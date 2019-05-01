@@ -24,7 +24,7 @@ function timeConverter(timestamp){
   return time;
 }
 
-var prefix = ":";
+var prefix = ".";
 
 client.on("ready", () => {
 	client.user.setActivity(`${prefix}help`, {type: "STREAMING",url: "https://www.twitch.tv/android"});
@@ -46,7 +46,8 @@ client.on("message", message => {
 			.setTitle("Android Bot")
 			.setDescription("`"+prefix+"android <version_number>` : Avoir des info sur une version d'Android particulière\n"+
 			"`"+prefix+"magisk <version>`: Avoir la version de magisk la plus récente \n - Version: `Stable`, `Beta`, `Canary`\n"+
-			"`"+prefix+"help roms`: Voir les commandes pour les Customs ROMs")
+			"`"+prefix+"help roms`: Voir les commandes pour les Customs ROMs\n"+
+			"`"+prefix+"invite`: Avoir l'invite du bot")
 			.setFooter(`Aide | ${prefix}help (here)`);
 		const f = content.split(' ')[1];
 		if(f === "here"){
