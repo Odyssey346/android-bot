@@ -42,7 +42,7 @@ Ouvrez le fichier index.js et mettez le token de votre bot à la place de "token
  
  Q1: Pourquoi quand je démarre le bot j'ai `Cannot find module` ?
  
- R1: Avez vous fait `npm install` ?
+ R1: Avez vous bien installer tout les packages avec npm ?
  
  Q2: Pourquoi quand je démarre le bot j'ai `UnhandledPromiseRejectionWarning: Error: Incorrect login details were provided.` ?
  
