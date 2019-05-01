@@ -18,6 +18,7 @@ prefix: .
 ##### Sur Windows:
 
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
+
 Téléchargez le repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
 
 Dézipper le zip et ouvrez une Invite de commande dans le dossier extrait
