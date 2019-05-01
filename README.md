@@ -30,7 +30,7 @@ Ouvrez le fichier index.js et mettez le token de votre bot à la place de "token
 ### Comment l'utiliser:
  Tapez sur votre Invite de Commande `node index.js`
  
- ajoutez le bot à votre serveur puis fait .help
+ ajoutez le bot à votre serveur puis faite .help
  
 ### Troubleshooting
  
