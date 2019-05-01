@@ -43,7 +43,7 @@ client.on("message", message => {
 	if(content.startsWith(`${prefix}help`)){
 		const embed = new Discord.RichEmbed()
 			.setColor(0xFFFFFF)
-			.setTitle("Android Bot")
+			.setTitle("Page d'aide")
 			.setDescription("`"+prefix+"android <version_number>` : Avoir des info sur une version d'Android particulière\n"+
 			"`"+prefix+"magisk <version>`: Avoir la version de magisk la plus récente \n - Version: `Stable`, `Beta`, `Canary`\n"+
 			"`"+prefix+"help roms`: Voir les commandes pour les Customs ROMs\n"+
@@ -55,7 +55,7 @@ client.on("message", message => {
 		} else if(f === "roms"){
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
-				.setTitle("Custom ROM Commande")
+				.setTitle("Page d'aide (Custom ROM)")
 				.setDescription("Récupère les dernières versions des appareils officiellement pris en charge")
 				.addField("ROMs Disponibles", roms, false)
 				.addField("Utilisation", "`"+prefix+"<rom> <nom_de_code>`\nExemple: `"+prefix+"havoc whyred`\nVous pouvez également afficher les ROMs disponibles avec `"+prefix+"roms`.\n\n**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil.", false)
