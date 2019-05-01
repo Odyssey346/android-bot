@@ -1,4 +1,6 @@
 # Android Discord Bot
+Bot Discord permettant de savoir une version Android ou Magisk particulière ou si une rom est officiel pour un certain appareil
+
 prefix: .
 
 #### ROMs Supporté pour les commandes Roms:
