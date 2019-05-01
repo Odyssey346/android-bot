@@ -103,7 +103,15 @@ client.on("message", message => {
 					.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 				send({embed});
 			} else {
-				send("Veuillez entrer une version d'android ou une version d'api correct")
+				if(version === "29" || version === "10.0" || version === "10.0.0"){
+					const embed = new Discord.RichEmbed()
+						.setColor(0xFFFFFF)
+						.setTitle(`Android 10 Q`)
+						.setDescription("**API**: `29`\n**NDK**: `8`\n**Code de Version**: `Q`")
+					send({embed});
+				} else {
+					send("Veuillez entrer une version d'android ou une version d'api correct")
+				}
 			}
 		} else {
 			const info = android.get(28);
