@@ -19,7 +19,7 @@ prefix: .
 
 Installez NodeJS : https://nodejs.org/dist/v10.15.3/node-v10.15.3-x64.msi
 
-Télécharger le repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
+Téléchargez le repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
 
 Dézipper le zip et ouvrez une Invite de commande dans le dossier extrait
 
@@ -29,6 +29,7 @@ Ouvrez le fichier index.js et mettez le token de votre bot à la place de "token
 
 ### Comment l'utiliser:
  Tapez sur votre Invite de Commande `node index.js`
+ 
  ajoutez le bot à votre serveur puis fait .help
  
 ### Troubleshooting
