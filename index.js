@@ -87,25 +87,58 @@ client.on("message", message => {
 	//Android
 	if(content.startsWith(`${prefix}android`)){
 		const version = content.split(' ')[1];
+		function name(name){
+			if(name === "(no code name)"){
+				return "";
+			} else {
+				return name;
+			}
+		}
+		function color(name){
+			if(name === "Pie"){
+				return 0xe0f6d9
+			} else if(name === "Oreo"){
+				return 0xedb405
+			} else if(name === "Nougat"){
+				return 0x4fc3f6
+			} else if(name === "Marshmallow"){
+				return 0xe91e63
+			} else if(name === "Lollipop"){
+				return 0x9c27b1
+			} else if(name === "KitKat" || name === "KitKat Watch"){
+				return 0x693c20
+			} else if(name === "Jellybean"){
+				return 0xfe0000
+			} else if(name === "Ice Cream Sandwich"){
+				return 0x8a4e1d
+			} else if(name === "Honeycomb"){
+				return 0x00467a
+			} else if(name === "Gingerbread"){
+				return 0xb28a70
+			} else if(name === "Froyo"){
+				return 0xa4d229
+			} else if(name === "Eclair"){
+				return 0xc19d53
+			} else if(name === "Donut"){
+				return 0xf4f5f7
+			} else if(name === "Cupcake"){
+				return 0x8cc63c
+			} else {
+				return 0xffffff
+			}
+		}
 		if(version !== undefined){
 			const info = android.get(version);
 			if(info !== null){
-				function name(name){
-					if(name === "(no code name)"){
-						return "";
-					} else {
-						return name;
-					}
-				}
 				const embed = new Discord.RichEmbed()
-					.setColor(0xFFFFFF)
+					.setColor(color(name))
 					.setTitle(`Android ${info.semver} ${name(info.name)}`)
 					.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 				send({embed});
 			} else {
 				if(version === "29" || version === "10.0" || version === "10.0.0"){
 					const embed = new Discord.RichEmbed()
-						.setColor(0xFFFFFF)
+						.setColor(0x77c35f)
 						.setTitle(`Android 10 Q`)
 						.setDescription("**API**: `29`\n**NDK**: `8`\n**Code de Version**: `Q`")
 					send({embed});
@@ -115,15 +148,8 @@ client.on("message", message => {
 			}
 		} else {
 			const info = android.get(28);
-			function name(name){
-				if(name === "(no code name)"){
-					return "";
-				} else {
-					return name;
-				}
-			}
 			const embed = new Discord.RichEmbed()
-				.setColor(0xFFFFFF)
+				.setColor(color(name))
 				.setTitle(`Android ${info.semver} ${name(info.name)}`)
 				.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 			send({embed});
