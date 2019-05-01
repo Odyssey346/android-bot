@@ -23,7 +23,13 @@ Téléchargez le repo : https://github.com/Pharuxtan/android-bot/archive/master.
 
 Dézipper le zip et ouvrez une Invite de commande dans le dossier extrait
 
-Puis tapez `npm install`
+Puis tapez
+```
+npm i android-versions
+npm i discord.js
+npm i prettysize
+npm i request
+```
 
 Ouvrez le fichier index.js et mettez le token de votre bot à la place de "token" (sans enlever les "")
 
