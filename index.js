@@ -55,11 +55,13 @@ client.on("message", message => {
 		} else if(f === "roms"){
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
-				.setTitle("Page d'aide (Custom ROM)")
+				.setTitle("Page d'aide pour les Customs ROMs")
 				.setDescription("Récupère les dernières versions des appareils officiellement pris en charge")
 				.addField("ROMs Disponibles", roms, false)
 				.addField("Utilisation", "`"+prefix+"<rom> <nom_de_code>`\nExemple: `"+prefix+"havoc whyred`\nVous pouvez également afficher les ROMs disponibles avec `"+prefix+"roms`.\n\n**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil.", false)
-				.addField("Pour Pixel Experience et AOSP Extended", "`"+prefix+"pe <nom_de_code> <version>`\nVersions: Oreo (oreo), Pie (pie), Pie-CAF (caf (que Pixel Experience))\nExemple: `"+prefix+"pe whyred caf`\n\n**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour la version <version> pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible pour la version pie, caf ou oreo, ou que la rom n'est pas disponible officiellement pour votre appareil.", false)
+				.addField("Pour Pixel Experience", "`"+prefix+"pe <nom_de_code> <version>`\nVersions: Oreo (oreo), Pie (pie), Pie-CAF (caf)\nExemple: `"+prefix+"pe whyred caf`", true)
+				.addField("Pour AOSP Extended", "`"+prefix+"aex <nom_de_code> <version>`\nVersions: Oreo (oreo), Pie (pie)\nExemple: `"+prefix+"aex whyred oreo`", true)
+				.addField("** **", "**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour la version <version> pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible pour la version pie, caf ou oreo, ou que la rom n'est pas disponible officiellement pour votre appareil.", false)
 				.setFooter(`Aide Roms | ${prefix}help roms (here)`);
 			const s = content.split(' ')[2];
 			if(s === "here"){
@@ -70,7 +72,7 @@ client.on("message", message => {
 		} else {
 			sendmp({embed});
 		}
-	}
+	}}
 });
 
 //Android Bot
