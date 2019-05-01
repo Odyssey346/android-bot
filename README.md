@@ -15,8 +15,6 @@ prefix: .
 * AOSP Extended
 
 ### Comment l'installer:
-##### Sur Windows:
-
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
 
 Téléchargez le repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
