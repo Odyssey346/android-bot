@@ -23,19 +23,15 @@ Télécharger le repo : https://github.com/Pharuxtan/android-bot/archive/master.
 
 Dézipper le zip et ouvrez une Invite de commande dans le dossier extrait
 
-Puis tapez ```
-npm install
-```
+Puis tapez `npm install`
 
 Ouvrez le fichier index.js et mettez le token de votre bot à la place de "token" (sans enlever les "")
 
 ### Comment l'utiliser:
- Tapez sur votre Invite de Commande ```
- node index.js
- ```
+ Tapez sur votre Invite de Commande `node index.js`
  ajoutez le bot à votre serveur puis fait .help
  
- ### Troubleshooting
+### Troubleshooting
  
  Q1: Pourquoi quand je démarre le bot j'ai `Cannot find module` ?
  
