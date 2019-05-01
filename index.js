@@ -1,4 +1,4 @@
-﻿const Discord = require("discord.js");
+const Discord = require("discord.js");
 const request = require("request");
 const pretty = require('prettysize');
 const android = require('android-versions');
@@ -81,6 +81,7 @@ client.on("message", message => {
 	const author = message.author;
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
+	//Android
 	if(content.startsWith(`${prefix}android`)){
 		const version = content.split(' ')[1];
 		if(version !== undefined){
@@ -116,6 +117,7 @@ client.on("message", message => {
 				.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 			send({embed});
 		}
+	//Magisk
 	} else if(content.startsWith(`${prefix}magisk`)) {
 		const version = content.split(' ')[1];
 		//Stable Version
@@ -179,12 +181,21 @@ client.on("message", message => {
 				var uninstaller = response.uninstaller;
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
-					.setTitle(`Magisk Stable`)
+					.setTitle("Magisk Stable")
 					.addField("Magisk Manager", "**Version**: "+app.version+" `"+app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${app.version}](${app.link})\n - [ChangeLog](${app.note})`, true)
 					.addField("Magisk Installer", "**Version**: "+magisk.version+" `"+magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisk.version}](${magisk.link})\n - [Magisk Uninstaller](${uninstaller.link})\n - [ChangeLog](${magisk.note})`, true)
 				send({embed});
 			});
-		}			
+		}
+	//Invite
+	} else if(content.startsWith(`${prefix}invite`)){
+		client.generateInvite().then(link => {
+			const embed = new Discord.RichEmbed()
+				.setColor(0xFFFFFF)
+				.setTitle("Invite")
+				.setURL(link)
+			send({embed});
+		});
 	}
 });
 
