@@ -72,7 +72,7 @@ client.on("message", message => {
 		} else {
 			sendmp({embed});
 		}
-	}}
+	}
 });
 
 //Android Bot
