@@ -9,7 +9,6 @@
   "dependencies": {
     "android-versions": "^1.4.0",
     "discord.js": "^11.4.2",
-    "express": "^4.16.4",
     "prettysize": "^2.0.0",
     "request": "^2.88.0"
   },
