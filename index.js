@@ -59,9 +59,6 @@ client.on("message", message => {
 				.setDescription("Récupère les dernières versions des appareils officiellement pris en charge")
 				.addField("ROMs Disponibles", roms, false)
 				.addField("Utilisation", "`"+prefix+"<rom> <nom_de_code>`\nExemple: `"+prefix+"havoc whyred`\nVous pouvez également afficher les ROMs disponibles avec `"+prefix+"roms`.\n\n**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil.", false)
-				.addField("Pour Pixel Experience", "`"+prefix+"pe <nom_de_code> <version>`\nVersions: Oreo (oreo), Pie (pie), Pie-CAF (caf)\nExemple: `"+prefix+"pe whyred caf`", true)
-				.addField("Pour AOSP Extended", "`"+prefix+"aex <nom_de_code> <version>`\nVersions: Oreo (oreo), Pie (pie)\nExemple: `"+prefix+"aex whyred oreo`", true)
-				.addField("** **", "**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour la version <version> pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible pour la version pie, caf ou oreo, ou que la rom n'est pas disponible officiellement pour votre appareil.", false)
 				.setFooter(`Aide Roms | ${prefix}help roms (here)`);
 			const s = content.split(' ')[2];
 			if(s === "here"){
@@ -573,98 +570,41 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}aex`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			const version = content.split(' ')[2];
-			//Pie Version
-			if(version === "pie") {
-				request({
-					url: `https://api.aospextended.com/ota/${codename}/pie`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200){
-						var response = JSON.parse(bodyurl);
-						const embed = new Discord.RichEmbed()
-							.setColor(0x21ef8b)
-							.setTitle(`AEX | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://api.aospextended.com/ota/${codenameup}/pie`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0x21ef8b)
-									.setTitle(`AEX | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé sur la version `"+version+"` pour `"+devicename(codename)+"`");
-							}
-						});
-					}
-				});
-			//Oreo Version
-			} else if(version === "oreo") {
-				request({
-					url: `https://api.aospextended.com/ota/${codename}/oreo`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200){
-						var response = JSON.parse(bodyurl);
-						const embed = new Discord.RichEmbed()
-							.setColor(0x21ef8b)
-							.setTitle(`AEX | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://api.aospextended.com/ota/${codenameup}/oreo`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0x21ef8b)
-									.setTitle(`AEX | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé sur la version `"+version+"` pour `"+devicename(codename)+"`");
-							}
-						});
-					}
-				});
-			//Pie (undefined) Version
-			} else {
-				request({
-					url: `https://api.aospextended.com/ota/${codename}/pie`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200){
-						var response = JSON.parse(bodyurl);
-						const embed = new Discord.RichEmbed()
-							.setColor(0x21ef8b)
-							.setTitle(`AEX | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://api.aospextended.com/ota/${codenameup}/pie`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0x21ef8b)
-									.setTitle(`AEX | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé sur la version `"+version+"` pour `"+devicename(codename)+"`");
-							}
-						});
-					}
+			const codenameup = content.split(' ')[1].toUpperCase();
+			async function aex(url, urlup) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200){
+							var response = JSON.parse(bodyurl);
+							resolve("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
+						} else {
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								if(responses.statusCode === 200){
+									var response = JSON.parse(bodyurl);
+									resolve("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
+								} else {
+									resolve("Aucune ROM");
+								}
+							});
+						}
+					});
 				});
 			}
+			//Pie
+			aex(`https://api.aospextended.com/ota/${codename}/pie`, `https://api.aospextended.com/ota/${codenameup}/pie`).then(pie => {
+			//Oreo
+			aex(`https://api.aospextended.com/ota/${codename}/oreo`, `https://api.aospextended.com/ota/${codenameup}/oreo`).then(oreo => {
+				const embed = new Discord.RichEmbed()
+					.setColor(0xf8ba00)
+					.setTitle(`AEX | ${devicename(codename)}`)
+					.addField("Pie", pie)
+					.addField("Oreo", oreo)
+				send({embed})
+			})});
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
@@ -709,128 +649,44 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}pe`)){
 		const codename = content.split(' ')[1]
 		if(codename !== undefined){
-			const version = content.split(' ')[2];
-			//Pie version
-			if(version === "pie") {
-				request({
-					url: `https://download.pixelexperience.org/ota_v2/${codename}/pie`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-						var response = JSON.parse(bodyurl);
-						const embed = new Discord.RichEmbed()
-							.setColor(0xf8ba00)
-							.setTitle(`Pixel Experience | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://download.pixelexperience.org/ota_v2/${codenameup}/pie`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0xf8ba00)
-									.setTitle(`Pixel Experience | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé sur la version `"+version+"` pour `"+devicename(codename)+"`");
-							}
-						});
-					}
-				});
-			//CAF Version
-			} else if(version === "caf" || version === "pie_caf" || version === "pie-caf"){
-				request({
-					url: `https://download.pixelexperience.org/ota_v2/${codename}/pie_caf`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-						var response = JSON.parse(bodyurl);
-						const embed = new Discord.RichEmbed()
-							.setColor(0xf8ba00)
-							.setTitle(`Pixel Experience | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_caf`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0xf8ba00)
-									.setTitle(`Pixel Experience | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé sur la version `"+version+"` pour `"+devicename(codename)+"`");
-							}
-						});
-					}
-				});
-			//Oreo Version
-			} else if(version === "oreo"){
-				request({
-					url: `https://download.pixelexperience.org/ota_v2/${codename}/oreo`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-						var response = JSON.parse(bodyurl);
-						const embed = new Discord.RichEmbed()
-							.setColor(0xf8ba00)
-							.setTitle(`Pixel Experience | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://download.pixelexperience.org/ota_v2/${codenameup}/oreo`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0xf8ba00)
-									.setTitle(`Pixel Experience | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé sur la version `"+version+"` pour `"+devicename(codename)+"`");
-							}
-						});
-					}
-				});
-			//Pie (undefined) Version
-			} else {
-				request({
-					url: `https://download.pixelexperience.org/ota_v2/${codename}/pie`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-						var response = JSON.parse(bodyurl);
-						const embed = new Discord.RichEmbed()
-							.setColor(0xf8ba00)
-							.setTitle(`Pixel Experience | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://download.pixelexperience.org/ota_v2/${codenameup}/pie`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0xf8ba00)
-									.setTitle(`Pixel Experience | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé sur la version `pie` pour `"+devicename(codename)+"`");
-							}
-						});
-					}
+			const codenameup = content.split(' ')[1].toUpperCase();
+			async function pe(url, urlup) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
+							var response = JSON.parse(bodyurl);
+							resolve("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
+						} else {
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
+									var response = JSON.parse(bodyurl);
+									resolve("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
+								} else {
+									resolve("Aucune ROM");
+								}
+							});
+						}
+					});
 				});
 			}
+			//Pie
+			pe(`https://download.pixelexperience.org/ota_v2/${codename}/pie`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie`).then(pie => {
+			//Pie-CAF
+			pe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_caf`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_caf`).then(caf => {
+			//Oreo
+			pe(`https://download.pixelexperience.org/ota_v2/${codename}/oreo`, `https://download.pixelexperience.org/ota_v2/${codenameup}/oreo`).then(oreo => {
+				const embed = new Discord.RichEmbed()
+					.setColor(0xf8ba00)
+					.setTitle(`Pixel Experience | ${devicename(codename)}`)
+					.addField("Pie", pie)
+					.addField("Pie-CAF", caf)
+					.addField("Oreo", oreo)
+				send({embed})
+			})})});
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
