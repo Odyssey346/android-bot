@@ -207,22 +207,39 @@ client.on("message", message => {
 					.addField("SNET (SafetyNet)", "**Version**: `"+snet.versionCode+"`\n**Télécharger**: "+`[snet.apk](${snet.link})`, true)
 				send({embed});
 			});
-		//Stable (undefined) Version
+		//All (undefined) Version
 		} else {
-			request({
-				url: `https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json`
-			}, function(err, responses, bodyurl) {
-				var response = JSON.parse(bodyurl);
-				var app = response.app;
-				var magisk = response.magisk;
-				var uninstaller = response.uninstaller;
+			async function magisk(url) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url
+					}, function(err, responses, bodyurl) {
+						var response = JSON.parse(bodyurl);
+						resolve(response);
+					});
+				});
+			}
+			//Stable
+			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json`).then(magisks => {
+			//Beta
+			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json`).then(magiskb => {
+			//Canary
+			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/canary_builds/canary.json`).then(magiskc => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
-					.setTitle("<:magisk:573148683290542100> Magisk Stable")
-					.addField("Magisk Manager", "**Version**: "+app.version+" `"+app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${app.version}](${app.link})\n - [ChangeLog](${app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magisk.version+" `"+magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisk.version}](${magisk.link})\n - [Magisk Uninstaller](${uninstaller.link})\n - [ChangeLog](${magisk.note})`, true)
-				send({embed});
-			});
+					.setTitle("<:magisk:573148683290542100> Magisk")
+					.addField("Stable", "** **", false)
+					.addField("Magisk Manager", "**Version**: "+magisks.app.version+" `"+magisks.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
+					.addField("Magisk Installer", "**Version**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
+					.addField("Beta", "** **", false)		
+					.addField("Magisk Manager", "**Version**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskb.app.version}](${magiskb.app.link})\n - [ChangeLog](${magiskb.app.note})`, true)
+					.addField("Magisk Installer", "**Version**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})\n - [ChangeLog](${magiskb.magisk.note})`, true)
+					.addField("Canary", "** **", false)						
+					.addField("Magisk Manager", "**Version**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [ChangeLog](${magiskc.app.note})`, true)
+					.addField("Magisk Installer", "**Version**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})\n - [ChangeLog](${magiskc.magisk.note})`, true)
+					.addField("SNET (SafetyNet)", "**Version**: `"+magiskc.snet.versionCode+"`\n**Télécharger**: "+`[snet.apk](${magiskc.snet.link})`, true)
+				send({embed})
+			})})});
 		}
 	//Invite
 	} else if(content.startsWith(`${prefix}invite`)){
