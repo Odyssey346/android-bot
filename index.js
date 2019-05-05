@@ -1206,7 +1206,7 @@ client.on("message", message => {
 			//crDroid
 			romcrd(codename, codenameup, "crDroid (crdroid)").then(crdroid => {
 			//Clean Open Source Porject COSP
-			romcrd(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
+			romcosp(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
 			//ResurrectionRemix RR
 			rom(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)").then(rr => {
 				
