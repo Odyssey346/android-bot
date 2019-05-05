@@ -29,6 +29,7 @@ npm i android-versions
 npm i discord.js
 npm i prettysize
 npm i request
+npm i xml-js
 ```
 
 Ouvrez le fichier index.js et mettez le token de votre bot à la place de "token" (sans enlever les "")
