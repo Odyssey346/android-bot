@@ -141,7 +141,7 @@ client.on("message", message => {
 				if(version === "29" || version === "10.0" || version === "10.0.0"){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x77c35f)
-						.setTitle("<:q_:573167305832267779> Android 10 Q")
+						.setTitle("Android 10 Q")
 						.setDescription("**API**: `29`\n**NDK**: `8`\n**Code de Version**: `Q`")
 					send({embed});
 				} else {
@@ -152,7 +152,7 @@ client.on("message", message => {
 			const info = android.get(28);
 			const embed = new Discord.RichEmbed()
 				.setColor(color(info.name))
-				.setTitle(`${icon(info.name)} Android ${info.semver} ${name(info.name)}`)
+				.setTitle(`Android ${info.semver} ${name(info.name)}`)
 				.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 			send({embed});
 		}
