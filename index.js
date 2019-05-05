@@ -537,7 +537,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			if(codename !== "enchilada"){
 				request({
-					url: `https://raw.githubusercontent.com/evolution-x/official_devices/master/builds/${codename}.json`
+					url: `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codename}.json`
 				}, function(err, responses, bodyurl) {
 					if(responses.statusCode === 200){
 						var response = JSON.parse(bodyurl);
@@ -549,7 +549,7 @@ client.on("message", message => {
 					} else {
 						const codenameup = codename.toUpperCase();
 						request({
-							url: `https://raw.githubusercontent.com/evolution-x/official_devices/master/builds/${codenameup}.json`
+							url: `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codenameup}.json`
 						}, function(err, responses, bodyurl) {
 							if(responses.statusCode === 200){
 								var response = JSON.parse(bodyurl);
@@ -1145,7 +1145,7 @@ client.on("message", message => {
 			//Potato Open Sauce Project POSP
 			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (posp/potato)").then(posp => {
 			//Evolution-X EVO-X
-			rombody(`https://raw.githubusercontent.com/evolution-x/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/evolution-x/official_devices/master/builds/${codenameup}.json`, "Evolution-X (evo/evox)").then(evo => {
+			rombody(`https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codenameup}.json`, "Evolution-X (evo/evox)").then(evo => {
 			//AOSP Extended AEX (Pie)
 			rombody(`https://api.aospextended.com/ota/${codename}/pie`, `https://api.aospextended.com/ota/${codenameup}/pie`, "AOSP Extended (Pie) (aex)").then(aexpie => {
 			//AOSP Extended AEX (Oreo)
