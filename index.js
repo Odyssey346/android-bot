@@ -18,7 +18,8 @@ const roms = "DotOS (dotos)\n"+
 			 "crDroid (crdroid)\n"+
 			 "Syberia (syberia)\n"+
 			 "Clean Open Source Project (cosp/clean)\n"+
-			 "Resurrection Remix  (rr)";
+			 "Resurrection Remix (rr)\n"+
+			 "SuperiorOS (superior)";
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -160,68 +161,49 @@ client.on("message", message => {
 	//Magisk
 	} else if(content.startsWith(`${prefix}magisk`)) {
 		const version = content.split(' ')[1];
+		async function magisk(url) {
+			return new Promise(function(resolve, reject) {
+				request({
+					url
+				}, function(err, responses, bodyurl) {
+					var response = JSON.parse(bodyurl);
+					resolve(response);
+				});
+			});
+		}
 		//Stable Version
 		if(version === "stable") {
-			request({
-				url: `https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json`
-			}, function(err, responses, bodyurl) {
-				var response = JSON.parse(bodyurl);
-				var app = response.app;
-				var magisk = response.magisk;
-				var uninstaller = response.uninstaller;
+			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json`).then(magisks => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
 					.setTitle("Magisk Stable")
-					.addField("Magisk Manager", "**Version**: "+app.version+" `"+app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${app.version}](${app.link})\n - [ChangeLog](${app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magisk.version+" `"+magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisk.version}](${magisk.link})\n - [Magisk Uninstaller](${uninstaller.link})\n - [ChangeLog](${magisk.note})`, true)
+					.addField("Magisk Manager", "**Version**: "+magisks.app.version+" `"+magisks.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
+					.addField("Magisk Installer", "**Version**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
 				send({embed});
 			});
 		//Beta Version
 		} else if(version === "beta") {
-			request({
-				url: `https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json`
-			}, function(err, responses, bodyurl) {
-				var response = JSON.parse(bodyurl);
-				var app = response.app;
-				var magisk = response.magisk;
-				var uninstaller = response.uninstaller;
+			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json`).then(magiskb => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
 					.setTitle("Magisk Beta")
-					.addField("Magisk Manager", "**Version**: "+app.version+" `"+app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${app.version}](${app.link})\n - [ChangeLog](${app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magisk.version+" `"+magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisk.version}](${magisk.link})\n - [Magisk Uninstaller](${uninstaller.link})\n - [ChangeLog](${magisk.note})`, true)
+					.addField("Magisk Manager", "**Version**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskb.app.version}](${magiskb.app.link})\n - [ChangeLog](${magiskb.app.note})`, true)
+					.addField("Magisk Installer", "**Version**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})\n - [ChangeLog](${magiskb.magisk.note})`, true)
 				send({embed});
 			});
 		//Canary Version
 		} else if(version === "canary") {
-			request({
-				url: `https://raw.githubusercontent.com/topjohnwu/magisk_files/master/canary_builds/canary.json`
-			}, function(err, responses, bodyurl) {
-				var response = JSON.parse(bodyurl);
-				var app = response.app;
-				var magisk = response.magisk;
-				var uninstaller = response.uninstaller;
-				var snet = response.snet;
+			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/canary_builds/canary.json`).then(magiskc => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
 					.setTitle("Magisk Canary")
-					.addField("Magisk Manager", "**Version**: "+app.version+" `"+app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${app.version}](${app.link})\n - [ChangeLog](${app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magisk.version+" `"+magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisk.version}](${magisk.link})\n - [Magisk Uninstaller](${uninstaller.link})\n - [ChangeLog](${magisk.note})`, true)
-					.addField("SNET (SafetyNet)", "**Version**: `"+snet.versionCode+"`\n**Télécharger**: "+`[snet.apk](${snet.link})`, true)
+					.addField("Magisk Manager", "**Version**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [ChangeLog](${magiskc.app.note})`, true)
+					.addField("Magisk Installer", "**Version**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})\n - [ChangeLog](${magiskc.magisk.note})`, true)
+					.addField("SNET (SafetyNet)", "**Version**: `"+magiskc.snet.versionCode+"`\n**Télécharger**: "+`[snet.apk](${magiskc.snet.link})`, true)
 				send({embed});
 			});
 		//All (undefined) Version
 		} else {
-			async function magisk(url) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						var response = JSON.parse(bodyurl);
-						resolve(response);
-					});
-				});
-			}
 			//Stable
 			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json`).then(magisks => {
 			//Beta
@@ -884,6 +866,43 @@ client.on("message", message => {
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
+	//SuperiorOS
+	} else if(content.startsWith(`${prefix}superior`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			request({
+				url: `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`
+			}, function(err, responses, bodyurl) {
+				if(responses.statusCode === 200){
+					var body = JSON.parse(bodyurl);
+					var response = body.response[0]
+					const embed = new Discord.RichEmbed()
+						.setColor(0xbe1421)
+						.setTitle(`SuperiorOS | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+					send({embed});
+				} else {
+					const codenameup = codename.toUpperCase();
+					request({
+						url: `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200){
+							var body = JSON.parse(bodyurl);
+							var response = body.response[0]
+								const embed = new Discord.RichEmbed()
+								.setColor(0xbe1421)
+								.setTitle(`SuperiorOS | ${devicename(codename)}`)
+								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+							send({embed});
+						} else {
+							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+						}
+					});
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
 		const codename = content.split(' ')[1];
@@ -1209,10 +1228,12 @@ client.on("message", message => {
 			romcosp(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
 			//ResurrectionRemix RR
 			rom(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)").then(rr => {
+			//ResurrectionRemix RR
+			rom(`https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`, `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`, "SuperiorOS (superior)").then(superior => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false){
 					send("Aucune ROMs Disponibles pour `"+devicename(codename)+"`")
 				} else {
 					
@@ -1227,11 +1248,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`ROMs Disponibles pour ${devicename(codename)}`)
-						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}`)
+						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}`)
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
