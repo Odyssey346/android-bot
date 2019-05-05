@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const request = require("request");
 const pretty = require('prettysize');
+const convert = require('xml-js');
 const android = require('android-versions');
 const client = new Discord.Client();
 const roms = "DotOS (dotos)\n"+
@@ -13,7 +14,10 @@ const roms = "DotOS (dotos)\n"+
 			 "LineageOS (los/lineage)\n"+
 			 "Pixel Experience (pe)\n"+
 			 "BootleggersROM (btlg/bootleggers)\n"+
-			 "AOSP Extended (aex)";
+			 "AOSP Extended (aex)\n"+
+			 "crDroid (crdroid)\n"+
+			 "Syberia (syberia)\n"+
+			 "Clean Open Source Project (cosp/clean)";
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -23,6 +27,7 @@ function timeConverter(timestamp){
   var time = `${year}-${month}-${date}`;
   return time;
 }
+
 
 var prefix = ".";
 
@@ -91,6 +96,39 @@ client.on("message", message => {
 				return name;
 			}
 		}
+		function icon(name){
+			if(name === "Pie"){
+				return "<:pie:573163420623568907>"
+			} else if(name === "Oreo"){
+				return "<:oreo:573168522373627934>"
+			} else if(name === "Nougat"){
+				return "<:nougat:573169083877425162>"
+			} else if(name === "Marshmallow"){
+				return "<:marshmellow:573170371537272832>"
+			} else if(name === "Lollipop"){
+				return "<:lollipop:573171531891343383>"
+			} else if(name === "KitKat" || name === "KitKat Watch"){
+				return "<:kitkat:573172035380052010>"
+			} else if(name === "Jellybean"){
+				return "<:jellybean:573172603129298964>"
+			} else if(name === "Ice Cream Sandwich"){
+				return "<:ice_cream_sandwich:573173175597269033>"
+			} else if(name === "Honeycomb"){
+				return "<:honeycomb:573174223204384768>"
+			} else if(name === "Gingerbread"){
+				return "<:gingerbread:573175126149824513>"
+			} else if(name === "Froyo"){
+				return "<:froyo:573175832558829591>"
+			} else if(name === "Eclair"){
+				return "<:eclair:573178443144101888>"
+			} else if(name === "Donut"){
+				return "<:donut:573179657667477513>"
+			} else if(name === "Cupcake"){
+				return "<:cupcake:573181831747207169>"
+			} else {
+				return ""
+			}
+		}
 		function color(name){
 			if(name === "Pie"){
 				return 0xe0f6d9
@@ -128,15 +166,15 @@ client.on("message", message => {
 			const info = android.get(version);
 			if(info !== null){
 				const embed = new Discord.RichEmbed()
-					.setColor(color(name))
-					.setTitle(`Android ${info.semver} ${name(info.name)}`)
+					.setColor(color(info.name))
+					.setTitle(`${icon(info.name)} Android ${info.semver} ${name(info.name)}`)
 					.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 				send({embed});
 			} else {
 				if(version === "29" || version === "10.0" || version === "10.0.0"){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x77c35f)
-						.setTitle(`Android 10 Q`)
+						.setTitle("<:q_:573167305832267779> Android 10 Q")
 						.setDescription("**API**: `29`\n**NDK**: `8`\n**Code de Version**: `Q`")
 					send({embed});
 				} else {
@@ -146,8 +184,8 @@ client.on("message", message => {
 		} else {
 			const info = android.get(28);
 			const embed = new Discord.RichEmbed()
-				.setColor(color(name))
-				.setTitle(`Android ${info.semver} ${name(info.name)}`)
+				.setColor(color(info.name))
+				.setTitle(`${icon(info.name)} Android ${info.semver} ${name(info.name)}`)
 				.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 			send({embed});
 		}
@@ -690,6 +728,154 @@ client.on("message", message => {
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
+	//SyberiaOS
+	} else if(content.startsWith(`${prefix}syberia`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = codename.toUpperCase();
+			request({
+				url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${codename}.json`
+			}, function(err, responses, bodyurl) {
+				if(responses.statusCode === 200){
+					var response = JSON.parse(bodyurl);
+					const embed = new Discord.RichEmbed()
+						.setColor(0xDF766E)
+						.setTitle(`Syberia | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+					send({embed});
+				} else {
+					request({
+						url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${codenameup}.json`
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200){
+						var response = JSON.parse(bodyurl);
+							const embed = new Discord.RichEmbed()
+								.setColor(0xDF766E)
+								.setTitle(`Syberia | ${devicename(codename)}`)
+								.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+							send({embed});
+						} else {
+							function ab(code){
+								if(code === 'fajita'){
+									return 'OnePlus6T'
+								} else if(code === 'enchilada'){
+									return 'OnePlus6'
+								} else if(code === 'FAJITA'){
+									return 'OnePlus6T'
+								} else if(code === 'ENCHILADA'){
+									return 'OnePlus6'
+								} else {
+									return code
+								}
+							}
+							request({
+								url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(codename)}.json`
+							}, function(err, responses, bodyurl) {
+								if(responses.statusCode === 200){
+									var body = JSON.parse(bodyurl);
+									var response = body.response[0]
+									const embed = new Discord.RichEmbed()
+										.setColor(0xDF766E)
+										.setTitle(`Syberia | ${devicename(codename)}`)
+										.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+									send({embed});
+								} else {
+									request({
+										url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(codenameup)}.json`
+									}, function(err, responses, bodyurl) {
+										if(responses.statusCode === 200){
+											var body = JSON.parse(bodyurl);
+											var response = body.response[0]
+											const embed = new Discord.RichEmbed()
+												.setColor(0xDF766E)
+												.setTitle(`Syberia | ${devicename(codename)}`)
+												.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+											send({embed});
+										} else {
+											send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+										}
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
+	//crDroid
+	} else if(content.startsWith(`${prefix}crdroid`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			request({
+				url: "https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml"
+			}, function(err, responses, bodyurl) {
+				var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
+				function resp(){
+					try {
+						return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename];
+					} catch (err) {
+						try {
+							return JSON.parse(body).OTA.manufacturer.find((m) => m[codenameup] !== undefined)[codenameup];
+						} catch (err) {
+							return false;
+						}
+					}
+				}
+				if(resp() === false){
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+				} else {
+					var response = resp();
+					var filename = response.filename._text;
+					const embed = new Discord.RichEmbed()
+						.setColor(0x31423F)	
+						.setTitle(`crDroid | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**Version**: **`"+filename.split('-')[4]+"`**\n"+`**Télécharger**: [${filename}](${response.download._text})`)
+					send({embed});
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
+	//Clean Open Source Project COSP
+	} else if(content.startsWith(`${prefix}cosp`) || content.startsWith(`${prefix}clean`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			request({
+				url: `https://mirror.codebucket.de/cosp/getdevices.php`
+			}, function(err, responses, bodyurl) {
+				var body = JSON.parse(bodyurl);
+				var response = body.includes(codename);
+				if(response){
+					const embed = new Discord.RichEmbed()
+						.setColor(0x010101)	
+						.setTitle(`Clean Open Source Project | ${devicename(codename)}`)
+						.setDescription(`**Télécharger**: [COSP ${codename}](https://mirror.codebucket.de/cosp/${codename}/)`)
+					send({embed});
+				} else {
+					const codenameup = content.split(' ')[1].toUpperCase();
+					request({
+						url: `https://mirror.codebucket.de/cosp/getdevices.php`
+					}, function(err, responses, bodyurl) {
+						var body = JSON.parse(bodyurl);
+						var response = body.includes(codenameup);
+						if(response){
+							const embed = new Discord.RichEmbed()
+								.setColor(0x010101)	
+								.setTitle(`Clean Open Source Project | ${devicename(codename)}`)
+								.setDescription(`**Télécharger**: [COSP ${codename}](https://mirror.codebucket.de/cosp/${codenameup}/)`)
+							send({embed});
+						} else {
+							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+						}
+					});
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
 		const codename = content.split(' ')[1];
@@ -871,6 +1057,112 @@ client.on("message", message => {
 					});
 				});
 			}
+			async function romcosp(code, codeup, name) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url: `https://mirror.codebucket.de/cosp/getdevices.php`
+					}, function(err, responses, bodyurl) {
+						var body = JSON.parse(bodyurl);
+						var response = body.includes(code);
+						if(response){
+							resolve(`${name}\n`)
+						} else {
+							request({
+								url: `https://mirror.codebucket.de/cosp/getdevices.php`
+							}, function(err, responses, bodyurl) {
+								var body = JSON.parse(bodyurl);
+								var response = body.includes(codeup);
+								if(response){
+									resolve(`${name}\n`)
+								} else {
+									resolve(false)
+								}
+							});
+						}
+					});
+				});
+			}
+			async function romcrd(code, codeup, name) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url: "https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml"
+					}, function(err, responses, bodyurl) {
+						var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
+						function resp(){
+							try {
+								return true;
+							} catch (err) {
+								try {
+									return true;
+								} catch (err) {
+									return false;
+								}
+							}
+						}
+						if(resp() === false){
+							resolve(false)
+						} else {
+							resolve(`${name}\n`)
+						}
+					});
+				});
+			}
+			async function romsyb(coden, codenup, name){
+				return new Promise(function(resolve, reject) {
+					request({
+						url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${coden}.json`
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200){
+							var response = JSON.parse(bodyurl);
+							resolve(`${name}\n`);
+						} else {
+							request({
+								url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${codenup}.json`
+							}, function(err, responses, bodyurl) {
+								if(responses.statusCode === 200){
+									var response = JSON.parse(bodyurl);
+									resolve(`${name}\n`);
+								} else {
+									function ab(code){
+										if(code === 'fajita'){
+											return 'OnePlus6T'
+										} else if(code === 'enchilada'){
+											return 'OnePlus6'
+										} else if(code === 'FAJITA'){
+											return 'OnePlus6T'
+										} else if(code === 'ENCHILADA'){
+											return 'OnePlus6'
+										} else {
+											return code
+										}
+									}
+									request({
+										url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(coden)}.json`
+									}, function(err, responses, bodyurl) {
+										if(responses.statusCode === 200){
+											var body = JSON.parse(bodyurl);
+											var response = body.response[0]
+											resolve(`${name}\n`);
+										} else {
+											request({
+												url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(codenup)}.json`
+											}, function(err, responses, bodyurl) {
+												if(responses.statusCode === 200){
+													var body = JSON.parse(bodyurl);
+													var response = body.response[0]
+													resolve(`${name}\n`);
+												} else {
+													resolve(false);
+												}
+											});
+										}
+									});
+								}
+							});
+						}
+					});
+				});
+			}
 			//HavocOS
 			rom(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)").then(havoc => {
 			//PixysOS
@@ -899,10 +1191,16 @@ client.on("message", message => {
 			rompe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_caf`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_caf`, "Pixel Experience (CAF) (pe)").then(pecaf => {
 			//Pixel Experience (Oreo)
 			rompe(`https://download.pixelexperience.org/ota_v2/${codename}/oreo`, `https://download.pixelexperience.org/ota_v2/${codenameup}/oreo`, "Pixel Experience (Oreo) (pe)").then(peoreo => {
+			//SyberiaOS
+			romsyb(codename, codenameup, "Syberia (syberia)").then(syberia => {
+			//crDroid
+			romcrd(codename, codenameup, "crDroid (crdroid)").then(crdroid => {
+			//Clean Open Source Porject COSP
+			romcrd(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pie, caf, oreo
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, syberia, crdroid, cosp
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false){
 					send("Aucune ROMs Disponibles pour `"+devicename(codename)+"`")
 				} else {
 					
@@ -917,11 +1215,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`ROMs Disponibles pour ${devicename(codename)}`)
-						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}`)
+						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}`)
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
@@ -931,6 +1229,5 @@ client.on("message", message => {
 		}
 	}
 });
-
 
 client.login("token");
