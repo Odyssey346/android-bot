@@ -15,6 +15,9 @@ prefix: .
 * Pixel Experience
 * BootleggersROM
 * AOSP Extended
+* crDroid
+* Syberia
+* Clean Open Source Project (COSP)
 
 ### Comment l'installer:
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
