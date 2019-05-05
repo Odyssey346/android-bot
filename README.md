@@ -18,6 +18,7 @@ prefix: .
 * crDroid
 * Syberia
 * Clean Open Source Project (COSP)
+* Resurrection Remix
 
 ### Comment l'installer:
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
