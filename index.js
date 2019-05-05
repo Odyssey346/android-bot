@@ -134,7 +134,7 @@ client.on("message", message => {
 			if(info !== null){
 				const embed = new Discord.RichEmbed()
 					.setColor(color(info.name))
-					.setTitle(`${icon(info.name)} Android ${info.semver} ${name(info.name)}`)
+					.setTitle(`Android ${info.semver} ${name(info.name)}`)
 					.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
 				send({embed});
 			} else {
