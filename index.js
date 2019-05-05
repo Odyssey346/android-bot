@@ -17,7 +17,8 @@ const roms = "DotOS (dotos)\n"+
 			 "AOSP Extended (aex)\n"+
 			 "crDroid (crdroid)\n"+
 			 "Syberia (syberia)\n"+
-			 "Clean Open Source Project (cosp/clean)";
+			 "Clean Open Source Project (cosp/clean)\n"+
+			 "Resurrection Remix  (rr)";
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -843,6 +844,43 @@ client.on("message", message => {
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
+	//ResurrectionRemix RR
+	} else if(content.startsWith(`${prefix}rr`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			request({
+				url: `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`
+			}, function(err, responses, bodyurl) {
+				if(responses.statusCode === 200){
+					var body = JSON.parse(bodyurl);
+					var response = body.response[0]
+					const embed = new Discord.RichEmbed()
+						.setColor(0x1A1C1D)
+						.setTitle(`Resurrection Remix | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+					send({embed});
+				} else {
+					const codenameup = codename.toUpperCase();
+					request({
+						url: `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200){
+							var body = JSON.parse(bodyurl);
+							var response = body.response[0]
+								const embed = new Discord.RichEmbed()
+								.setColor(0x1A1C1D)
+								.setTitle(`Resurrection Remix | ${devicename(codename)}`)
+								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+							send({embed});
+						} else {
+							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+						}
+					});
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
 		const codename = content.split(' ')[1];
@@ -1164,10 +1202,12 @@ client.on("message", message => {
 			romcrd(codename, codenameup, "crDroid (crdroid)").then(crdroid => {
 			//Clean Open Source Porject COSP
 			romcrd(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
+			//ResurrectionRemix RR
+			rom(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)").then(rr => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, syberia, crdroid, cosp
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, syberia, crdroid, cosp, rr
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false){
 					send("Aucune ROMs Disponibles pour `"+devicename(codename)+"`")
 				} else {
 					
@@ -1182,7 +1222,7 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`ROMs Disponibles pour ${devicename(codename)}`)
-						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}`)
+						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}`)
 					send({embed});
 				}
 				
