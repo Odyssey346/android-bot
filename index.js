@@ -96,39 +96,6 @@ client.on("message", message => {
 				return name;
 			}
 		}
-		function icon(name){
-			if(name === "Pie"){
-				return "<:pie:573163420623568907>"
-			} else if(name === "Oreo"){
-				return "<:oreo:573168522373627934>"
-			} else if(name === "Nougat"){
-				return "<:nougat:573169083877425162>"
-			} else if(name === "Marshmallow"){
-				return "<:marshmellow:573170371537272832>"
-			} else if(name === "Lollipop"){
-				return "<:lollipop:573171531891343383>"
-			} else if(name === "KitKat" || name === "KitKat Watch"){
-				return "<:kitkat:573172035380052010>"
-			} else if(name === "Jellybean"){
-				return "<:jellybean:573172603129298964>"
-			} else if(name === "Ice Cream Sandwich"){
-				return "<:ice_cream_sandwich:573173175597269033>"
-			} else if(name === "Honeycomb"){
-				return "<:honeycomb:573174223204384768>"
-			} else if(name === "Gingerbread"){
-				return "<:gingerbread:573175126149824513>"
-			} else if(name === "Froyo"){
-				return "<:froyo:573175832558829591>"
-			} else if(name === "Eclair"){
-				return "<:eclair:573178443144101888>"
-			} else if(name === "Donut"){
-				return "<:donut:573179657667477513>"
-			} else if(name === "Cupcake"){
-				return "<:cupcake:573181831747207169>"
-			} else {
-				return ""
-			}
-		}
 		function color(name){
 			if(name === "Pie"){
 				return 0xe0f6d9
