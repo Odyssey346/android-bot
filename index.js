@@ -1098,10 +1098,10 @@ client.on("message", message => {
 						var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
 						function resp(){
 							try {
-								return true;
+								return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
 							} catch (err) {
 								try {
-									return true;
+									return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
 								} catch (err) {
 									return false;
 								}
