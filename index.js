@@ -19,7 +19,8 @@ const roms = "DotOS (dotos)\n"+
 			 "Syberia (syberia)\n"+
 			 "Clean Open Source Project (cosp/clean)\n"+
 			 "Resurrection Remix (rr)\n"+
-			 "SuperiorOS (superior)";
+			 "SuperiorOS (superior)\n"+
+			 "RevengeOS (revenge)";
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -903,6 +904,42 @@ client.on("message", message => {
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
+	//RevengeOS
+	} else if(content.startsWith(`${prefix}revenge`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			request({
+				url: `https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`
+			}, function(err, responses, bodyurl) {
+				if(responses.statusCode === 200){
+					var response = JSON.parse(bodyurl).slice(-1)[0];
+					const embed = new Discord.RichEmbed()
+						.setColor(0x1395FA)	
+						.setTitle(`RevengeOS | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**Taille**: **`"+response.size+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codename}/${response.file_name})`)
+					send({embed});
+				} else {
+					const codenameup = content.split(' ')[1].toUpperCase();
+					request({
+						url: `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200){
+							var response = JSON.parse(bodyurl).slice(-1)[0];
+							var date = response.date.split('/');
+							const embed = new Discord.RichEmbed()
+								.setColor(0x1395FA)	
+								.setTitle(`RevengeOS | ${devicename(codename)}`)
+								.setDescription("**Date**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**Taille**: **`"+response.size+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codenameup}/${response.file_name})`)
+							send({embed});
+						} else {
+							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+						}
+					});
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
 		const codename = content.split(' ')[1];
@@ -914,16 +951,12 @@ client.on("message", message => {
 						url
 					}, function(err, responses, bodyurl) {
 						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
 							resolve(`${name}\n`);
 						} else {
 							request({
 								url: urlup
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200){
-									var body = JSON.parse(bodyurl);
-									var response = body.response[0]
 									resolve(`${name}\n`);
 								} else {
 									resolve(false);
@@ -945,14 +978,12 @@ client.on("message", message => {
 								url
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200){
-									var response = JSON.parse(bodyurl);
 									resolve(`${name}\n`);
 								} else {
 									request({
 										url: urlup
 									}, function(err, responses, bodyurl) {
 										if(responses.statusCode === 200){
-											var response = JSON.parse(bodyurl);
 											resolve(`${name}\n`);
 										} else {
 											resolve(false);
@@ -968,14 +999,12 @@ client.on("message", message => {
 							url
 						}, function(err, responses, bodyurl) {
 							if(responses.statusCode === 200){
-								var response = JSON.parse(bodyurl);
 								resolve(`${name}\n`);
 							} else {
 								request({
 									url: urlup
 								}, function(err, responses, bodyurl) {
 									if(responses.statusCode === 200){
-										var response = JSON.parse(bodyurl);
 										resolve(`${name}\n`);
 									} else {
 										resolve(false);
@@ -992,16 +1021,12 @@ client.on("message", message => {
 						url
 					}, function(err, responses, bodyurl) {
 						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
 							resolve(`${name}\n`);
 						} else {
 							request({
 								url: urlup
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-									var body = JSON.parse(bodyurl);
-									var response = body.response[0]
 									resolve(`${name}\n`);
 								} else {
 									resolve(false);
@@ -1017,16 +1042,12 @@ client.on("message", message => {
 						url
 					}, function(err, responses, bodyurl) {
 						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-							var body = JSON.parse(bodyurl);
-							var response = body.response.slice(-1)[0]
 							resolve(`${name}\n`);
 						} else {
 							request({
 								url: urlup
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-									var body = JSON.parse(bodyurl);
-									var response = body.response.slice(-1)[0]
 									resolve(`${name}\n`);
 								} else {
 									resolve(false);
@@ -1042,14 +1063,12 @@ client.on("message", message => {
 						url
 					}, function(err, responses, bodyurl) {
 						if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-							var response = JSON.parse(bodyurl);
 							resolve(`${name}\n`);
 						} else {
 							request({
 								url: urlup
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-									var response = JSON.parse(bodyurl);
 									resolve(`${name}\n`);
 								} else {
 									resolve(false);
@@ -1065,16 +1084,12 @@ client.on("message", message => {
 						url
 					}, function(err, responses, bodyurl) {
 						if(responses.statusCode === 200 && JSON.parse(bodyurl)[codename] !== undefined){
-							var body = JSON.parse(bodyurl);
-							var response = body[codename];
 							resolve(`${name}\n`);
 						} else {
 							request({
 								url
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200 && JSON.parse(bodyurl)[codenameup] !== undefined){
-									var body = JSON.parse(bodyurl);
-									var response = body[codenameup];
 									resolve(`${name}\n`);
 								} else {
 									resolve(false);
@@ -1090,7 +1105,7 @@ client.on("message", message => {
 						url: `https://mirror.codebucket.de/cosp/getdevices.php`
 					}, function(err, responses, bodyurl) {
 						var body = JSON.parse(bodyurl);
-						var response = body.includes(code);
+						var response = body.includes(codename);
 						if(response){
 							resolve(`${name}\n`)
 						} else {
@@ -1098,7 +1113,7 @@ client.on("message", message => {
 								url: `https://mirror.codebucket.de/cosp/getdevices.php`
 							}, function(err, responses, bodyurl) {
 								var body = JSON.parse(bodyurl);
-								var response = body.includes(codeup);
+								var response = body.includes(codename);
 								if(response){
 									resolve(`${name}\n`)
 								} else {
@@ -1228,12 +1243,14 @@ client.on("message", message => {
 			romcosp(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
 			//ResurrectionRemix RR
 			rom(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)").then(rr => {
-			//SuperiorOS
+			//SyberiaOS
 			rom(`https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`, `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`, "SuperiorOS (superior)").then(superior => {
+			//RevengeOS
+			rom(`https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`, `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`, "RevengeOS (revenge)").then(revenge => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false){
 					send("Aucune ROMs Disponibles pour `"+devicename(codename)+"`")
 				} else {
 					
@@ -1248,11 +1265,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`ROMs Disponibles pour ${devicename(codename)}`)
-						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}`)
+						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}${tof(revenge)}`)
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
