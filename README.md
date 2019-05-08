@@ -19,6 +19,8 @@ prefix: .
 * Syberia
 * Clean Open Source Project (COSP)
 * Resurrection Remix
+* SuperiorOS
+* RevengeOS
 
 ### Comment l'installer:
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
