@@ -121,7 +121,7 @@
    "beyond0lte":"Galaxy S10e",
    "beyond1lte":"Galaxy S10",
    "beyond2lte":"Galaxy S10 Plus",
-   "beyond3lte":"Galaxy S10 5G"
+   "beyond3lte":"Galaxy S10 5G",
    "crownlte":"Galaxy Note 9",
    "t0lte":"Galaxy Note 2",
    "lt03lte":"Galaxy Note 10.1 2014",
@@ -437,5 +437,7 @@
    "dreamqlte":"Galaxy S8",
    "star2qltechn":"Galaxy S9+",
    "starqltechn":"Galaxy S9",
-   "treble": "Generic System Image"
+   "treble": "Generic System Image",
+   "sargo": "Pixel 3a",
+   "bonito": "Pixel 3a XL"
 }
