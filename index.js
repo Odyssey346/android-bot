@@ -256,75 +256,169 @@ client.on("message", message => {
 			return codename;
 		}
 	}
+	async function rom(url, urlup, body, btlg, cosp, crdroid, error, end, name, cdn, cdnup) {
+		return new Promise(function(resolve, reject){
+			if(body){
+				if(error){
+					request({
+						url
+					}, function(err, responses, bodyurl){
+						if(responses.statusCode === 200){
+							if(end){
+								resolve(JSON.parse(bodyurl).slice(-1)[0])
+							} else {
+								resolve(JSON.parse(bodyurl))
+							}
+						} else {
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								if(responses.statusCode === 200){
+									if(end){
+										resolve(JSON.parse(bodyurl).slice(-1)[0])
+									} else {
+										resolve(JSON.parse(bodyurl))
+									}
+								} else {
+									resolve(false);
+								}
+							});
+						}
+					});
+				} else {
+					request({
+						url
+					}, function(err, responses, bodyurl){
+						if(responses.statusCode === 200 && JSON.parse(bodyurl).error === "false" || !JSON.parse(bodyurl).error){
+							if(end){
+								resolve(JSON.parse(bodyurl).slice(-1)[0])
+							} else {
+								resolve(JSON.parse(bodyurl))
+							}
+						} else {
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								if(responses.statusCode === 200 && JSON.parse(bodyurl).error === "false" || !JSON.parse(bodyurl).error){
+									if(end){
+										resolve(JSON.parse(bodyurl).slice(-1)[0])
+									} else {
+										resolve(JSON.parse(bodyurl))
+									}
+								} else {
+									resolve(false);
+								}
+							});
+						}
+					});
+				}
+			} else if(btlg){
+				request({
+					url
+				}, function(err, responses, bodyurl){
+					if(responses.statusCode === 200 && JSON.parse(bodyurl)[cdn] !== undefined){
+						resolve(JSON.parse(bodyurl)[cdn])
+					} else {
+						request({
+							url: urlup
+						}, function(err, responses, bodyurl) {
+							if(responses.statusCode === 200 && JSON.parse(bodyurl)[cdnup] !== undefined){
+								resolve(JSON.parse(bodyurl)[cdnup])
+							} else {
+								resolve(false);
+							}
+						});
+					}
+				});
+			} else if(cosp){
+				request({
+					url: `https://mirror.codebucket.de/cosp/getdevices.php`
+				}, function(err, responses, bodyurl) {
+					var body = JSON.parse(bodyurl);
+					var response = body.includes(cdn);
+					if(response){
+						resolve(`https://mirror.codebucket.de/cosp/${cdn}`)
+					} else {
+						request({
+							url: `https://mirror.codebucket.de/cosp/getdevices.php`
+						}, function(err, responses, bodyurl) {
+							var body = JSON.parse(bodyurl);
+							var response = body.includes(cdnup);
+							if(response){
+								resolve(`https://mirror.codebucket.de/cosp/${cdnup}`)
+							} else {
+								resolve(false);
+							}
+						});
+					}
+				});
+			} else if(crdroid){
+				request({
+					url
+				}, function(err, responses, bodyurl) {
+					var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
+					function resp(){
+						try {
+							return JSON.parse(body).OTA.manufacturer.find((m) => m[cdn] !== undefined)[cdn];
+						} catch (err) {
+							try {
+								return JSON.parse(body).OTA.manufacturer.find((m) => m[cdnup] !== undefined)[cdnup];
+							} catch (err) {
+								return false;
+							}
+						}
+					}
+					var response = resp()
+					if(response){
+						resolve(response);
+					} else {
+						resolve(false);
+					}
+				});
+			} else {
+				request({
+					url
+				}, function(err, responses, bodyurl){
+					if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+						if(end){
+							resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+						} else {
+							resolve(JSON.parse(bodyurl).response[0])
+						}
+					} else {
+						request({
+							url: urlup
+						}, function(err, responses, bodyurl) {
+							if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+								if(end){
+									resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+								} else {
+									resolve(JSON.parse(bodyurl).response[0])
+								}
+							} else {
+								resolve(false);
+							}
+						});
+					}
+				});
+			}
+		});
+	}
 	//HavocOS
 	if(content.startsWith(`${prefix}havoc`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x1A73E8)
 						.setTitle(`HavocOS | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-					send({embed});
+					send({embed})
 				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-							const embed = new Discord.RichEmbed()
-								.setColor(0x1A73E8)
-								.setTitle(`HavocOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
-				}
-			});
-		} else {
-			send("Veuillez entrer un nom de code !")
-		}
-	//LineageOS
-	} else if(content.startsWith(`${prefix}lineage`) || content.startsWith(`${prefix}los`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			request({
-				url: `https://download.lineageos.org/api/v1/${codename}/nightly/*`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
-					const embed = new Discord.RichEmbed()
-						.setColor(0x167C80)
-						.setTitle(`LineageOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://download.lineageos.org/api/v1/${codenameup}/nightly/*`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-							const embed = new Discord.RichEmbed()
-								.setColor(0x167C80)
-								.setTitle(`LineageOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
@@ -334,34 +428,17 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}pixy`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codename}/build.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/"
+			rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x9abcf2)
 						.setTitle(`PixysOS | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codenameup}/build.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-							const embed = new Discord.RichEmbed()
-								.setColor(0x9abcf2)
-								.setTitle(`PixysOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
@@ -371,34 +448,17 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}pearl`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/PearlOS/OTA/master/${codename}.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/PearlOS/OTA/master/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x4d7dc4)
 						.setTitle(`PearlOS | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/PearlOS/OTA/master/${codenameup}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-							const embed = new Discord.RichEmbed()
-								.setColor(0x4d7dc4)
-								.setTitle(`PearlOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
@@ -408,34 +468,57 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}dotos`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codename}.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/DotOS/ota_config/dot-p/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0xef2222)
 						.setTitle(`DotOS | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codenameup}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-							const embed = new Discord.RichEmbed()
-								.setColor(0xef2222)
-								.setTitle(`DotOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
+	//ResurrectionRemix
+	} else if(content.startsWith(`${prefix}rr`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase
+			const start = "https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+				if(response){
+					const embed = new Discord.RichEmbed()
+						.setColor(0x1A1C1D)
+						.setTitle(`Resurrection Remix | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+					send({embed});
+				} else {
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
+	//SuperiorOS
+	} else if(content.startsWith(`${prefix}superior`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase
+			const start = "https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+				if(response){
+					const embed = new Discord.RichEmbed()
+						.setColor(0xbe1421)
+						.setTitle(`SuperiorOS | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+					send({embed});
+				} else {
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
@@ -445,112 +528,62 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}viper`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codename}/build.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/Viper-Devices/official_devices/master/"
+			rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x4184f4)
 						.setTitle(`ViperOS | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codenameup}/build.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-							const embed = new Discord.RichEmbed()
-								.setColor(0x4184f4)
-								.setTitle(`ViperOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
-	//Potato Open Sauce Porject POSP
-	} else if(content.startsWith(`${prefix}posp`) || content.startsWith(`${prefix}potato`)){
+	//LineageOS
+	} else if(content.startsWith(`${prefix}lineage`) || content.startsWith(`${prefix}los`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-					var body = JSON.parse(bodyurl);
-					var response = body.response.slice(-1)[0]
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://download.lineageos.org/api/v1/"
+			rom(`${start}${codename}/nightly/*`, `${start}${codenameup}/nightly/*`).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
-						.setColor(0x6a16e2)
-						.setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
+						.setColor(0x167C80)
+						.setTitle(`LineageOS | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-							var body = JSON.parse(bodyurl);
-							var response = body.response.slice(-1)[0]
-							const embed = new Discord.RichEmbed()
-								.setColor(0x6a16e2)
-								.setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
-	//Evolution-X EVO-X
+	//Evolution-X
 	} else if(content.startsWith(`${prefix}evo`) || content.startsWith(`${prefix}evox`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			if(codename !== "enchilada"){
-				request({
-					url: `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codename}.json`
-				}, function(err, responses, bodyurl) {
-					if(responses.statusCode === 200){
-						var response = JSON.parse(bodyurl);
+				const codenameup = content.split(' ')[1].toUpperCase();
+				const start = "https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/"
+				rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, true).then(response => {
+					if(response){
 						const embed = new Discord.RichEmbed()
 							.setColor(0xb0c9ce)
 							.setTitle(`Evolution-X | ${devicename(codename)}`)
 							.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
 						send({embed});
 					} else {
-						const codenameup = codename.toUpperCase();
-						request({
-							url: `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codenameup}.json`
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200){
-								var response = JSON.parse(bodyurl);
-								const embed = new Discord.RichEmbed()
-									.setColor(0xb0c9ce)
-									.setTitle(`Evolution-X | ${devicename(codename)}`)
-									.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-								send({embed});
-							} else {
-								send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-							}
-						});
+						send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 					}
-					
 				});
 			} else {
-				send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+				send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 			}
 		} else {
 			send("Veuillez entrer un nom de code !")
@@ -560,199 +593,117 @@ client.on("message", message => {
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
-			async function aex(url, urlup) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var response = JSON.parse(bodyurl);
-							resolve("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
-						} else {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200){
-									var response = JSON.parse(bodyurl);
-									resolve("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
-								} else {
-									resolve("Aucune ROM");
-								}
-							});
-						}
-					});
-				});
-			}
+			const start = "https://api.aospextended.com/ota/"
 			//Pie
-			aex(`https://api.aospextended.com/ota/${codename}/pie`, `https://api.aospextended.com/ota/${codenameup}/pie`).then(pie => {
+			rom(`${start}${codename}/pie`, `${start}${codenameup}/pie`, true).then(pie => {
 			//Oreo
-			aex(`https://api.aospextended.com/ota/${codename}/oreo`, `https://api.aospextended.com/ota/${codenameup}/oreo`).then(oreo => {
+			rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
+				function check(response){
+					if(response){
+						return "**Date**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`
+					} else {
+						return "Aucune ROM"
+					}
+				}
 				const embed = new Discord.RichEmbed()
 					.setColor(0xf8ba00)
 					.setTitle(`AEX | ${devicename(codename)}`)
-					.addField("Pie", pie)
-					.addField("Oreo", oreo)
+					.addField("Pie", check(pie))
+					.addField("Oreo", check(oreo))
 				send({embed})
 			})});
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
-	//BootleggersROM BTLG
+	//BootleggersROM
 	} else if(content.startsWith(`${prefix}bootleggers`) || content.startsWith(`${prefix}btlg`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://bootleggersrom-devices.github.io/api/devices.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200 && JSON.parse(bodyurl)[codename] !== undefined){
-					var body = JSON.parse(bodyurl);
-					var response = body[codename];
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://bootleggersrom-devices.github.io/api/devices.json"
+			rom(start, start, false, true, false, false, false, false, '', codename, codenameup).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x515262)
 						.setTitle(`BootleggersROM | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+ `${response.buildate.substring(0, 4)}-${response.buildate.substring(4, 6)}-${response.buildate.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.buildsize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.download})`)
 					send({embed});
 				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://bootleggersrom-devices.github.io/api/devices.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && JSON.parse(bodyurl)[codenameup] !== undefined){
-							var body = JSON.parse(bodyurl);
-							var response = body[codenameup];
-							const embed = new Discord.RichEmbed()
-								.setColor(0x515262)
-								.setTitle(`BootleggersROM | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+ `${response.buildate.substring(0, 4)}-${response.buildate.substring(4, 6)}-${response.buildate.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.buildsize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.download})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
-	//Pixel Experience PE
+	//Pixel Experience
 	} else if(content.startsWith(`${prefix}pe`)){
-		const codename = content.split(' ')[1]
+		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
-			async function pe(url, urlup) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-							var response = JSON.parse(bodyurl);
-							resolve("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
-						} else {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-									var response = JSON.parse(bodyurl);
-									resolve("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`);
-								} else {
-									resolve("Aucune ROM");
-								}
-							});
-						}
-					});
-				});
-			}
+			const start = "https://download.pixelexperience.org/ota_v2/"
 			//Pie
-			pe(`https://download.pixelexperience.org/ota_v2/${codename}/pie`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie`).then(pie => {
-			//Pie-CAF
-			pe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_caf`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_caf`).then(caf => {
-			//Pie Go
-			pe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_go`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_go`).then(go => {
+			rom(`${start}${codename}/pie`, `${start}${codenameup}/pie`, true).then(pie => {
+			//CAF
+			rom(`${start}${codename}/pie_caf`, `${start}${codenameup}/pie_caf`, true).then(caf => {
+			//Go
+			rom(`${start}${codename}/pie_go`, `${start}${codenameup}/pie_go`, true).then(go => {
 			//Oreo
-			pe(`https://download.pixelexperience.org/ota_v2/${codename}/oreo`, `https://download.pixelexperience.org/ota_v2/${codenameup}/oreo`).then(oreo => {
+			rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
+				function check(response){
+					if(response){
+						return "**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`
+					} else {
+						return "Aucune ROM"
+					}
+				}
 				const embed = new Discord.RichEmbed()
 					.setColor(0xf8ba00)
 					.setTitle(`Pixel Experience | ${devicename(codename)}`)
-					.addField("Pie", pie)
-					.addField("Pie-CAF", caf)
-					.addField("Pie Go", go)
-					.addField("Oreo", oreo)
+					.addField("Pie", check(pie))
+					.addField("Pie-CAF", check(caf))
+					.addField("Pie Go", check(go))
+					.addField("Oreo", check(oreo))
 				send({embed})
 			})})})});
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
-	//SyberiaOS
-	} else if(content.startsWith(`${prefix}syberia`)){
+	//Potato Open Source Project POSP
+	} else if(content.startsWith(`${prefix}posp`) || content.startsWith(`${prefix}potato`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			const codenameup = codename.toUpperCase();
-			request({
-				url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${codename}.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var response = JSON.parse(bodyurl);
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://api.potatoproject.co/checkUpdate?device="
+			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, true).then(response => {
+				if(response){
 					const embed = new Discord.RichEmbed()
-						.setColor(0xDF766E)
-						.setTitle(`Syberia | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setColor(0x6a16e2)
+						.setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					request({
-						url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${codenameup}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-						var response = JSON.parse(bodyurl);
-							const embed = new Discord.RichEmbed()
-								.setColor(0xDF766E)
-								.setTitle(`Syberia | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+ `${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							function ab(code){
-								if(code === 'fajita'){
-									return 'OnePlus6T'
-								} else if(code === 'enchilada'){
-									return 'OnePlus6'
-								} else if(code === 'FAJITA'){
-									return 'OnePlus6T'
-								} else if(code === 'ENCHILADA'){
-									return 'OnePlus6'
-								} else {
-									return code
-								}
-							}
-							request({
-								url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(codename)}.json`
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200){
-									var body = JSON.parse(bodyurl);
-									var response = body.response[0]
-									const embed = new Discord.RichEmbed()
-										.setColor(0xDF766E)
-										.setTitle(`Syberia | ${devicename(codename)}`)
-										.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-									send({embed});
-								} else {
-									request({
-										url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(codenameup)}.json`
-									}, function(err, responses, bodyurl) {
-										if(responses.statusCode === 200){
-											var body = JSON.parse(bodyurl);
-											var response = body.response[0]
-											const embed = new Discord.RichEmbed()
-												.setColor(0xDF766E)
-												.setTitle(`Syberia | ${devicename(codename)}`)
-												.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-											send({embed});
-										} else {
-											send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-										}
-									});
-								}
-							});
-						}
-					});
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
+	//RevengeOS
+	} else if(content.startsWith(`${prefix}revenge`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/RevengeOS/releases/master/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, true, true).then(response => {
+				if(response){
+					var date = response.date.split('/');
+					const embed = new Discord.RichEmbed()
+						.setColor(0x1395FA)	
+						.setTitle(`RevengeOS | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**Taille**: **`"+response.size+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codename}/${response.file_name})`)
+					send({embed});
+				} else {
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
@@ -763,31 +714,16 @@ client.on("message", message => {
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
-			request({
-				url: "https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml"
-			}, function(err, responses, bodyurl) {
-				var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
-				function resp(){
-					try {
-						return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename];
-					} catch (err) {
-						try {
-							return JSON.parse(body).OTA.manufacturer.find((m) => m[codenameup] !== undefined)[codenameup];
-						} catch (err) {
-							return false;
-						}
-					}
-				}
-				if(resp() === false){
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-				} else {
-					var response = resp();
+			rom("https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml", '', false, false, false, true, false, false, '', codename, codenameup).then(response => {
+				if(response){
 					var filename = response.filename._text;
 					const embed = new Discord.RichEmbed()
 						.setColor(0x31423F)	
 						.setTitle(`crDroid | ${devicename(codename)}`)
 						.setDescription("**Date**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**Version**: **`"+filename.split('-')[4]+"`**\n"+`**Télécharger**: [${filename}](${response.download._text})`)
 					send({embed});
+				} else {
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 				}
 			});
 		} else {
@@ -797,146 +733,58 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}cosp`) || content.startsWith(`${prefix}clean`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			request({
-				url: `https://mirror.codebucket.de/cosp/getdevices.php`
-			}, function(err, responses, bodyurl) {
-				var body = JSON.parse(bodyurl);
-				var response = body.includes(codename);
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://mirror.codebucket.de/cosp/getdevices.php"
+			rom(start, start, false, false, true, false, false, false, '', codename, codenameup).then(response => {
 				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x010101)	
 						.setTitle(`Clean Open Source Project | ${devicename(codename)}`)
-						.setDescription(`**Télécharger**: [COSP ${codename}](https://mirror.codebucket.de/cosp/${codename}/)`)
+						.setDescription(`**Télécharger**: [COSP ${codename}](${response})`)
 					send({embed});
 				} else {
-					const codenameup = content.split(' ')[1].toUpperCase();
-					request({
-						url: `https://mirror.codebucket.de/cosp/getdevices.php`
-					}, function(err, responses, bodyurl) {
-						var body = JSON.parse(bodyurl);
-						var response = body.includes(codenameup);
-						if(response){
+					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
+	//SyberiaOS
+	} else if(content.startsWith(`${prefix}syberia`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/syberia-project/official_devices/master"
+			rom(`${start}/a-only/${codename}.json`, `${start}/a-only/${codenameup}.json`, true, false, false, false, true).then(a => {
+				if(a){
+					const embed = new Discord.RichEmbed()
+						.setColor(0xDF766E)
+						.setTitle(`Syberia | ${devicename(codename)}`)
+						.setDescription("**Date**: **`"+ `${a.build_date.substring(0, 4)}-${a.build_date.substring(4, 6)}-${a.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(a.filesize)+"`**\n**Version**: **`"+a.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${a.filename}](${a.url})`)
+					send({embed});
+				} else {
+					function abcdn(code){
+						if(code === 'fajita' || code === 'FAJITA'){
+							return 'OnePlus6T'
+						} else if(code === 'enchilada' || code === 'ENCHILADA'){
+							return 'OnePlus6'
+						} else {
+							return code
+						}
+					}
+					rom(`${start}/ab/${abcdn(codename)}.json`, `${start}/ab/${abcdn(codenameup)}.json`).then(ab => {
+						if(ab){
 							const embed = new Discord.RichEmbed()
-								.setColor(0x010101)	
-								.setTitle(`Clean Open Source Project | ${devicename(codename)}`)
-								.setDescription(`**Télécharger**: [COSP ${codename}](https://mirror.codebucket.de/cosp/${codenameup}/)`)
+								.setColor(0xDF766E)
+								.setTitle(`Syberia | ${devicename(codename)}`)
+								.setDescription("**Date**: **`"+timeConverter(ab.datetime)+"`**\n**Taille**: **`"+pretty(ab.size)+"`**\n**Version**: **`"+ab.version+"`**\n"+`**Télécharger**: [${ab.filename}](${ab.url})`)
 							send({embed});
 						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
+							send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
 						}
-					});
+					})
 				}
-			});
-		} else {
-			send("Veuillez entrer un nom de code !")
-		}
-	//ResurrectionRemix RR
-	} else if(content.startsWith(`${prefix}rr`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
-					const embed = new Discord.RichEmbed()
-						.setColor(0x1A1C1D)
-						.setTitle(`Resurrection Remix | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-								const embed = new Discord.RichEmbed()
-								.setColor(0x1A1C1D)
-								.setTitle(`Resurrection Remix | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
-				}
-			});
-		} else {
-			send("Veuillez entrer un nom de code !")
-		}
-	//SuperiorOS
-	} else if(content.startsWith(`${prefix}superior`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var body = JSON.parse(bodyurl);
-					var response = body.response[0]
-					const embed = new Discord.RichEmbed()
-						.setColor(0xbe1421)
-						.setTitle(`SuperiorOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					const codenameup = codename.toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var body = JSON.parse(bodyurl);
-							var response = body.response[0]
-								const embed = new Discord.RichEmbed()
-								.setColor(0xbe1421)
-								.setTitle(`SuperiorOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
-				}
-			});
-		} else {
-			send("Veuillez entrer un nom de code !")
-		}
-	//RevengeOS
-	} else if(content.startsWith(`${prefix}revenge`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			request({
-				url: `https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`
-			}, function(err, responses, bodyurl) {
-				if(responses.statusCode === 200){
-					var response = JSON.parse(bodyurl).slice(-1)[0];
-					const embed = new Discord.RichEmbed()
-						.setColor(0x1395FA)	
-						.setTitle(`RevengeOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**Taille**: **`"+response.size+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codename}/${response.file_name})`)
-					send({embed});
-				} else {
-					const codenameup = content.split(' ')[1].toUpperCase();
-					request({
-						url: `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var response = JSON.parse(bodyurl).slice(-1)[0];
-							var date = response.date.split('/');
-							const embed = new Discord.RichEmbed()
-								.setColor(0x1395FA)	
-								.setTitle(`RevengeOS | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**Taille**: **`"+response.size+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codenameup}/${response.file_name})`)
-							send({embed});
-						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`");
-						}
-					});
-				}
-			});
+			})
 		} else {
 			send("Veuillez entrer un nom de code !")
 		}
@@ -945,7 +793,7 @@ client.on("message", message => {
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
-			async function rom(url, urlup, name) {
+			async function roms(url, urlup, name) {
 				return new Promise(function(resolve, reject) {
 					request({
 						url
@@ -1206,17 +1054,17 @@ client.on("message", message => {
 				});
 			}
 			//HavocOS
-			rom(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)").then(havoc => {
+			roms(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)").then(havoc => {
 			//PixysOS
-			rom(`https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codenameup}/build.json`, "PixysOS (pixy)").then(pixy => {
+			roms(`https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codenameup}/build.json`, "PixysOS (pixy)").then(pixy => {
 			//LineageOS
 			romlos(`https://download.lineageos.org/api/v1/${codename}/nightly/*`, `https://download.lineageos.org/api/v1/${codenameup}/nightly/*`, "LineageOS (los/lineage)").then(los => {
 			//PearlOS
-			rom(`https://raw.githubusercontent.com/PearlOS/OTA/master/${codename}.json`, `https://raw.githubusercontent.com/PearlOS/OTA/master/${codenameup}.json`, "PearlOS (pearl)").then(pearl => {
+			roms(`https://raw.githubusercontent.com/PearlOS/OTA/master/${codename}.json`, `https://raw.githubusercontent.com/PearlOS/OTA/master/${codenameup}.json`, "PearlOS (pearl)").then(pearl => {
 			//DotOS
-			rom(`https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codename}.json`, `https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codenameup}.json`, "DotOS (dotos)").then(dotos => {
+			roms(`https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codename}.json`, `https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codenameup}.json`, "DotOS (dotos)").then(dotos => {
 			//ViperOS
-			rom(`https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codenameup}/build.json`, "ViperOS (viper)").then(viper => {
+			roms(`https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codenameup}/build.json`, "ViperOS (viper)").then(viper => {
 			//Potato Open Sauce Project POSP
 			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (posp/potato)").then(posp => {
 			//Evolution-X EVO-X
@@ -1242,11 +1090,11 @@ client.on("message", message => {
 			//Clean Open Source Porject COSP
 			romcosp(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
 			//ResurrectionRemix RR
-			rom(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)").then(rr => {
-			//SuperiorOS
-			rom(`https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`, `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`, "SuperiorOS (superior)").then(superior => {
+			roms(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)").then(rr => {
+			//SyberiaOS
+			roms(`https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`, `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`, "SuperiorOS (superior)").then(superior => {
 			//RevengeOS
-			rom(`https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`, `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`, "RevengeOS (revenge)").then(revenge => {
+			roms(`https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`, `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`, "RevengeOS (revenge)").then(revenge => {
 				
 				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge
 				
