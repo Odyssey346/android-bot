@@ -30,7 +30,14 @@ function timeConverter(timestamp){
   var time = `${year}-${month}-${date}`;
   return time;
 }
-
+function devicename(codename){
+	const device = require('./device.json');
+	if(device[codename] !== undefined){
+		return device[codename]; 
+	} else {
+		return codename;
+	}
+}
 
 var prefix = ".";
 
@@ -236,6 +243,39 @@ client.on("message", message => {
 				.setURL(link)
 			send({embed});
 		});
+	//TWRP
+	} else if(content.startsWith(`${prefix}twrp`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			request({
+				url: `https://twrp.me/search.json`
+			}, function(err, responses, bodyurl) {
+				var body = JSON.parse(bodyurl);
+				var response = body.find(cdn => cdn.title.indexOf(`(${codename})`) !== -1);
+				if(response !== undefined){
+					const embed = new Discord.RichEmbed()
+						.setColor(0x0091CA)
+						.setTitle(`TWRP | ${devicename(codename)}`)
+				.setDescription(`**Télécharger**: [${response.title}](https://twrp.me${response.url})`)
+					send({embed});
+				} else {
+					var body = JSON.parse(bodyurl);
+					var response = body.find(cdn => cdn.title.indexOf(`(${codenameup})`) !== -1);
+					if(response !== undefined){
+						const embed = new Discord.RichEmbed()
+							.setColor(0x0091CA)
+							.setTitle(`TWRP | ${devicename(codename)}`)
+							.setDescription(`**Télécharger**: [${response.title}](https://twrp.me${response.url})`)
+						send({embed});
+					} else {
+						send("TWRP n'a pas était trouver pour `"+devicename(codename)+"`");
+					}
+				}
+			});
+		} else {
+			send("Veuillez entrer un nom de code !")
+		}
 	}
 });
 
@@ -248,14 +288,6 @@ client.on("message", message => {
 	const author = message.author;
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
-	function devicename(codename){
-		const device = require('./device.json');
-		if(device[codename] !== undefined){
-			return device[codename]; 
-		} else {
-			return codename;
-		}
-	}
 	async function rom(url, urlup, body, btlg, cosp, crdroid, error, end, name, cdn, cdnup) {
 		return new Promise(function(resolve, reject){
 			if(body){
