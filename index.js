@@ -50,7 +50,7 @@ function devicename(codename){
 }
 
 
-var prefix = ":";
+var prefix = ".";
 
 client.on("ready", () => {
 	client.user.setActivity(`${prefix}help`, {type: "STREAMING",url: "https://www.twitch.tv/android"});
