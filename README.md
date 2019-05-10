@@ -1,9 +1,11 @@
 # Android Discord Bot
-Bot Discord permettant de savoir une version Android ou Magisk particulière ou si une rom est officiel pour un certain appareil
+Bot Discord to know a particular Android or Magisk version or whether a rom is official for a certain device
+
+Language: [English](README.md) | [Français](README.fr.md)
 
 prefix: .
 
-#### ROMs Supporté pour les commandes Roms:
+#### ROMs Supported for Roms Command
 * DotOS
 * Evolution-X
 * HavocOS
@@ -23,13 +25,13 @@ prefix: .
 * RevengeOS
 
 ### Comment l'installer:
-Téléchargez et Installez NodeJS : https://nodejs.org/en/
+Download and Install NodeJS : https://nodejs.org/en/
 
-Téléchargez le repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
+Download the repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
 
-Dézipper le zip et ouvrez une Invite de commande dans le dossier extrait
+Unzip it and open a Command Prompt in the folder extracted
 
-Puis tapez
+Then type
 ```
 npm i android-versions
 npm i discord.js
@@ -38,19 +40,21 @@ npm i request
 npm i xml-js
 ```
 
-Ouvrez le fichier index.js et mettez le token de votre bot à la place de "token" (sans enlever les "")
+Open the file config.json:
+* put your token
+* put the language (fr, en)
 
 ### Comment l'utiliser:
- Tapez sur votre Invite de Commande `node index.js`
+ Tap on the Command Prompt `node index.js`
  
- ajoutez le bot à votre serveur puis faite .help
+ add the bot to your server and then do .help
  
 ### Troubleshooting
  
- Q1: Pourquoi quand je démarre le bot j'ai `Cannot find module` ?
+ Q1: Why when I start the bot I have `Cannot find module` ?
  
- R1: Avez vous bien installer tout les packages avec npm ?
+ R1: Have you installed all the packages with npm ?
  
- Q2: Pourquoi quand je démarre le bot j'ai `UnhandledPromiseRejectionWarning: Error: Incorrect login details were provided.` ?
+ Q2: Why when I start the bot I have `UnhandledPromiseRejectionWarning: Error: Incorrect login details were provided.` ?
  
- R2: Avez-vous bien mit votre token dans le index.js ?
+ R2: Did you put or do mistakes with your token in the config.json ?
