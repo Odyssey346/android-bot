@@ -3,6 +3,16 @@ const request = require("request");
 const pretty = require('prettysize');
 const convert = require('xml-js');
 const android = require('android-versions');
+const config = require('./config.json');
+//Language Verifier
+const configlang = config.lang.toLowerCase();
+const langverif = require('./lang.json');
+if(langverif[configlang] === undefined){
+	console.log("Please enter a Language Exist !");
+	process.exit(0);
+}
+//end
+const lang = langverif[configlang];
 const client = new Discord.Client();
 const roms = "DotOS (dotos)\n"+
 			 "Evolution-X (evo/evox)\n"+
@@ -39,11 +49,12 @@ function devicename(codename){
 	}
 }
 
-var prefix = ".";
+
+var prefix = ":";
 
 client.on("ready", () => {
 	client.user.setActivity(`${prefix}help`, {type: "STREAMING",url: "https://www.twitch.tv/android"});
-	console.log(`Connecter sur ${client.user.username} - ${client.user.id}`);
+	console.log(`${lang.connect} ${client.user.username} - ${client.user.id}`);
 });
 
 //Help
@@ -58,23 +69,24 @@ client.on("message", message => {
 	if(content.startsWith(`${prefix}help`)){
 		const embed = new Discord.RichEmbed()
 			.setColor(0xFFFFFF)
-			.setTitle("Page d'aide")
-			.setDescription("`"+prefix+"android <version_number>` : Avoir des info sur une version d'Android particulière\n"+
-			"`"+prefix+"magisk <version>`: Avoir la version de magisk la plus récente \n - Version: `Stable`, `Beta`, `Canary`\n"+
-			"`"+prefix+"help roms`: Voir les commandes pour les Customs ROMs\n"+
-			"`"+prefix+"invite`: Avoir l'invite du bot")
-			.setFooter(`Aide | ${prefix}help (here)`);
+			.setTitle(lang.help.default.title)
+			.setDescription("`"+prefix+"android <version_number>` : "+lang.help.default.android+"\n"+
+			"`"+prefix+"magisk <version>`: "+lang.help.default.magisk.text+" \n - "+lang.help.default.magisk.ver+": `Stable`, `Beta`, `Canary`\n"+
+			"`"+prefix+"twrp <codename>`: "+lang.help.default.twrp+"\n"+
+			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
+			"`"+prefix+"invite`: "+lang.help.default.inv)
+			.setFooter(`${lang.help.default.help} | ${prefix}help (here)`);
 		const f = content.split(' ')[1];
 		if(f === "here"){
 			send({embed});
 		} else if(f === "roms"){
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
-				.setTitle("Page d'aide pour les Customs ROMs")
-				.setDescription("Récupère les dernières versions des appareils officiellement pris en charge")
-				.addField("ROMs Disponibles", roms, false)
-				.addField("Utilisation", "`"+prefix+"<rom> <nom_de_code>`\nExemple: `"+prefix+"havoc whyred`\nVous pouvez également afficher les ROMs disponibles avec `"+prefix+"roms`.\n\n**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil.", false)
-				.setFooter(`Aide Roms | ${prefix}help roms (here)`);
+				.setTitle(lang.help.roms.title)
+				.setDescription(lang.help.roms.desc)
+				.addField(lang.help.roms.available, roms, false)
+				.addField(lang.help.roms.use.title, "`"+prefix+"<rom> <nom_de_code>`\n"+lang.help.roms.use.example+": `"+prefix+"havoc whyred`\n"+lang.help.roms.use.cmdroms+" `"+prefix+"roms`.\n\n"+lang.help.roms.use.note, false)
+				.setFooter(`${lang.help.roms.help} | ${prefix}help roms (here)`);
 			const s = content.split(' ')[2];
 			if(s === "here"){
 				send({embed})
@@ -145,17 +157,17 @@ client.on("message", message => {
 				const embed = new Discord.RichEmbed()
 					.setColor(color(info.name))
 					.setTitle(`Android ${info.semver} ${name(info.name)}`)
-					.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
+					.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**"+lang.android.versioncode+"**: `"+info.versionCode+"`")
 				send({embed});
 			} else {
 				if(version === "29" || version === "10.0" || version === "10.0.0"){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x77c35f)
 						.setTitle("Android 10 Q")
-						.setDescription("**API**: `29`\n**NDK**: `8`\n**Code de Version**: `Q`")
+						.setDescription("**API**: `29`\n**NDK**: `8`\n**"+lang.android.versioncode+"**: `Q`")
 					send({embed});
 				} else {
-					send("Veuillez entrer une version d'android ou une version d'api correct")
+					send(lang.android.error);
 				}
 			}
 		} else {
@@ -163,7 +175,7 @@ client.on("message", message => {
 			const embed = new Discord.RichEmbed()
 				.setColor(color(info.name))
 				.setTitle(`Android ${info.semver} ${name(info.name)}`)
-				.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**Code de Version**: `"+info.versionCode+"`")
+				.setDescription("**API**: `"+info.api+"`\n**NDK**: `"+info.ndk+"`\n**"+lang.android.versioncode+"**: `"+info.versionCode+"`")
 			send({embed});
 		}
 	//Magisk
@@ -185,8 +197,8 @@ client.on("message", message => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
 					.setTitle("Magisk Stable")
-					.addField("Magisk Manager", "**Version**: "+magisks.app.version+" `"+magisks.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
+					.addField("Magisk Manager", "**"+lang.version+"**: "+magisks.app.version+" `"+magisks.app.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
+					.addField("Magisk Installer", "**"+lang.version+"**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
 				send({embed});
 			});
 		//Beta Version
@@ -195,8 +207,8 @@ client.on("message", message => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
 					.setTitle("Magisk Beta")
-					.addField("Magisk Manager", "**Version**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskb.app.version}](${magiskb.app.link})\n - [ChangeLog](${magiskb.app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})\n - [ChangeLog](${magiskb.magisk.note})`, true)
+					.addField("Magisk Manager", "**"+lang.version+"**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Manager ${magiskb.app.version}](${magiskb.app.link})\n - [ChangeLog](${magiskb.app.note})`, true)
+					.addField("Magisk Installer", "**"+lang.version+"**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})\n - [ChangeLog](${magiskb.magisk.note})`, true)
 				send({embed});
 			});
 		//Canary Version
@@ -205,9 +217,9 @@ client.on("message", message => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
 					.setTitle("Magisk Canary")
-					.addField("Magisk Manager", "**Version**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [ChangeLog](${magiskc.app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})\n - [ChangeLog](${magiskc.magisk.note})`, true)
-					.addField("SNET (SafetyNet)", "**Version**: `"+magiskc.snet.versionCode+"`\n**Télécharger**: "+`[snet.apk](${magiskc.snet.link})`, true)
+					.addField("Magisk Manager", "**"+lang.version+"**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [ChangeLog](${magiskc.app.note})`, true)
+					.addField("Magisk Installer", "**"+lang.version+"**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})\n - [ChangeLog](${magiskc.magisk.note})`, true)
+					.addField("SNET (SafetyNet)", "**"+lang.version+"**: `"+magiskc.snet.versionCode+"`\n**${lang.download}**: "+`[snet.apk](${magiskc.snet.link})`, true)
 				send({embed});
 			});
 		//All (undefined) Version
@@ -222,15 +234,15 @@ client.on("message", message => {
 					.setColor(0x30756a)
 					.setTitle("Magisk")
 					.addField("Stable", "** **", false)
-					.addField("Magisk Manager", "**Version**: "+magisks.app.version+" `"+magisks.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
+					.addField("Magisk Manager", "**"+lang.version+"**: "+magisks.app.version+" `"+magisks.app.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
+					.addField("Magisk Installer", "**"+lang.version+"**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
 					.addField("Beta", "** **", false)		
-					.addField("Magisk Manager", "**Version**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskb.app.version}](${magiskb.app.link})\n - [ChangeLog](${magiskb.app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})\n - [ChangeLog](${magiskb.magisk.note})`, true)
+					.addField("Magisk Manager", "**"+lang.version+"**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Manager ${magiskb.app.version}](${magiskb.app.link})\n - [ChangeLog](${magiskb.app.note})`, true)
+					.addField("Magisk Installer", "**"+lang.version+"**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})\n - [ChangeLog](${magiskb.magisk.note})`, true)
 					.addField("Canary", "** **", false)						
-					.addField("Magisk Manager", "**Version**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [ChangeLog](${magiskc.app.note})`, true)
-					.addField("Magisk Installer", "**Version**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`\n**Télécharger**: \n - "+`[Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})\n - [ChangeLog](${magiskc.magisk.note})`, true)
-					.addField("SNET (SafetyNet)", "**Version**: `"+magiskc.snet.versionCode+"`\n**Télécharger**: "+`[snet.apk](${magiskc.snet.link})`, true)
+					.addField("Magisk Manager", "**"+lang.version+"**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [ChangeLog](${magiskc.app.note})`, true)
+					.addField("Magisk Installer", "**"+lang.version+"**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`\n**${lang.download}**: \n - "+`[Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})\n - [ChangeLog](${magiskc.magisk.note})`, true)
+					.addField("SNET (SafetyNet)", "**"+lang.version+"**: `"+magiskc.snet.versionCode+"`\n**${lang.download}**: "+`[snet.apk](${magiskc.snet.link})`, true)
 				send({embed})
 			})})});
 		}
@@ -257,7 +269,7 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x0091CA)
 						.setTitle(`TWRP | ${devicename(codename)}`)
-				.setDescription(`**Télécharger**: [${response.title}](https://twrp.me${response.url})`)
+				.setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
 					send({embed});
 				} else {
 					var body = JSON.parse(bodyurl);
@@ -266,15 +278,15 @@ client.on("message", message => {
 						const embed = new Discord.RichEmbed()
 							.setColor(0x0091CA)
 							.setTitle(`TWRP | ${devicename(codename)}`)
-							.setDescription(`**Télécharger**: [${response.title}](https://twrp.me${response.url})`)
+							.setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
 						send({embed});
 					} else {
-						send("TWRP n'a pas était trouver pour `"+devicename(codename)+"`");
+						send(lang.twrperr+" `"+devicename(codename)+"`");
 					}
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	}
 });
@@ -447,14 +459,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x1A73E8)
 						.setTitle(`HavocOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed})
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//PixysOS
 	} else if(content.startsWith(`${prefix}pixy`)){
@@ -467,14 +479,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x9abcf2)
 						.setTitle(`PixysOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//PearlOS
 	} else if(content.startsWith(`${prefix}pearl`)){
@@ -487,14 +499,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x4d7dc4)
 						.setTitle(`PearlOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//DotOS
 	} else if(content.startsWith(`${prefix}dotos`)){
@@ -507,14 +519,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xef2222)
 						.setTitle(`DotOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//ResurrectionRemix
 	} else if(content.startsWith(`${prefix}rr`)){
@@ -527,14 +539,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x1A1C1D)
 						.setTitle(`Resurrection Remix | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//SuperiorOS
 	} else if(content.startsWith(`${prefix}superior`)){
@@ -547,14 +559,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xbe1421)
 						.setTitle(`SuperiorOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//ViperOS
 	} else if(content.startsWith(`${prefix}viper`)){
@@ -567,14 +579,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x4184f4)
 						.setTitle(`ViperOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//LineageOS
 	} else if(content.startsWith(`${prefix}lineage`) || content.startsWith(`${prefix}los`)){
@@ -587,14 +599,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x167C80)
 						.setTitle(`LineageOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//Evolution-X
 	} else if(content.startsWith(`${prefix}evo`) || content.startsWith(`${prefix}evox`)){
@@ -608,17 +620,17 @@ client.on("message", message => {
 						const embed = new Discord.RichEmbed()
 							.setColor(0xb0c9ce)
 							.setTitle(`Evolution-X | ${devicename(codename)}`)
-							.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+							.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 						send({embed});
 					} else {
-						send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+						send(lang.romerr+" `"+devicename(codename)+"`")
 					}
 				});
 			} else {
-				send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+				send(lang.romerr+" `"+devicename(codename)+"`")
 			}
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//AOSP Extended AEX
 	} else if(content.startsWith(`${prefix}aex`)){
@@ -632,9 +644,9 @@ client.on("message", message => {
 			rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
 				function check(response){
 					if(response){
-						return "**Date**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**Taille**: **`"+pretty(response.filesize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`
+						return "**"+lang.date+"**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+pretty(response.filesize)+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
 					} else {
-						return "Aucune ROM"
+						return lang.norom
 					}
 				}
 				const embed = new Discord.RichEmbed()
@@ -645,7 +657,7 @@ client.on("message", message => {
 				send({embed})
 			})});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//BootleggersROM
 	} else if(content.startsWith(`${prefix}bootleggers`) || content.startsWith(`${prefix}btlg`)){
@@ -658,14 +670,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x515262)
 						.setTitle(`BootleggersROM | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+ `${response.buildate.substring(0, 4)}-${response.buildate.substring(4, 6)}-${response.buildate.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(response.buildsize)+"`**\n**Version**: **`"+response.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${response.filename}](${response.download})`)
+						.setDescription("**"+lang.date+"**: **`"+ `${response.buildate.substring(0, 4)}-${response.buildate.substring(4, 6)}-${response.buildate.substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+pretty(response.buildsize)+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](${response.download})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//Pixel Experience
 	} else if(content.startsWith(`${prefix}pe`)){
@@ -683,9 +695,9 @@ client.on("message", message => {
 			rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
 				function check(response){
 					if(response){
-						return "**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`
+						return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
 					} else {
-						return "Aucune ROM"
+						return lang.norom
 					}
 				}
 				const embed = new Discord.RichEmbed()
@@ -698,7 +710,7 @@ client.on("message", message => {
 				send({embed})
 			})})})});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//Potato Open Source Project POSP
 	} else if(content.startsWith(`${prefix}posp`) || content.startsWith(`${prefix}potato`)){
@@ -711,14 +723,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x6a16e2)
 						.setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+timeConverter(response.datetime)+"`**\n**Taille**: **`"+pretty(response.size)+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.filename}](${response.url})`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//RevengeOS
 	} else if(content.startsWith(`${prefix}revenge`)){
@@ -732,14 +744,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x1395FA)	
 						.setTitle(`RevengeOS | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**Taille**: **`"+response.size+"`**\n**Version**: **`"+response.version+"`**\n"+`**Télécharger**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codename}/${response.file_name})`)
+						.setDescription("**"+lang.date+"**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**"+lang.size+"**: **`"+response.size+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codename}/${response.file_name})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//crDroid
 	} else if(content.startsWith(`${prefix}crdroid`)){
@@ -752,14 +764,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x31423F)	
 						.setTitle(`crDroid | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**Version**: **`"+filename.split('-')[4]+"`**\n"+`**Télécharger**: [${filename}](${response.download._text})`)
+						.setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**"+lang.version+"**: **`"+filename.split('-')[4]+"`**\n"+`**${lang.download}**: [${filename}](${response.download._text})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//Clean Open Source Project COSP
 	} else if(content.startsWith(`${prefix}cosp`) || content.startsWith(`${prefix}clean`)){
@@ -772,14 +784,14 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x010101)	
 						.setTitle(`Clean Open Source Project | ${devicename(codename)}`)
-						.setDescription(`**Télécharger**: [COSP ${codename}](${response})`)
+						.setDescription(`**${lang.download}**: [COSP ${codename}](${response})`)
 					send({embed});
 				} else {
-					send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//SyberiaOS
 	} else if(content.startsWith(`${prefix}syberia`)){
@@ -792,7 +804,7 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xDF766E)
 						.setTitle(`Syberia | ${devicename(codename)}`)
-						.setDescription("**Date**: **`"+ `${a.build_date.substring(0, 4)}-${a.build_date.substring(4, 6)}-${a.build_date.substring(6, 8)}` +"`**\n**Taille**: **`"+pretty(a.filesize)+"`**\n**Version**: **`"+a.filename.split('-')[1]+"`**\n"+`**Télécharger**: [${a.filename}](${a.url})`)
+						.setDescription("**"+lang.date+"**: **`"+ `${a.build_date.substring(0, 4)}-${a.build_date.substring(4, 6)}-${a.build_date.substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+pretty(a.filesize)+"`**\n**"+lang.version+"**: **`"+a.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${a.filename}](${a.url})`)
 					send({embed});
 				} else {
 					function abcdn(code){
@@ -809,16 +821,16 @@ client.on("message", message => {
 							const embed = new Discord.RichEmbed()
 								.setColor(0xDF766E)
 								.setTitle(`Syberia | ${devicename(codename)}`)
-								.setDescription("**Date**: **`"+timeConverter(ab.datetime)+"`**\n**Taille**: **`"+pretty(ab.size)+"`**\n**Version**: **`"+ab.version+"`**\n"+`**Télécharger**: [${ab.filename}](${ab.url})`)
+								.setDescription("**"+lang.date+"**: **`"+timeConverter(ab.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(ab.size)+"`**\n**"+lang.version+"**: **`"+ab.version+"`**\n"+`**${lang.download}**: [${ab.filename}](${ab.url})`)
 							send({embed});
 						} else {
-							send("Aucune ROM trouvé pour `"+devicename(codename)+"`")
+							send(lang.romerr+" `"+devicename(codename)+"`")
 						}
 					})
 				}
 			})
 		} else {
-			send("Veuillez entrer un nom de code !")
+			send(lang.cdnerr)
 		}
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
@@ -1131,7 +1143,7 @@ client.on("message", message => {
 				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge
 				
 				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false){
-					send("Aucune ROMs Disponibles pour `"+devicename(codename)+"`")
+					send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
 					function tof(f){
@@ -1144,7 +1156,7 @@ client.on("message", message => {
 					
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
-						.setTitle(`ROMs Disponibles pour ${devicename(codename)}`)
+						.setTitle(`${lang.roms} ${devicename(codename)}`)
 						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}${tof(revenge)}`)
 					send({embed});
 				}
@@ -1153,11 +1165,11 @@ client.on("message", message => {
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
-				.setTitle("ROMs Disponibles")
+				.setTitle(lang.help.roms.available)
 				.setDescription(roms)
 			send({embed});
 		}
 	}
 });
 
-client.login("token");
+client.login(config.token);
