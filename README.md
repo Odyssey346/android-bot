@@ -33,11 +33,7 @@ Unzip it and open a Command Prompt in the folder extracted
 
 Then type
 ```
-npm i android-versions
-npm i discord.js
-npm i prettysize
-npm i request
-npm i xml-js
+npm install
 ```
 
 Open the file config.json:
@@ -53,7 +49,7 @@ Open the file config.json:
  
  Q1: Why when I start the bot I have `Cannot find module` ?
  
- R1: Have you installed all the packages with npm ?
+ R1: Have you installed all the packages with `npm install` ?
  
  Q2: Why when I start the bot I have `UnhandledPromiseRejectionWarning: Error: Incorrect login details were provided.` ?
  
