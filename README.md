@@ -31,10 +31,7 @@ Download the repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
 
 Unzip it and open a Command Prompt in the folder extracted
 
-Then type
-```
-npm install
-```
+Then type `npm install`
 
 Open the file config.json:
 * put your token
