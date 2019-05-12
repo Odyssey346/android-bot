@@ -1,0 +1,16 @@
+{
+  "name": "androidbot",
+  "version": "1.0.0",
+  "description": "NodeJS Bot",
+  "main": "index.js",
+  "author": "Pharuxtan",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "android-versions": "^1.4.0",
+    "discord.js": "^11.4.2",
+    "express": "^4.16.4",
+    "prettysize": "^2.0.0",
+    "request": "^2.88.0",
+    "xml-js": "^1.6.11"
+  }
+}
