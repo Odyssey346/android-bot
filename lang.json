@@ -37,7 +37,7 @@
       "version":"Version",
       "cdnerr":"Veuillez entrer un nom de code !",
       "twrperr":"TWRP n'a pas été trouvé pour",
-      "romerr":"Aucune ROM trouvé pour",
+      "romerr":"Aucune ROM trouvée pour",
       "norom":"Aucune ROM",
 	  "romserr": "Aucune ROMs Disponibles pour",
       "roms":"ROMs Disponibles pour"
