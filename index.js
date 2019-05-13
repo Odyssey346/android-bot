@@ -4,6 +4,7 @@ const pretty = require('prettysize');
 const convert = require('xml-js');
 const android = require('android-versions');
 const config = require('./config.json');
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 //Language Verifier
 const configlang = config.lang.toLowerCase();
 const langverif = require('./lang.json');
@@ -300,7 +301,7 @@ client.on("message", message => {
 	const author = message.author;
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
-	async function rom(url, urlup, body, btlg, cosp, crdroid, error, end, name, cdn, cdnup) {
+	async function rom(url, urlup, body, btlg, cosp, crdroid, error, end, name, cdn, cdnup, bkpurl, bkpurlup) {
 		return new Promise(function(resolve, reject){
 			if(body){
 				if(error){
@@ -423,16 +424,32 @@ client.on("message", message => {
 				request({
 					url
 				}, function(err, responses, bodyurl){
-					if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-						if(end){
-							resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+					try{
+						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+							if(end){
+								resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+							} else {
+								resolve(JSON.parse(bodyurl).response[0])
+							}
 						} else {
-							resolve(JSON.parse(bodyurl).response[0])
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+									if(end){
+										resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+									} else {
+										resolve(JSON.parse(bodyurl).response[0])
+									}
+								} else {
+									resolve(false);
+								}
+							});
 						}
-					} else {
+					} catch (err) {
 						request({
-							url: urlup
-						}, function(err, responses, bodyurl) {
+							url: bkpurl
+						}, function(err, responses, bodyurl){
 							if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
 								if(end){
 									resolve(JSON.parse(bodyurl).response.slice(-1)[0])
@@ -440,7 +457,19 @@ client.on("message", message => {
 									resolve(JSON.parse(bodyurl).response[0])
 								}
 							} else {
-								resolve(false);
+								request({
+									url: bkpurlup
+								}, function(err, responses, bodyurl) {
+									if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+										if(end){
+											resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+										} else {
+											resolve(JSON.parse(bodyurl).response[0])
+										}
+									} else {
+										resolve(false);
+									}
+								});
 							}
 						});
 					}
@@ -718,7 +747,8 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://api.potatoproject.co/checkUpdate?device="
-			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, true).then(response => {
+			const bkp = "http://api.strangebits.co.in/checkUpdate?device="
+			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, true, '', '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(response => {
 				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x6a16e2)
@@ -928,21 +958,41 @@ client.on("message", message => {
 					});
 				});
 			}
-			async function romposp(url, urlup, name) {
+			async function romposp(url, urlup, bkpurl, bkpurlup, name) {
 				return new Promise(function(resolve, reject) {
 					request({
 						url
 					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-							resolve(`${name}\n`);
-						} else {
+						try {
+							if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+								resolve(`${name}\n`);
+							} else {
+								request({
+									url: urlup
+								}, function(err, responses, bodyurl) {
+									if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+										resolve(`${name}\n`);
+									} else {
+										resolve(false);
+									}
+								});
+							}
+						} catch(err) {
 							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
+								url: bkpurl
+							}, function(err, responses, bodyurl){
 								if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
 									resolve(`${name}\n`);
 								} else {
-									resolve(false);
+									request({
+										url: bkpurlup
+									}, function(err, responses, bodyurl) {
+										if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+											resolve(`${name}\n`);
+										} else {
+											resolve(false);
+										}
+									});
 								}
 							});
 						}
@@ -1110,7 +1160,7 @@ client.on("message", message => {
 			//ViperOS
 			roms(`https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codenameup}/build.json`, "ViperOS (viper)").then(viper => {
 			//Potato Open Sauce Project POSP
-			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (posp/potato)").then(posp => {
+			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=mashed`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (posp/potato)").then(posp => {
 			//Evolution-X EVO-X
 			rombody(`https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codenameup}.json`, "Evolution-X (evo/evox)").then(evo => {
 			//AOSP Extended AEX (Pie)
