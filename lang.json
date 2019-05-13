@@ -1,15 +1,15 @@
 {
    "fr":{
-      "connect":"Connecter sur",
+      "connect":"Connecter sûr",
       "help":{
          "default":{
             "title":"Page d'aide",
-            "android":"Avoir des info sur une version d'Android particulière",
+            "android":"Avoir des infos sur une version d'Android particulière",
             "magisk":{
                "text":"Avoir la version de magisk la plus récente",
                "ver":"Version"
             },
-            "twrp":"Savoir si TWRP est Officiel pour votre appareil",
+            "twrp":"Savoir si TWRP est officiel pour votre appareil",
             "roms":"Voir les commandes pour les Customs ROMs",
             "inv":" Avoir l'invite du bot",
             "help":"Aide"
@@ -24,7 +24,7 @@
                "cmdroms":"Vous pouvez également afficher les ROMs disponibles avec",
                "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
             },
-			"help":"Aide Roms"
+	    "help":"Aide Roms"
          }
       },
       "android":{
@@ -36,7 +36,7 @@
       "size":"Taille",
       "version":"Version",
       "cdnerr":"Veuillez entrer un nom de code !",
-      "twrperr":"TWRP n'a pas était trouver pour",
+      "twrperr":"TWRP n'a pas été trouvé pour",
       "romerr":"Aucune ROM trouvé pour",
       "norom":"Aucune ROM",
 	  "romserr": "Aucune ROMs Disponibles pour",
@@ -67,7 +67,7 @@
                "cmdroms":"You can also view available ROMs with",
                "note":"**Note:**\nIf the bot answers `No ROM found for <device_name>/<code_name>` it means that the rom is not officially available for your device."
             },
-			"help":"Roms Help"
+	    "help":"Roms Help"
          }
       },
       "android":{
