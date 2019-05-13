@@ -22,7 +22,7 @@
                "title":"Utilisation",
                "example":"Exemple",
                "cmdroms":"Vous pouvez également afficher les ROMs disponibles avec",
-               "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
+               "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvée pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
             },
 	    "help":"Aide Roms"
          }
