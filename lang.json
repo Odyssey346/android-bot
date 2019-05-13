@@ -11,7 +11,7 @@
             },
             "twrp":"Savoir si TWRP est officiel pour votre appareil",
             "roms":"Voir les commandes pour les Customs ROMs",
-            "inv":" Avoir l'invite du bot",
+            "inv":"Avoir l'invite du bot",
             "help":"Aide"
          },
          "roms":{
