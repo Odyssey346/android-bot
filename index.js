@@ -603,17 +603,31 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://raw.githubusercontent.com/Viper-Devices/official_devices/master/"
-			rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x4184f4)
-						.setTitle(`ViperOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
+			if(codename === "daisy"){
+				rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`, true).then(response => {
+					if(response){
+						const embed = new Discord.RichEmbed()
+							.setColor(0x4184f4)
+							.setTitle(`ViperOS | ${devicename(codename)}`)
+							.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+						send({embed});
+					} else {
+						send(lang.romerr+" `"+devicename(codename)+"`")
+					}
+				});
+			} else {
+				rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
+					if(response){
+						const embed = new Discord.RichEmbed()
+							.setColor(0x4184f4)
+							.setTitle(`ViperOS | ${devicename(codename)}`)
+							.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+						send({embed});
+					} else {
+						send(lang.romerr+" `"+devicename(codename)+"`")
+					}
+				});
+			}
 		} else {
 			send(lang.cdnerr)
 		}
