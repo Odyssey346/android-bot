@@ -32,7 +32,7 @@ const roms = "DotOS (dotos)\n"+
 			 "Resurrection Remix (rr)\n"+
 			 "SuperiorOS (superior)\n"+
 			 "RevengeOS (revenge)\n"+
-			 "AOSiP (aosip)\n"+
+			 "Android Open Source illusion Project (aosip)\n"+
 			 "ArrowOS (arrow)";
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
@@ -919,7 +919,7 @@ client.on("message", message => {
 				}
 				const embed = new Discord.RichEmbed()
 					.setColor(0x20458B)
-					.setTitle(`AOSiP | ${devicename(codename)}`)
+					.setTitle(`Android Open Source illusion Project | ${devicename(codename)}`)
 					.addField(lang.official, check(off))
 					.addField(lang.beta, check(beta))
 				send({embed})
@@ -1275,9 +1275,9 @@ client.on("message", message => {
 			//RevengeOS
 			roms(`https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`, `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`, "RevengeOS (revenge)").then(revenge => {
 			//AOSiP Official
-			roms(`https://aosip.dev/${codename}/official`, `https://aosip.dev/${codenameup}/official`, `AOSiP (${lang.official}) (aosip)`).then(aosipo => {
+			roms(`https://aosip.dev/${codename}/official`, `https://aosip.dev/${codenameup}/official`, `Android Open Source illusion Project (${lang.official}) (aosip)`).then(aosipo => {
 			//AOSiP Beta
-			roms(`https://aosip.dev/${codename}/beta`, `https://aosip.dev/${codenameup}/beta`, `AOSiP (${lang.beta}) (aosip)`).then(aosipb => {
+			roms(`https://aosip.dev/${codename}/beta`, `https://aosip.dev/${codenameup}/beta`, `Android Open Source illusion Project (${lang.beta}) (aosip)`).then(aosipb => {
 			//ArrowOS
 			roms(`https://update.arrowos.net/api/v1/${codename}/official`, `https://update.arrowos.net/api/v1/${codenameup}/official`, "ArrowOS (arrow)").then(arrow => {
 				
