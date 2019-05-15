@@ -23,7 +23,7 @@ prefix: .
 * Resurrection Remix
 * SuperiorOS
 * RevengeOS
-* AOSiP
+* Android Open Source illusion Project
 * ArrowOS
 
 ### Comment l'installer:
