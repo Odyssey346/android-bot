@@ -32,7 +32,8 @@ const roms = "DotOS (dotos)\n"+
 			 "Resurrection Remix (rr)\n"+
 			 "SuperiorOS (superior)\n"+
 			 "RevengeOS (revenge)\n"+
-			 "AOSiP (aosip)";
+			 "AOSiP (aosip)\n"+
+			 "ArrowOS (arrow)";
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -926,6 +927,26 @@ client.on("message", message => {
 		} else {
 			send(lang.cdnerr)
 		}
+	//ArrowOS
+	} else if(content.startsWith(`${prefix}arrow`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://update.arrowos.net/api/v1/"
+			rom(`${start}${codename}/official`, `${start}${codenameup}/official`).then(response => {
+				if(response){
+					const embed = new Discord.RichEmbed()
+						.setColor(0xe6e6e6)
+						.setTitle(`ArrowOS | ${devicename(codename)}`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+					send({embed})
+				} else {
+					send(lang.romerr+" `"+devicename(codename)+"`")
+				}
+			});
+		} else {
+			send(lang.cdnerr)
+		}
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
 		const codename = content.split(' ')[1];
@@ -1257,10 +1278,12 @@ client.on("message", message => {
 			roms(`https://aosip.dev/${codename}/official`, `https://aosip.dev/${codenameup}/official`, `AOSiP (${lang.official}) (aosip)`).then(aosipo => {
 			//AOSiP Beta
 			roms(`https://aosip.dev/${codename}/beta`, `https://aosip.dev/${codenameup}/beta`, `AOSiP (${lang.beta}) (aosip)`).then(aosipb => {
+			//ArrowOS
+			roms(`https://update.arrowos.net/api/v1/${codename}/official`, `https://update.arrowos.net/api/v1/${codenameup}/official`, "ArrowOS (arrow)").then(arrow => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false){
 					send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
@@ -1275,11 +1298,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`${lang.roms} ${devicename(codename)}`)
-						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}${tof(revenge)}${tof(aosipo)}${tof(aosipb)}`)
+						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}${tof(revenge)}${tof(aosipo)}${tof(aosipb)}${tof(arrow)}`)
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
