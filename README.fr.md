@@ -24,6 +24,7 @@ prefix: .
 * SuperiorOS
 * RevengeOS
 * AOSiP
+* ArrowOS
 
 ### Comment l'installer:
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
