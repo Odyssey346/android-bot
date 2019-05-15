@@ -710,10 +710,21 @@ client.on("message", message => {
 			const start = "https://bootleggersrom-devices.github.io/api/devices.json"
 			rom(start, start, false, true, false, false, false, false, '', codename, codenameup).then(response => {
 				if(response){
+					function size(size, prettysize){
+						if(prettysize === "0 Bytes"){
+							if(size.indexOf("(") !== -1){
+								return size.split('(')[0]
+							} else {
+								return size
+							}
+						} else {
+							return prettysize
+						}
+					}
 					const embed = new Discord.RichEmbed()
 						.setColor(0x515262)
 						.setTitle(`BootleggersROM | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+ `${response.buildate.substring(0, 4)}-${response.buildate.substring(4, 6)}-${response.buildate.substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+pretty(response.buildsize)+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](${response.download})`)
+						.setDescription("**"+lang.date+"**: **`"+ `${response.filename.split('-')[4].substring(0, 4)}-${response.filename.split('-')[4].substring(4, 6)}-${response.filename.split('-')[4].substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+size(response.buildsize, pretty(response.buildsize))+"`**\n**"+lang.version+"**: **`"+`${response.filename.split('-')[1].split('.')[1]}.${response.filename.split('-')[1].split('.')[2]}`+"`**\n"+`**${lang.download}**: [${response.filename}](${response.download})`)
 					send({embed});
 				} else {
 					send(lang.romerr+" `"+devicename(codename)+"`")
