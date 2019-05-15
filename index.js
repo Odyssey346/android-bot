@@ -382,7 +382,12 @@ client.on("message", message => {
 					var body = JSON.parse(bodyurl);
 					var response = body.includes(cdn);
 					if(response){
-						resolve(`https://mirror.codebucket.de/cosp/${cdn}`)
+						request({
+							url: `https://ota.cosp-project.org/latestDownload?device=${cdn}`
+						}, function(err, responses, bodyurl) {
+							if(JSON.parse(bodyurl).error) return resolve(false);
+							resolve(JSON.parse(bodyurl))
+						});
 					} else {
 						request({
 							url: `https://mirror.codebucket.de/cosp/getdevices.php`
@@ -390,9 +395,14 @@ client.on("message", message => {
 							var body = JSON.parse(bodyurl);
 							var response = body.includes(cdnup);
 							if(response){
-								resolve(`https://mirror.codebucket.de/cosp/${cdnup}`)
+								request({
+									url: `https://ota.cosp-project.org/latestDownload?device=${cdn}`
+								}, function(err, responses, bodyurl) {
+									if(JSON.parse(bodyurl).error) return resolve(false);
+									resolve(JSON.parse(bodyurl))
+								});
 							} else {
-								resolve(false);
+								resolve(false)
 							}
 						});
 					}
@@ -836,10 +846,11 @@ client.on("message", message => {
 			const start = "https://mirror.codebucket.de/cosp/getdevices.php"
 			rom(start, start, false, false, true, false, false, false, '', codename, codenameup).then(response => {
 				if(response){
+					const date = response.date.toString();
 					const embed = new Discord.RichEmbed()
 						.setColor(0x010101)	
 						.setTitle(`Clean Open Source Project | ${devicename(codename)}`)
-						.setDescription(`**${lang.download}**: [COSP ${codename}](${response})`)
+						.setDescription("**"+lang.date+"**: **`"+ `20${date.substring(0, 2)}-${date.substring(2, 4)}-${date.substring(4, 6)}` +"`**\n"+`**${lang.download}**: [${response.download.split('/')[5]}](${response.download})`)
 					send({embed});
 				} else {
 					send(lang.romerr+" `"+devicename(codename)+"`")
