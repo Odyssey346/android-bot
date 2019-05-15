@@ -23,6 +23,7 @@ prefix: .
 * Resurrection Remix
 * SuperiorOS
 * RevengeOS
+* AOSiP
 
 ### Comment l'installer:
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
