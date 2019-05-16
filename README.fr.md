@@ -25,6 +25,7 @@ prefix: .
 * RevengeOS
 * Android Open Source illusion Project
 * ArrowOS
+* Liquid Remix
 
 ### Comment l'installer:
 Téléchargez et Installez NodeJS : https://nodejs.org/en/
