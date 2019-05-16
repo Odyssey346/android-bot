@@ -15,26 +15,7 @@ if(langverif[configlang] === undefined){
 //end
 const lang = langverif[configlang];
 const client = new Discord.Client();
-const roms = "DotOS (dotos)\n"+
-			 "Evolution-X (evo/evox)\n"+
-			 "HavocOS (havoc)\n"+
-			 "PearlOS (pearl)\n"+
-			 "PixysOS (pixy)\n"+
-			 "Potato Open Sauce Project (posp/potato)\n"+
-			 "ViperOS (viper)\n"+
-			 "LineageOS (los/lineage)\n"+
-			 "Pixel Experience (pe)\n"+
-			 "BootleggersROM (btlg/bootleggers)\n"+
-			 "AOSP Extended (aex)\n"+
-			 "crDroid (crdroid)\n"+
-			 "Syberia (syberia)\n"+
-			 "Clean Open Source Project (cosp/clean)\n"+
-			 "Resurrection Remix (rr)\n"+
-			 "SuperiorOS (superior)\n"+
-			 "RevengeOS (revenge)\n"+
-			 "Android Open Source illusion Project (aosip)\n"+
-			 "ArrowOS (arrow)\n"+
-			 "Liquid Remix (liquid)";
+const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
