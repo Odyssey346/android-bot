@@ -15,7 +15,7 @@ if(langverif[configlang] === undefined){
 //end
 const lang = langverif[configlang];
 const client = new Discord.Client();
-const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)\n"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
+const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)\n", "Dirty Unicorns (dirty)\n"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -285,7 +285,7 @@ client.on("message", message => {
 	const author = message.author;
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
-	async function rom(url, urlup, body, btlg, cosp, crdroid, xml, error, end, cdn, cdnup, bkpurl, bkpurlup) {
+	async function rom(url, urlup, body, btlg, cosp, crdroid, xml, dirty, error, end, cdn, cdnup, bkpurl, bkpurlup) {
 		return new Promise(function(resolve, reject){
 			if(body){
 				if(error){
@@ -432,6 +432,24 @@ client.on("message", message => {
 						resolve(response);
 					} else {
 						resolve(false);
+					}
+				});
+			} else if(dirty){
+				request({
+					url
+				}, function(err, responses, bodyurl){
+					try {
+						resolve(JSON.parse(bodyurl).slice(-1)[0])
+					} catch(err) {
+						request({
+							url: urlup
+						}, function(err, responses, bodyurl) {
+							try {
+								resolve(JSON.parse(bodyurl).slice(-1)[0])
+							} catch(err) {
+								resolve(false);
+							}
+						});
 					}
 				});
 			} else {
@@ -672,7 +690,7 @@ client.on("message", message => {
 			if(codename !== "enchilada"){
 				const codenameup = content.split(' ')[1].toUpperCase();
 				const start = "https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/"
-				rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, true).then(response => {
+				rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true).then(response => {
 					if(response){
 						const embed = new Discord.RichEmbed()
 							.setColor(0xb0c9ce)
@@ -722,7 +740,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://bootleggersrom-devices.github.io/api/devices.json"
-			rom(start, start, false, true, false, false, false, false, false, codename, codenameup).then(response => {
+			rom(start, start, false, true, false, false, false, false, false, false, codename, codenameup).then(response => {
 				if(response){
 					function size(size, prettysize){
 						if(prettysize === "0 Bytes"){
@@ -787,7 +805,7 @@ client.on("message", message => {
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://api.potatoproject.co/checkUpdate?device="
 			const bkp = "http://api.strangebits.co.in/checkUpdate?device="
-			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(response => {
+			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(response => {
 				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x6a16e2)
@@ -807,7 +825,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://raw.githubusercontent.com/RevengeOS/releases/master/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, true, true).then(response => {
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true, true).then(response => {
 				if(response){
 					var date = response.date.split('/');
 					const embed = new Discord.RichEmbed()
@@ -827,7 +845,7 @@ client.on("message", message => {
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
-			rom("https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml", '', false, false, false, true, false, false, false, codename, codenameup).then(response => {
+			rom("https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml", '', false, false, false, true, false, false, false, false, codename, codenameup).then(response => {
 				if(response){
 					var filename = response.filename._text;
 					const embed = new Discord.RichEmbed()
@@ -848,7 +866,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://mirror.codebucket.de/cosp/getdevices.php"
-			rom(start, start, false, false, true, false, false, false, '', codename, codenameup).then(response => {
+			rom(start, start, false, false, true, false, false, false, false, '', codename, codenameup).then(response => {
 				if(response){
 					const date = response.date.toString();
 					const embed = new Discord.RichEmbed()
@@ -869,7 +887,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://raw.githubusercontent.com/syberia-project/official_devices/master"
-			rom(`${start}/a-only/${codename}.json`, `${start}/a-only/${codenameup}.json`, true, false, false, false, false, true).then(a => {
+			rom(`${start}/a-only/${codename}.json`, `${start}/a-only/${codenameup}.json`, true, false, false, false, false, false, true).then(a => {
 				if(a){
 					const embed = new Discord.RichEmbed()
 						.setColor(0xDF766E)
@@ -983,6 +1001,36 @@ client.on("message", message => {
 					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
 			});
+		} else {
+			send(lang.cdnerr)
+		}
+	//Dirty Unicorns
+	} else if(content.startsWith(`${prefix}dirty`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = 'https://download.dirtyunicorns.com/api/files/'
+			//Official
+			rom(`${start}${codename}/Official`, `${start}${codenameup}/Official`, false, false, false, false, false, true).then(off => {
+			//Rc
+			rom(`${start}${codename}/Rc`, `${start}${codenameup}/Rc`, false, false, false, false, false, true).then(rc => {
+			//Weeklies
+			rom(`${start}${codename}/Weeklies`, `${start}${codenameup}/Weeklies`, false, false, false, false, false, true).then(week => {
+				function check(response, ver){
+					if(response){
+						return "**"+lang.date+"**: **`"+`${response.filename.split('-')[2].substring(0, 4)}-${response.filename.split('-')[2].substring(4, 6)}-${response.filename.split('-')[2].substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+response.filesize+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](https://download.dirtyunicorns.com/api/download/${response.filename.split('-')[0].split('_')[1]}/${ver}/${response.filename})`
+					} else {
+						return lang.norom
+					}
+				}
+				const embed = new Discord.RichEmbed()
+					.setColor(0xB00300)
+					.setTitle(`Dirty Unicorns | ${devicename(codename)}`)
+					.addField(lang.official, check(off, "Official"))
+					.addField("Rc", check(rc, "Rc"))
+					.addField("Weeklies", check(week, "Weeklies"))
+				send({embed})
+			})})});
 		} else {
 			send(lang.cdnerr)
 		}
@@ -1301,6 +1349,29 @@ client.on("message", message => {
 					});
 				});
 			}
+			async function romdirty(url, urlup, name) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url
+					}, function(err, responses, bodyurl){
+						try {
+							var body = JSON.parse(bodyurl).slice(-1)[0];
+							resolve(`${name}\n`)
+						} catch(err) {
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								try {
+									var body = JSON.parse(bodyurl).slice(-1)[0];
+									resolve(`${name}\n`)
+								} catch(err) {
+									resolve(false);
+								}
+							});
+						}
+					});
+				});
+			}
 			//HavocOS
 			roms(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)").then(havoc => {
 			//PixysOS
@@ -1351,10 +1422,16 @@ client.on("message", message => {
 			roms(`https://update.arrowos.net/api/v1/${codename}/official`, `https://update.arrowos.net/api/v1/${codenameup}/official`, "ArrowOS (arrow)").then(arrow => {
 			//Liquid Remix
 			romxml(`https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codename}.xml`, `https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codenameup}.xml`, "Liquid Remix (liquid)").then(liquid => {
+			//Dirty Unicorns (Official)
+			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Official`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Official`, "Dirty Unicorns (Official) (dirty)").then(dirtyo => {
+			//Dirty Unicorns (RC)
+			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Rc`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Rc`, "Dirty Unicorns (RC) (dirty)").then(dirtyr => {
+			//Dirty Unicorns (Weeklies)
+			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Weeklies`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Weeklies`, "Dirty Unicorns (Weeklies) (dirty)").then(dirtyw => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false){
 					send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
@@ -1369,11 +1446,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`${lang.roms} ${devicename(codename)}`)
-						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(posp), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
+						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(posp), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
