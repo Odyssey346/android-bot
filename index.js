@@ -33,7 +33,8 @@ const roms = "DotOS (dotos)\n"+
 			 "SuperiorOS (superior)\n"+
 			 "RevengeOS (revenge)\n"+
 			 "Android Open Source illusion Project (aosip)\n"+
-			 "ArrowOS (arrow)";
+			 "ArrowOS (arrow)\n"+
+			 "Liquid Remix (liquid)";
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -199,7 +200,7 @@ client.on("message", message => {
 			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json`).then(magisks => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
-					.setTitle("<:magisk:573148683290542100> Magisk Stable")
+					.setTitle("Magisk Stable")
 					.addField("Magisk Manager", "**"+lang.version+"**: "+magisks.app.version+" `"+magisks.app.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
 					.addField("Magisk Installer", "**"+lang.version+"**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
 				send({embed});
@@ -209,7 +210,7 @@ client.on("message", message => {
 			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json`).then(magiskb => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
-					.setTitle("<:magisk:573148683290542100> Magisk Beta")
+					.setTitle("Magisk Beta")
 					.addField("Magisk Manager", "**"+lang.version+"**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Manager ${magiskb.app.version}](${magiskb.app.link})\n - [ChangeLog](${magiskb.app.note})`, true)
 					.addField("Magisk Installer", "**"+lang.version+"**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})\n - [ChangeLog](${magiskb.magisk.note})`, true)
 				send({embed});
@@ -219,7 +220,7 @@ client.on("message", message => {
 			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/canary_builds/canary.json`).then(magiskc => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
-					.setTitle("<:magisk:573148683290542100> Magisk Canary")
+					.setTitle("Magisk Canary")
 					.addField("Magisk Manager", "**"+lang.version+"**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [ChangeLog](${magiskc.app.note})`, true)
 					.addField("Magisk Installer", "**"+lang.version+"**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})\n - [ChangeLog](${magiskc.magisk.note})`, true)
 					.addField("SNET (SafetyNet)", "**"+lang.version+"**: `"+magiskc.snet.versionCode+"`"+`\n**${lang.download}**: \n - [snet.apk](${magiskc.snet.link})`, true)
@@ -235,7 +236,7 @@ client.on("message", message => {
 			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/canary_builds/canary.json`).then(magiskc => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
-					.setTitle("<:magisk:573148683290542100> Magisk")
+					.setTitle("Magisk")
 					.addField("Stable", "** **", false)
 					.addField("Magisk Manager", "**"+lang.version+"**: "+magisks.app.version+" `"+magisks.app.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
 					.addField("Magisk Installer", "**"+lang.version+"**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
@@ -303,7 +304,7 @@ client.on("message", message => {
 	const author = message.author;
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
-	async function rom(url, urlup, body, btlg, cosp, crdroid, error, end, name, cdn, cdnup, bkpurl, bkpurlup) {
+	async function rom(url, urlup, body, btlg, cosp, crdroid, xml, error, end, cdn, cdnup, bkpurl, bkpurlup) {
 		return new Promise(function(resolve, reject){
 			if(body){
 				if(error){
@@ -405,6 +406,26 @@ client.on("message", message => {
 								});
 							} else {
 								resolve(false)
+							}
+						});
+					}
+				});
+			} else if(xml){
+				request({
+					url
+				}, function(err, responses, bodyurl) {
+					try {
+						var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
+						resolve(body);
+					} catch(err) {
+						request({
+							url: urlup
+						}, function(err, responses, bodyurl) {
+							try {
+								var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
+								resolve(body);
+							} catch(err) {
+								resolve(false);
 							}
 						});
 					}
@@ -670,7 +691,7 @@ client.on("message", message => {
 			if(codename !== "enchilada"){
 				const codenameup = content.split(' ')[1].toUpperCase();
 				const start = "https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/"
-				rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, true).then(response => {
+				rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, true).then(response => {
 					if(response){
 						const embed = new Discord.RichEmbed()
 							.setColor(0xb0c9ce)
@@ -720,7 +741,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://bootleggersrom-devices.github.io/api/devices.json"
-			rom(start, start, false, true, false, false, false, false, '', codename, codenameup).then(response => {
+			rom(start, start, false, true, false, false, false, false, false, codename, codenameup).then(response => {
 				if(response){
 					function size(size, prettysize){
 						if(prettysize === "0 Bytes"){
@@ -785,7 +806,7 @@ client.on("message", message => {
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://api.potatoproject.co/checkUpdate?device="
 			const bkp = "http://api.strangebits.co.in/checkUpdate?device="
-			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, true, '', '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(response => {
+			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(response => {
 				if(response){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x6a16e2)
@@ -805,7 +826,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://raw.githubusercontent.com/RevengeOS/releases/master/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, true, true).then(response => {
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, true, true).then(response => {
 				if(response){
 					var date = response.date.split('/');
 					const embed = new Discord.RichEmbed()
@@ -825,7 +846,7 @@ client.on("message", message => {
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
-			rom("https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml", '', false, false, false, true, false, false, '', codename, codenameup).then(response => {
+			rom("https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml", '', false, false, false, true, false, false, false, codename, codenameup).then(response => {
 				if(response){
 					var filename = response.filename._text;
 					const embed = new Discord.RichEmbed()
@@ -867,7 +888,7 @@ client.on("message", message => {
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://raw.githubusercontent.com/syberia-project/official_devices/master"
-			rom(`${start}/a-only/${codename}.json`, `${start}/a-only/${codenameup}.json`, true, false, false, false, true).then(a => {
+			rom(`${start}/a-only/${codename}.json`, `${start}/a-only/${codenameup}.json`, true, false, false, false, false, true).then(a => {
 				if(a){
 					const embed = new Discord.RichEmbed()
 						.setColor(0xDF766E)
@@ -940,6 +961,43 @@ client.on("message", message => {
 						.setTitle(`ArrowOS | ${devicename(codename)}`)
 						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
 					send({embed})
+				} else {
+					send(lang.romerr+" `"+devicename(codename)+"`")
+				}
+			});
+		} else {
+			send(lang.cdnerr)
+		}
+	//Liquid Remix
+	} else if(content.startsWith(`${prefix}liquid`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/"
+			function op(cdn){
+				if(cdn === 'enchilada'){
+					return 'oneplus'
+				} else {
+					return cdn
+				}
+			}
+			rom(`${start}${op(codename)}.xml`, `${start}${codenameup}.xml`, false, false, false, false, true).then(body => {
+				if(body){
+					function resp(cdn, cdnup) {
+						var info = body.SlimOTA.Official[cdn];
+						if(info !== undefined){
+							return body.SlimOTA.Official[cdn]
+						} else {
+							return body.SlimOTA.Official[cdnup]
+						}
+					}
+					var response = resp(codename, codenameup);
+					var filename = response.Filename._text;
+					const embed = new Discord.RichEmbed()
+						.setColor(0x2D8CFD)	
+						.setTitle(`Liquid Remix | ${devicename(codename)}`)
+						.setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[1].substring(0, 4)}-${filename.split('-')[1].substring(4, 6)}-${filename.split('-')[1].substring(6, 8)}` +"`**\n"+`**${lang.download}**: [${filename}](${response.RomUrl._text})`)
+					send({embed});
 				} else {
 					send(lang.romerr+" `"+devicename(codename)+"`")
 				}
@@ -1232,6 +1290,36 @@ client.on("message", message => {
 					});
 				});
 			}
+			async function romxml(url, urlup, name) {
+				return new Promise(function(resolve, reject) {
+					function urlcheck(u){
+						if(u === 'https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/enchilada.xml'){
+							return 'https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/oneplus.xml'
+						} else {
+							return u
+						}
+					}
+					request({
+						url: urlcheck(url)
+					}, function(err, responses, bodyurl) {
+						try {
+							var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
+							resolve(`${name}\n`);
+						} catch(err) {
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								try {
+									var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
+									resolve(`${name}\n`);
+								} catch(err) {
+									resolve(false);
+								}
+							});
+						}
+					});
+				});
+			}
 			//HavocOS
 			roms(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)").then(havoc => {
 			//PixysOS
@@ -1280,10 +1368,12 @@ client.on("message", message => {
 			roms(`https://aosip.dev/${codename}/beta`, `https://aosip.dev/${codenameup}/beta`, `Android Open Source illusion Project (${lang.beta}) (aosip)`).then(aosipb => {
 			//ArrowOS
 			roms(`https://update.arrowos.net/api/v1/${codename}/official`, `https://update.arrowos.net/api/v1/${codenameup}/official`, "ArrowOS (arrow)").then(arrow => {
+			//Liquid Remix
+			romxml(`https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codename}.xml`, `https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codenameup}.xml`, "Liquid Remix (liquid)").then(liquid => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false){
 					send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
@@ -1298,11 +1388,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`${lang.roms} ${devicename(codename)}`)
-						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}${tof(revenge)}${tof(aosipo)}${tof(aosipb)}${tof(arrow)}`)
+						.setDescription(`${tof(dotos)}${tof(evo)}${tof(havoc)}${tof(pearl)}${tof(pixy)}${tof(posp)}${tof(viper)}${tof(los)}${tof(pepie)}${tof(pecaf)}${tof(pego)}${tof(peoreo)}${tof(btlg)}${tof(aexpie)}${tof(aexoreo)}${tof(crdroid)}${tof(syberia)}${tof(cosp)}${tof(rr)}${tof(superior)}${tof(revenge)}${tof(aosipo)}${tof(aosipb)}${tof(arrow)}${tof(liquid)}`)
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
