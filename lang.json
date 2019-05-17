@@ -1,10 +1,10 @@
 {
    "fr":{
-      "connect":"Connecter sur",
+      "connect":"Connecter sûr",
       "help":{
          "default":{
             "title":"Page d'aide",
-            "android":"Avoir des info sur une version d'Android particulière",
+            "android":"Avoir des infos sur une version d'Android particulière",
             "magisk":{
                "text":"Avoir la version de magisk la plus récente",
                "ver":"Version"
@@ -36,7 +36,7 @@
       "size":"Taille",
       "version":"Version",
       "cdnerr":"Veuillez entrer un nom de code !",
-      "twrperr":"TWRP n'a pas était trouver pour",
+      "twrperr":"TWRP n'a pas été trouvé pour",
       "romerr":"Aucune ROM trouvé pour",
       "norom":"Aucune ROM",
 	  "romserr": "Aucune ROMs Disponibles pour",
