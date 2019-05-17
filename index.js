@@ -805,17 +805,24 @@ client.on("message", message => {
 			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://api.potatoproject.co/checkUpdate?device="
 			const bkp = "http://api.strangebits.co.in/checkUpdate?device="
-			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x6a16e2)
-						.setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
+			//Weekly
+			rom(`${start}${codename}&type=weekly`, `${start}${codenameup}&type=weekly`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=weekly`, `${bkp}${codenameup}&type=weekly`).then(week => {
+			//Mashed
+			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(mash => {
+				function check(response){
+					if(response){
+						return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+					} else {
+						return lang.norom
+					}
 				}
-			});
+				const embed = new Discord.RichEmbed()
+					.setColor(0x6a16e2)
+					.setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
+					.addField('Weekly', check(week))
+					.addField('Mashed', check(mash))
+				send({embed})
+			})});
 		} else {
 			send(lang.cdnerr)
 		}
@@ -1044,6 +1051,7 @@ client.on("message", message => {
 			rom(`${start}ota_${codename}_official.xml`, `${start}ota_${codenameup}_official.xml`, false, false, false, false, true).then(off => {
 			//Experimental
 			rom(`${start}ota_${codename}_experimental.xml`, `${start}ota_${codenameup}_experimental.xml`, false, false, false, false, true).then(exp => {
+				console.log(off + exp)
 				function check(respo, n){
 					if(respo){
 						function resp(cdn, cdnup) {
@@ -1429,8 +1437,10 @@ client.on("message", message => {
 			roms(`https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codename}.json`, `https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codenameup}.json`, "DotOS (dotos)").then(dotos => {
 			//ViperOS
 			roms(`https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codenameup}/build.json`, "ViperOS (viper)").then(viper => {
-			//Potato Open Sauce Project POSP
-			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=mashed`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (posp/potato)").then(posp => {
+			//Potato Open Sauce Project POSP (Weekly)
+			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=weekly`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=weekly`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=weekly`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=weekly`, "Potato Open Sauce Project (Weekly) (posp/potato)").then(pospw => {
+			//Potato Open Sauce Project POSP (Mashed)
+			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=mashed`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (Mashed) (posp/potato)").then(pospm => {
 			//Evolution-X EVO-X
 			rombody(`https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codenameup}.json`, "Evolution-X (evo/evox)").then(evo => {
 			//AOSP Extended AEX (Pie)
@@ -1478,9 +1488,9 @@ client.on("message", message => {
 			//XenonHD (Experimental)
 			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_experimental.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`).then(xenone => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone
+				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && pospw === false && pospm === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false){
 					send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
@@ -1495,11 +1505,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`${lang.roms} ${devicename(codename)}`)
-						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(posp), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
+						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(pospw), tof(pospm), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
