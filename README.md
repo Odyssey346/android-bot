@@ -27,6 +27,7 @@ prefix: .
 * ArrowOS
 * Liquid Remix
 * Dirty Unicorns
+* XenonHD
 
 ### Comment l'installer:
 Download and Install NodeJS : https://nodejs.org/en/
