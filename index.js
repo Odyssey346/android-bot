@@ -15,7 +15,7 @@ if(langverif[configlang] === undefined){
 //end
 const lang = langverif[configlang];
 const client = new Discord.Client();
-const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)\n", "Dirty Unicorns (dirty)\n"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
+const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)\n", "Dirty Unicorns (dirty)\n", "XenonHD (xenon)\n"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -983,7 +983,7 @@ client.on("message", message => {
 			rom(`${start}${op(codename)}.xml`, `${start}${codenameup}.xml`, false, false, false, false, true).then(body => {
 				if(body){
 					function resp(cdn, cdnup) {
-						var info = body.SlimOTA.Official[cdn];
+						var info = body.SlimOTA.Official[cdn]
 						if(info !== undefined){
 							return body.SlimOTA.Official[cdn]
 						} else {
@@ -1031,6 +1031,52 @@ client.on("message", message => {
 					.addField("Weeklies", check(week, "Weeklies"))
 				send({embed})
 			})})});
+		} else {
+			send(lang.cdnerr)
+		}
+	//XenonHD
+	} else if(content.startsWith(`${prefix}xenon`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://mirrors.c0urier.net/android/teamhorizon/P/OTA/"
+			//Official
+			rom(`${start}ota_${codename}_official.xml`, `${start}ota_${codenameup}_official.xml`, false, false, false, false, true).then(off => {
+			//Experimental
+			rom(`${start}ota_${codename}_experimental.xml`, `${start}ota_${codenameup}_experimental.xml`, false, false, false, false, true).then(exp => {
+				console.log(off + exp)
+				function check(respo, n){
+					if(respo){
+						function resp(cdn, cdnup) {
+							function ver(){
+								if(n === "off"){
+									return off
+								} else {
+									return exp
+								}
+							}
+							var body = ver();
+							var info = body.XenonOTA.Pie[cdn]
+							if(info !== undefined){
+								return body.XenonOTA.Pie[cdn]
+							} else {
+								return body.XenonOTA.Pie[cdnup]
+							}
+						}
+						var response = resp(codename, codenameup)
+						var filename = response.Filename._text;
+						return "**"+lang.date+"**: **`"+ `20${filename.split('-')[1].substring(0, 2)}-${filename.split('-')[1].substring(2, 4)}-${filename.split('-')[1].substring(4, 6)}` +"`**\n"+`**${lang.download}**: [${filename}](${response.RomUrl._text})`
+					} else {
+						return lang.norom
+					}
+				}
+				const embed = new Discord.RichEmbed()
+					.setColor(0x009688)
+					.setTitle(`XenonHD | ${devicename(codename)}`)
+					.addField(lang.official, check(off, "off"))
+					.addField(lang.experimental, check(exp, "exp"))
+				send({embed})
+			})});
 		} else {
 			send(lang.cdnerr)
 		}
@@ -1423,15 +1469,19 @@ client.on("message", message => {
 			//Liquid Remix
 			romxml(`https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codename}.xml`, `https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codenameup}.xml`, "Liquid Remix (liquid)").then(liquid => {
 			//Dirty Unicorns (Official)
-			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Official`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Official`, "Dirty Unicorns (Official) (dirty)").then(dirtyo => {
+			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Official`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Official`, `Dirty Unicorns (${lang.official}) (dirty)`).then(dirtyo => {
 			//Dirty Unicorns (RC)
 			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Rc`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Rc`, "Dirty Unicorns (RC) (dirty)").then(dirtyr => {
 			//Dirty Unicorns (Weeklies)
 			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Weeklies`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Weeklies`, "Dirty Unicorns (Weeklies) (dirty)").then(dirtyw => {
+			//XenonHD (Official)
+			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_official.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_official.xml`, `XenonHD (${lang.official}) (xenon)`).then(xenono => {
+			//XenonHD (Experimental)
+			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_experimental.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`).then(xenone => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw
+				//havoc, pixy, los, pearl, dotos, viper, posp, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && posp === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false){
 					send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
@@ -1446,11 +1496,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`${lang.roms} ${devicename(codename)}`)
-						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(posp), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
+						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(posp), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
