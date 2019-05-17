@@ -1044,7 +1044,6 @@ client.on("message", message => {
 			rom(`${start}ota_${codename}_official.xml`, `${start}ota_${codenameup}_official.xml`, false, false, false, false, true).then(off => {
 			//Experimental
 			rom(`${start}ota_${codename}_experimental.xml`, `${start}ota_${codenameup}_experimental.xml`, false, false, false, false, true).then(exp => {
-				console.log(off + exp)
 				function check(respo, n){
 					if(respo){
 						function resp(cdn, cdnup) {
