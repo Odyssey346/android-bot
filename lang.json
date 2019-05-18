@@ -1,15 +1,16 @@
 {
    "fr":{
-      "connect":"Connecter sûr",
+      "connect":"Connecter sur",
       "help":{
          "default":{
             "title":"Page d'aide",
-            "android":"Avoir des infos sur une version d'Android particulière",
+            "android":"Avoir des info sur une version d'Android particulière",
             "magisk":{
                "text":"Avoir la version de magisk la plus récente",
                "ver":"Version"
             },
             "twrp":"Savoir si TWRP est Officiel pour votre appareil",
+            "gapps":"Avoir une Version particulière d'OpenGapps",
             "roms":"Voir les commandes pour les Customs ROMs",
             "inv":" Avoir l'invite du bot",
             "help":"Aide"
@@ -24,26 +25,36 @@
                "cmdroms":"Vous pouvez également afficher les ROMs disponibles avec",
                "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
             },
-			"help":"Aide Roms"
+            "help":"Aide Roms"
          }
       },
       "android":{
          "versioncode":"Code de Version",
          "error":"Veuillez entrer une version d'android ou une version d'api correct"
       },
+      "gapps":{
+         "arch":"Architecture",
+         "ver":"Version",
+         "variant":"Variante",
+         "noarch":"Veuillez entrer une Architecture:",
+         "vererr":"Veuillez entrer une Version correcte pour cette Architecture:",
+         "novar":"Veuillez entrer une Variante:",
+         "varerr":"Veuillez entrer une Variant correcte pour cette Version:",
+         "archerr":"Veuillez entrer une Architecture correcte:"
+      },
       "download":"Télécharger",
       "date":"Date",
       "size":"Taille",
       "version":"Version",
       "cdnerr":"Veuillez entrer un nom de code !",
-      "twrperr":"TWRP n'a pas été trouvé pour",
+      "twrperr":"TWRP n'a pas était trouver pour",
       "romerr":"Aucune ROM trouvé pour",
       "norom":"Aucune ROM",
-	  "romserr": "Aucune ROMs Disponibles pour",
+      "romserr":"Aucune ROMs Disponibles pour",
       "roms":"ROMs Disponibles pour",
-	  "official": "Officiel",
-	  "beta": "Beta",
-	  "experimental": "Experimental"
+      "official":"Officiel",
+      "beta":"Beta",
+      "experimental":"Experimental"
    },
    "en":{
       "connect":"Connect on",
@@ -56,6 +67,7 @@
                "ver":"Version"
             },
             "twrp":"Find if TWRP is Official for your device",
+            "gapps":"Have a particular version of OpenGapps",
             "roms":"See commands for Customs ROMs",
             "inv":"Have the bot invite",
             "help":"Help"
@@ -70,25 +82,35 @@
                "cmdroms":"You can also view available ROMs with",
                "note":"**Note:**\nIf the bot answers `No ROM found for <device_name>/<code_name>` it means that the rom is not officially available for your device."
             },
-			"help":"Roms Help"
+            "help":"Roms Help"
          }
       },
       "android":{
          "versioncode":"Version Code",
          "error":"Please enter a correct android or api version"
       },
+      "gapps":{
+         "arch":"Architecture",
+         "ver":"Version",
+         "variant":"Variant",
+         "noarch":"Please enter an Architecture:",
+         "nover":"Please enter a correct version for this Architecture:",
+         "novar":"Please enter a Variant:",
+         "varerr":"Please enter a correct Variant for this Version:",
+         "archerr":"Please enter a correct Architecture:"
+      },
       "download":"Download",
       "date":"Date",
       "size":"Size",
       "version":"Version",
-      "cdnerr":"Please enter a codename !",
+      "cdnerr":"Please enter a codename!",
       "twrperr":"TWRP was not found for",
       "romerr":"No ROM found for",
       "norom":"No ROM",
-	  "romserr": "No ROMs Available for",
+      "romserr":"No ROMs Available for",
       "roms":"ROMs Available for",
-	  "official": "Official",
-	  "beta": "Beta",
-	  "experimental": "Experimental"
+      "official":"Official",
+      "beta":"Beta",
+      "experimental":"Experimental"
    }
 }
