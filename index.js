@@ -59,6 +59,7 @@ client.on("message", message => {
 			.setDescription("`"+prefix+"android <version_number>` : "+lang.help.default.android+"\n"+
 			"`"+prefix+"magisk <version>`: "+lang.help.default.magisk.text+" \n - "+lang.help.default.magisk.ver+": `Stable`, `Beta`, `Canary`\n"+
 			"`"+prefix+"twrp <codename>`: "+lang.help.default.twrp+"\n"+
+			"`"+prefix+"gapps <arch> <ver> <variant>`: "+lang.help.default.gapps+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"invite`: "+lang.help.default.inv)
 			.setFooter(`${lang.help.default.help} | ${prefix}help (here)`);
@@ -273,6 +274,79 @@ client.on("message", message => {
 			});
 		} else {
 			send(lang.cdnerr)
+		}
+	} else if(content.startsWith(`${prefix}gapps`)){
+		const arch = content.split(' ')[1];
+		if(arch === undefined){
+			send(lang.gapps.noarch + ' `arm`, `arm64`, `x86`, `x86_64`')
+		} else if(arch !== 'arm' && arch !== 'arm64' && arch !== 'x86' && arch !== 'x86_64'){
+			send(lang.gapps.archerr + ' `arm`, `arm64`, `x86`, `x86_64`')
+		} else {
+			const ver = content.split(' ')[2];
+			if(ver === undefined){
+				if(arch !== 'arm' && arch !== 'x86'){
+					send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`')
+				} else {
+					send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`, `4.4`')
+				}
+			} else if(ver === '4.4' && arch === 'arm64' || arch === 'x86_64'){
+				send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`')
+			} else if(ver === '9.0' || ver === '8.1' || ver === '8.0' || ver === '7.1' || ver === '7.0' || ver === '6.0' || ver === '5.1' || ver === '5.0' || ver === '4.4'){
+				const variant = content.split(' ')[3];
+				function sendembed(){
+					var a = new Date();
+					var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+					var dates = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31']
+					var year = a.getUTCFullYear();
+					var month = months[a.getUTCMonth()];
+					var date = dates[a.getUTCDate()-2];
+					var time = `${year}${month}${date}`;
+					const embed = new Discord.RichEmbed()
+						.setColor(0x009688)
+						.setTitle('OpenGapps')
+						.setDescription(`**${lang.gapps.arch}**:` + ' **`' + arch + '`**\n' + `**${lang.gapps.ver}**:` + ' **`' + ver + '`**\n' + `**${lang.gapps.variant}**:` + ' **`' + variant + '`**\n' + `**${lang.download}**: [open_gapps-${arch}-${ver}-${variant}-${time}.zip](https://github.com/opengapps/${arch}/releases/download/${time}/open_gapps-${arch}-${ver}-${variant}-${time}.zip)`)
+					send(embed);
+				}
+				if(ver === '8.0'){
+					if(variant === undefined){
+						send(lang.gapps.novar + ' `full`, `mini`, `micro`, `nano`, `pico`, `tvstock`')
+					} else if(variant !== 'full' && variant !== 'mini' && variant !== 'micro' && variant !== 'nano' && variant !== 'pico' && variant !== 'tvstock'){
+						send(lang.gapps.varerr + ' `full`, `mini`, `micro`, `nano`, `pico`, `tvstock`')
+					} else {
+						sendembed()
+					}
+				} else if(ver === '7.0' || ver === '6.0' || ver === '5.1'){
+					if(variant === undefined){
+						send(lang.gapps.novar + ' `aroma`, `stock`, `nano`, `pico`, `tvstock`')
+					} else if(variant !== 'aroma' && variant !== 'stock' && variant !== 'nano' && variant !== 'pico' && variant !== 'tvstock'){
+						send(lang.gapps.varerr + ' `aroma`, `stock`, `nano`, `pico`, `tvstock`')
+					} else {
+						sendembed();
+					}
+				} else if(ver === '5.0' || ver === '4.4'){
+					if(variant === undefined){
+						send(lang.gapps.novar + ' `nano`, `pico`')
+					} else if(variant !== 'nano' && variant !== 'pico'){
+						send(lang.gapps.varerr + ' `nano`, `pico`')
+					} else {
+						sendembed();
+					}
+				} else {
+					if(variant === undefined){
+						send(lang.gapps.novar + ' `aroma`, `super`, `stock`, `full`, `mini`, `micro`, `nano`, `pico`, `tvstock`')
+					} else if(variant !== 'aroma' && variant !== 'super' && variant !== 'stock' && variant !== 'full' && variant !== 'mini' && variant !== 'micro' && variant !== 'nano' && variant !== 'pico' && variant !== 'tvstock'){
+						send(lang.gapps.varerr + ' `aroma`, `super`, `stock`, `full`, `mini`, `micro`, `nano`, `pico`, `tvstock`')
+					} else {
+						sendembed()
+					}
+				}
+			} else {
+				if(arch !== 'arm' && arch !== 'x86'){
+					send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`')
+				} else {
+					send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`, `4.4`')
+				}
+			}
 		}
 	}
 });
