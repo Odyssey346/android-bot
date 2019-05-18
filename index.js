@@ -19,9 +19,10 @@ const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n"
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  var dates = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31']
   var year = a.getFullYear();
   var month = months[a.getMonth()];
-  var date = a.getDate();
+  var date = dates[a.getDate()-1];
   var time = `${year}-${month}-${date}`;
   return time;
 }
