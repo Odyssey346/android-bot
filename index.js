@@ -275,6 +275,7 @@ client.on("message", message => {
 		} else {
 			send(lang.cdnerr)
 		}
+	//OpenGapps
 	} else if(content.startsWith(`${prefix}gapps`)){
 		const arch = content.split(' ')[1];
 		if(arch === undefined){
