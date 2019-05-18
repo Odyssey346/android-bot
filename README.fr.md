@@ -1,5 +1,5 @@
 # Android Discord Bot
-Bot Discord permettant de savoir une version Android ou Magisk particulière ou si une rom est officiel pour un certain appareil
+Bot Discord permettant de savoir une version Android ou Magisk particulière ou si une rom ou twrp est officiel pour un certain appareil et avoir les Gapps facilement
 
 Langue: [English](README.md) | [Français](README.fr.md)
 
