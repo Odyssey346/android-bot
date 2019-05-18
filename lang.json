@@ -37,7 +37,7 @@
          "ver":"Version",
          "variant":"Variante",
          "noarch":"Veuillez entrer une Architecture:",
-         "vererr":"Veuillez entrer une Version correcte pour cette Architecture:",
+         "nover":"Veuillez entrer une Version correcte pour cette Architecture:",
          "novar":"Veuillez entrer une Variante:",
          "varerr":"Veuillez entrer une Variant correcte pour cette Version:",
          "archerr":"Veuillez entrer une Architecture correcte:"
