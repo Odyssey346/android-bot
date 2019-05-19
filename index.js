@@ -290,8 +290,6 @@ client.on("message", message => {
 				} else {
 					send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`, `4.4`')
 				}
-			} else if(ver === '4.4' && arch === 'arm64' || arch === 'x86_64'){
-				send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`')
 			} else if(ver === '9.0' || ver === '8.1' || ver === '8.0' || ver === '7.1' || ver === '7.0' || ver === '6.0' || ver === '5.1' || ver === '5.0' || ver === '4.4'){
 				const variant = content.split(' ')[3];
 				function sendembed(){
@@ -322,13 +320,25 @@ client.on("message", message => {
 					} else {
 						sendembed();
 					}
-				} else if(ver === '5.0' || ver === '4.4'){
+				} else if(ver === '5.0'){
 					if(variant === undefined){
 						send(lang.gapps.novar + ' `nano`, `pico`')
 					} else if(variant !== 'nano' && variant !== 'pico'){
 						send(lang.gapps.varerr + ' `nano`, `pico`')
 					} else {
 						sendembed();
+					}
+				} else if(ver === '4.4'){
+					if(arch !== 'arm' && arch !== 'x86'){
+						send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`')
+					} else {
+						if(variant === undefined){
+							send(lang.gapps.novar + ' `nano`, `pico`')
+						} else if(variant !== 'nano' && variant !== 'pico'){
+							send(lang.gapps.varerr + ' `nano`, `pico`')
+						} else {
+							sendembed();
+						}
 					}
 				} else {
 					if(variant === undefined){
