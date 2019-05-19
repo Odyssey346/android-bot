@@ -295,18 +295,16 @@ client.on("message", message => {
 			} else if(ver === '9.0' || ver === '8.1' || ver === '8.0' || ver === '7.1' || ver === '7.0' || ver === '6.0' || ver === '5.1' || ver === '5.0' || ver === '4.4'){
 				const variant = content.split(' ')[3];
 				function sendembed(){
-					var a = new Date();
-					var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-					var dates = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31']
-					var year = a.getUTCFullYear();
-					var month = months[a.getUTCMonth()];
-					var date = dates[a.getUTCDate()-1];
-					var time = `${year}${month}${date}`;
-					const embed = new Discord.RichEmbed()
-						.setColor(0x009688)
-						.setTitle('OpenGapps')
-						.setDescription(`**${lang.gapps.arch}**:` + ' **`' + arch + '`**\n' + `**${lang.gapps.ver}**:` + ' **`' + ver + '`**\n' + `**${lang.gapps.variant}**:` + ' **`' + variant + '`**\n' + `**${lang.download}**: [open_gapps-${arch}-${ver}-${variant}-${time}.zip](https://github.com/opengapps/${arch}/releases/download/${time}/open_gapps-${arch}-${ver}-${variant}-${time}.zip)`)
-					send(embed);
+					request.get({
+						url: `https://api.github.com/repos/opengapps/${arch}/tags`, headers: {'User-Agent': 'android-bot'}
+					}, function(err, response, body){
+						var time = JSON.parse(body)[0].name;
+						const embed = new Discord.RichEmbed()
+							.setColor(0x009688)
+							.setTitle('OpenGapps')
+							.setDescription(`**${lang.gapps.arch}**:` + ' **`' + arch + '`**\n' + `**${lang.gapps.ver}**:` + ' **`' + ver + '`**\n' + `**${lang.gapps.variant}**:` + ' **`' + variant + '`**\n' + `**${lang.download}**: [open_gapps-${arch}-${ver}-${variant}-${time}.zip](https://github.com/opengapps/${arch}/releases/download/${time}/open_gapps-${arch}-${ver}-${variant}-${time}.zip)`)
+						send(embed);
+					});
 				}
 				if(ver === '8.0'){
 					if(variant === undefined){
