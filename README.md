@@ -1,5 +1,5 @@
 # Android Discord Bot
-Bot Discord to know a particular Android or Magisk version or if a rom or twrp is official for a certain device and have OpenGapps easily
+Bot Discord to know a particular Android or Magisk version or if a rom or twrp is official for a certain device and have OpenGapps or specifications on a device easily
 
 Language: [English](README.md) | [Français](README.fr.md)
 
