@@ -11,7 +11,6 @@
     "express": "latest",
     "prettysize": "latest",
     "request": "latest",
-    "xml-js": "latest",
-    "node-html-parser": "latest"
+    "xml-js": "latest"
   }
 }
