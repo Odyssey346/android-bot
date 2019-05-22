@@ -13,7 +13,6 @@
 			"gapps":"Avoir une Version particulière d'OpenGapps",
             "roms":"Voir les commandes pour les Customs ROMs",
             "inv":"Avoir l'invite du bot",
-			"specs":"Avoir les Specifications d'un appareil",
             "help":"Aide"
          },
          "roms":{
@@ -43,11 +42,6 @@
 		 "varerr":"Veuillez entrer une Variant correcte pour cette Version:",
 		 "archerr":"Veuillez entrer une Architecture correcte:"
 	  },
-	  "search":{
-	     "nosrch": "Veuillez entrer un nom d'appareil !",
-		 "err": "Votre appareil existe-t-il ?",
-		 "title": "Liste des appareils recherchés"
-	  },
       "download":"Télécharger",
       "date":"Date",
       "size":"Taille",
@@ -76,7 +70,6 @@
 			"gapps":"Have a particular version of OpenGapps",
             "roms":"See commands for Customs ROMs",
             "inv":"Have the bot invite",
-			"specs":"Have the Specifications of a device",
             "help":"Help"
          },
          "roms":{
@@ -105,11 +98,6 @@
 		 "novar":"Please enter a Variant:",
 		 "varerr":"Please enter a correct Variant for this Version:",
 		 "archerr":"Please enter a correct Architecture:"
-	  },
-	  "search":{
-	     "nosrch": "Please enter a device name!",
-		 "err": "Does your device exist?",
-		 "title": "List of searched devices"
 	  },
       "download":"Download",
       "date":"Date",
