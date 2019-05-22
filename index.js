@@ -60,7 +60,6 @@ client.on("message", message => {
 			"`"+prefix+"magisk <version>`: "+lang.help.default.magisk.text+" \n - "+lang.help.default.magisk.ver+": `Stable`, `Beta`, `Canary`\n"+
 			"`"+prefix+"twrp <codename>`: "+lang.help.default.twrp+"\n"+
 			"`"+prefix+"gapps <arch> <ver> <variant>`: "+lang.help.default.gapps+"\n"+
-			"`"+prefix+"specs <device_name>`: "+lang.help.default.specs+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"invite`: "+lang.help.default.inv)
 			.setFooter(`${lang.help.default.help} | ${prefix}help (here)`);
@@ -357,115 +356,6 @@ client.on("message", message => {
 					send(lang.gapps.nover + ' `9.0`, `8.1`, `8.0`, `7.1`, `7.0`, `6.0`, `5.1`, `5.0`, `4.4`')
 				}
 			}
-		}
-	//DeviceSpecification
-	} else if(content.startsWith(`${prefix}specs`)){
-		const search = content.substr(parseInt(prefix.length + 6));
-		if(content.split(' ')[1] !== undefined){
-			var language;
-			if(configlang !== 'fr' && configlang !== 'en'){
-				language = 'en'
-			} else {
-				language = configlang
-			}
-			request.get({
-				url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${search}`
-			}, function(err, response, fbody){
-				if(fbody === "0"){
-					send(lang.search.err)
-				} else {
-					var HTMLParser = require('node-html-parser');
-					var embed = new Discord.RichEmbed()
-						.setColor(0xffffff)
-						.setTitle(lang.search.title)
-						.setDescription(`**:one: : ${HTMLParser.parse(JSON.parse(fbody)[0].html).childNodes[2].childNodes[0].rawText}**\n**:two: : ${HTMLParser.parse(JSON.parse(fbody)[1].html).childNodes[2].childNodes[0].rawText}**\n**:three: : ${HTMLParser.parse(JSON.parse(fbody)[2].html).childNodes[2].childNodes[0].rawText}**\n**:four: : ${HTMLParser.parse(JSON.parse(fbody)[3].html).childNodes[2].childNodes[0].rawText}**\n**:five: : ${HTMLParser.parse(JSON.parse(fbody)[4].html).childNodes[2].childNodes[0].rawText}**\n`)
-						.setFooter('Source: DeviceSpecifications')
-					message.channel.send(embed).then(msg => {
-						var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
-						msg.react(reaction_numbers[1]).then(() => msg.react(reaction_numbers[2])).then(() => msg.react(reaction_numbers[3])).then(() => msg.react(reaction_numbers[4])).then(() => msg.react(reaction_numbers[5]));
-						const filter = (reaction, user) => {
-							return [reaction_numbers[1], reaction_numbers[2], reaction_numbers[3], reaction_numbers[4], reaction_numbers[5]].includes(reaction.emoji.name) && user.id === message.author.id;
-						};
-						async function number(){
-							return new Promise(async function(resolve, reject){
-								msg.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
-									.then(collected => {
-										const reaction = collected.first();
-										if(reaction.emoji.name === reaction_numbers[1]){
-											resolve(0)
-										} else if(reaction.emoji.name === reaction_numbers[2]){
-											resolve(1)
-										} else if(reaction.emoji.name === reaction_numbers[3]){
-											resolve(2)
-										} else if(reaction.emoji.name === reaction_numbers[4]){
-											resolve(3)
-										} else {
-											resolve(4)
-										}
-									})
-									.catch(collected => {});
-							});
-						}
-						number().then(n => {
-							request.get({
-								url: JSON.parse(fbody)[n].url
-							}, function(err, response, body){
-								var root = HTMLParser.parse(body);
-								var name = HTMLParser.parse(JSON.parse(fbody)[n].html).childNodes[2].childNodes[0].rawText;
-								var img = HTMLParser.parse(JSON.parse(fbody)[n].html).childNodes[0].rawAttrs.split('(')[1].split(')')[0];
-								function find(num, nodes){
-									if(nodes){
-										try {
-											return root.querySelector('#model-brief-specifications').childNodes[num].childNodes[0].rawText
-										} catch(err){
-											try {
-												return root.querySelector('#model-brief-specifications').childNodes[parseInt(num-1)].childNodes[0].rawText
-											} catch(err){
-												return '';
-											}
-										}
-									} else {
-										var value;
-										try {
-											value = root.querySelector('#model-brief-specifications').childNodes[num].rawText
-										} catch(err) {
-											try {
-												value = root.querySelector('#model-brief-specifications').childNodes[parseInt(num-1)].rawText
-											} catch(err){
-												value = ''
-											}
-										}
-										if(value !== ''){
-											return value + '\n'
-										} else {
-											try {
-												value = root.querySelector('#model-brief-specifications').childNodes[parseInt(num-1)].rawText
-											} catch(err) {
-												value = ''
-											}
-											if(value !== ''){
-												return value + '\n'
-											} else {
-												return '' + '\n'
-											}
-										}
-									}
-								}
-								const embed = new Discord.RichEmbed()
-									.setColor(0xffffff)
-									.setTitle(name)
-									.setURL(JSON.parse(fbody)[n].url)
-									.setDescription(`${find(1, true)} ${find(2)}${find(4, true)} ${find(5)}${find(7, true)} ${find(8)}${find(10, true)} ${find(11)}${find(13, true)} ${find(14)}${find(16, true)} ${find(17)}${find(19, true)} ${find(20)}${find(22, true)} ${find(23)}${find(25, true)} ${find(26)}${find(28, true)} ${find(29)}${find(31, true)} ${find(32)}${find(34, true)} ${find(35)}${find(37, true)} ${find(38)}${find(40, true)} ${find(41)}${find(43, true)} ${find(44)}${find(46, true)} ${find(47)}${find(49, true)} ${find(50)}${find(52, true)} ${find(53)}`)
-									.setThumbnail(img)
-									.setFooter('Source: DeviceSpecifications')
-								msg.edit(embed);
-							});
-						})
-					});
-				}
-			});
-		} else {
-			send(lang.search.nosrch)
 		}
 	}
 });
