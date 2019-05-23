@@ -294,14 +294,22 @@ client.on("message", message => {
 				const variant = content.split(' ')[3];
 				function sendembed(){
 					request.get({
-						url: `https://api.github.com/repos/opengapps/${arch}/tags`, headers: {'User-Agent': 'android-bot'}
-					}, function(err, response, body){
-						var time = JSON.parse(body)[0].name;
-						const embed = new Discord.RichEmbed()
-							.setColor(0x009688)
-							.setTitle('OpenGapps')
-							.setDescription(`**${lang.gapps.arch}**:` + ' **`' + arch + '`**\n' + `**${lang.gapps.ver}**:` + ' **`' + ver + '`**\n' + `**${lang.gapps.variant}**:` + ' **`' + variant + '`**\n' + `**${lang.download}**: [open_gapps-${arch}-${ver}-${variant}-${time}.zip](https://github.com/opengapps/${arch}/releases/download/${time}/open_gapps-${arch}-${ver}-${variant}-${time}.zip)`)
-						send(embed);
+						url: `https://api.github.com/repos/opengapps/${arch}/tags`, headers: {'User-Agent': 'android bot'}
+					}, function(err, response, nbody){
+						request.get({
+							url: `https://api.github.com/repos/opengapps/${arch}/releases/latest`, headers: {'User-Agent': 'android bot'}
+						}, function(err, response, body){
+							var time = JSON.parse(nbody)[0].name;
+							var search = JSON.parse(body).assets.find(s => s.name.indexOf(`open_gapps-${arch}-${ver}-${variant}-${time}.zip`) !== -1);
+							var dl = search.browser_download_url;
+							var size = pretty(search.size);
+							var name = search.name;
+							const embed = new Discord.RichEmbed()
+								.setColor(0x009688)
+								.setTitle('OpenGapps')
+								.setDescription(`**${lang.date}**:` + ' **`' + `${time.substring(0, 4)}-${time.substring(4, 6)}-${time.substring(6, 8)}` + '`**\n' + `**${lang.size}**:` + ' **`' + size + '`**\n' + `**${lang.download}**: [${name}](${dl})`)
+							send(embed);
+						});
 					});
 				}
 				if(ver === '8.0'){
