@@ -55,4 +55,4 @@ Ouvrez le fichier config.json:
  
  Q2: Pourquoi quand je démarre le bot j'ai `UnhandledPromiseRejectionWarning: Error: Incorrect login details were provided.` ?
  
- R2: Avez-vous bien mit votre token dans le index.js ?
+ R2: Avez-vous bien mit votre token dans le config.json ?
