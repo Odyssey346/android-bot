@@ -33,9 +33,6 @@
          "error":"Veuillez entrer une version d'android ou une version d'api correct"
       },
 	  "gapps":{
-		 "arch":"Architecture",
-		 "ver":"Version",
-		 "variant":"Variante",
 	     "noarch":"Veuillez entrer une Architecture:",
 		 "nover":"Veuillez entrer une Version correcte pour cette Architecture:",
 		 "novar":"Veuillez entrer une Variante:",
@@ -90,9 +87,6 @@
          "error":"Please enter a correct android or api version"
       },
 	  "gapps":{
-		 "arch":"Architecture",
-		 "ver":"Version",
-		 "variant":"Variant",
 	     "noarch":"Please enter an Architecture:",
 		 "nover":"Please enter a correct version for this Architecture:",
 		 "novar":"Please enter a Variant:",
