@@ -63,7 +63,8 @@
         "official":"Officiel",
         "beta":"Beta",
         "experimental":"Experimental",
-		"dm":"Vous ne pouvez pas effectuer cette commande en message privé !"
+		"dm":"Vous ne pouvez pas effectuer cette commande en message privé !",
+		"perm":"Vous n'avez pas la permission d'effectuer cette commande"
     },
     "en":{
         "connect":"Connect on",
@@ -129,6 +130,7 @@
         "official":"Official",
         "beta":"Beta",
         "experimental":"Experimental",
-		"dm":"You cannot make this command on direct message!"
+		"dm":"You cannot make this command on direct message!",
+		"perm":"You don't have permission to make this command"
     }
 }
