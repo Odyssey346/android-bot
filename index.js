@@ -405,20 +405,24 @@ client.on("message", message => {
 	//Language
 	} else if(content.startsWith(`${prefix}lang`)){
 		if(message.channel.type !== "dm"){
-			const lg = content.split(' ')[1]
-			if(lg !== undefined){
-				if(lg !== "en" && lg !== "fr"){
-					send(lang.lang.err + ' `fr`, `en`')
+			if(message.member.hasPermission(["MANAGE_GUILD"], false, true, true)){
+				const lg = content.split(' ')[1]
+				if(lg !== undefined){
+					if(lg !== "en" && lg !== "fr"){
+						send(lang.lang.err + ' `fr`, `en`')
+					} else {
+						var gld = require("./guild.json");
+						gld[message.guild.id]['lang'] = lg
+						fs.writeFile("./guild.json", JSON.stringify(gld, null, 4), err => {
+							if(err) throw err;
+						});
+						send(langfile[lg].lang.suc + " `" + lg + "`");
+					}
 				} else {
-					var gld = require("./guild.json");
-					gld[message.guild.id]['lang'] = lg
-					fs.writeFile("./guild.json", JSON.stringify(gld, null, 4), err => {
-						if(err) throw err;
-					});
-					send(langfile[lg].lang.suc + " `" + lg + "`");
+					send(lang.lang.nol + ' `fr`, `en`')
 				}
 			} else {
-				send(lang.lang.nol + ' `fr`, `en`')
+				send(lang.perm)
 			}
 		} else {
 			send(lang.dm)
@@ -426,16 +430,20 @@ client.on("message", message => {
 	//Prefix
 	} else if(content.startsWith(`${prefix}prefix`)){
 		if(message.channel.type !== "dm"){
-			const prf = content.split(' ')[1]
-			if(prf !== undefined){
-					var gld = require("./guild.json");
-					gld[message.guild.id]['prefix'] = prf
-					fs.writeFile("./guild.json", JSON.stringify(gld, null, 4), err => {
-						if(err) throw err;
-					});
-					send(lang.prefix.suc + " `" + prf + "`");
+			if(message.member.hasPermission(["MANAGE_GUILD"], false, true, true)){
+				const prf = content.split(' ')[1]
+				if(prf !== undefined){
+						var gld = require("./guild.json");
+						gld[message.guild.id]['prefix'] = prf
+						fs.writeFile("./guild.json", JSON.stringify(gld, null, 4), err => {
+							if(err) throw err;
+						});
+						send(lang.prefix.suc + " `" + prf + "`");
+				} else {
+					send(lang.prefix.nop)
+				}
 			} else {
-				send(lang.prefix.nop)
+				send(lang.perm)
 			}
 		} else {
 			send(lang.dm)
