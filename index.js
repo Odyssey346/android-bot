@@ -3,17 +3,18 @@ const request = require("request");
 const pretty = require('prettysize');
 const convert = require('xml-js');
 const android = require('android-versions');
+const fs = require('fs');
 const config = require('./config.json');
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 //Language Verifier
 const configlang = config.lang.toLowerCase();
-const langverif = require('./lang.json');
-if(langverif[configlang] === undefined){
+const langfile = require('./lang.json');
+if(langfile[configlang] === undefined){
 	console.log("Please enter a Language Exist !");
 	process.exit(0);
 }
 //end
-const lang = langverif[configlang];
+var lang = langfile[configlang];
 const client = new Discord.Client();
 const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)\n", "Dirty Unicorns (dirty)\n", "XenonHD (xenon)\n"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
 function timeConverter(timestamp){
@@ -47,9 +48,26 @@ client.on("ready", () => {
 client.on("message", message => {
 	const content = message.content.toLowerCase();
 	const channel = message.channel;
-	const guild = message.guild;
 	const member = message.member;
 	const author = message.author;
+	const guildfile = require('./guild.json');
+	if(message.channel.type !== "dm"){
+		if(guildfile[message.guild.id] !== undefined){
+			lang = langfile[guildfile[message.guild.id].lang];
+			prefix = guildfile[message.guild.id].prefix
+		} else {
+			lang = langfile['en'];
+			guildfile[message.guild.id] = {
+				lang: 'en',
+				prefix: config.prefix
+			}
+			fs.writeFile('./guild.json', JSON.stringify(guildfile, null, 4), err => {
+				if(err) throw err;
+			})
+		}
+	} else {
+		lang = langfile['en'];
+	}
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
 	if(content.startsWith(`${prefix}help`)){
@@ -61,6 +79,8 @@ client.on("message", message => {
 			"`"+prefix+"twrp <codename>`: "+lang.help.default.twrp+"\n"+
 			"`"+prefix+"gapps <arch> <ver> <variant>`: "+lang.help.default.gapps+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
+			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
+			"`"+prefix+"prefix`: "+lang.help.default.prefix+"\n"+
 			"`"+prefix+"invite`: "+lang.help.default.inv)
 			.setFooter(`${lang.help.default.help} | ${prefix}help (here)`);
 		const f = content.split(' ')[1];
@@ -90,9 +110,26 @@ client.on("message", message => {
 client.on("message", message => {
 	const content = message.content.toLowerCase();
 	const channel = message.channel;
-	const guild = message.guild;
 	const member = message.member;
 	const author = message.author;
+	const guildfile = require('./guild.json');
+	if(message.channel.type !== "dm"){
+		if(guildfile[message.guild.id] !== undefined){
+			lang = langfile[guildfile[message.guild.id].lang];
+			prefix = guildfile[message.guild.id].prefix
+		} else {
+			lang = langfile['en'];
+			guildfile[message.guild.id] = {
+				lang: 'en',
+				prefix: config.prefix
+			}
+			fs.writeFile('./guild.json', JSON.stringify(guildfile, null, 4), err => {
+				if(err) throw err;
+			})
+		}
+	} else {
+		lang = langfile['en'];
+	}
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
 	//Android
@@ -365,6 +402,44 @@ client.on("message", message => {
 				}
 			}
 		}
+	//Language
+	} else if(content.startsWith(`${prefix}lang`)){
+		if(message.channel.type !== "dm"){
+			const lg = content.split(' ')[1]
+			if(lg !== undefined){
+				if(lg !== "en" && lg !== "fr"){
+					send(lang.lang.err + ' `fr`, `en`')
+				} else {
+					var gld = require("./guild.json");
+					gld[message.guild.id]['lang'] = lg
+					fs.writeFile("./guild.json", JSON.stringify(gld, null, 4), err => {
+						if(err) throw err;
+					});
+					send(langfile[lg].lang.suc + " `" + lg + "`");
+				}
+			} else {
+				send(lang.lang.nol + ' `fr`, `en`')
+			}
+		} else {
+			send(lang.dm)
+		}
+	//Prefix
+	} else if(content.startsWith(`${prefix}prefix`)){
+		if(message.channel.type !== "dm"){
+			const prf = content.split(' ')[1]
+			if(prf !== undefined){
+					var gld = require("./guild.json");
+					gld[message.guild.id]['prefix'] = prf
+					fs.writeFile("./guild.json", JSON.stringify(gld, null, 4), err => {
+						if(err) throw err;
+					});
+					send(lang.prefix.suc + " `" + prf + "`");
+			} else {
+				send(lang.prefix.nop)
+			}
+		} else {
+			send(lang.dm)
+		}
 	}
 });
 
@@ -372,9 +447,26 @@ client.on("message", message => {
 client.on("message", message => {
 	const content = message.content.toLowerCase();
 	const channel = message.channel;
-	const guild = message.guild;
 	const member = message.member;
 	const author = message.author;
+	const guildfile = require('./guild.json');
+	if(message.channel.type !== "dm"){
+		if(guildfile[message.guild.id] !== undefined){
+			lang = langfile[guildfile[message.guild.id].lang];
+			prefix = guildfile[message.guild.id].prefix
+		} else {
+			lang = langfile['en'];
+			guildfile[message.guild.id] = {
+				lang: 'en',
+				prefix: config.prefix
+			}
+			fs.writeFile('./guild.json', JSON.stringify(guildfile, null, 4), err => {
+				if(err) throw err;
+			})
+		}
+	} else {
+		lang = langfile['en'];
+	}
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
 	async function rom(url, urlup, body, btlg, cosp, crdroid, xml, dirty, error, end, cdn, cdnup, bkpurl, bkpurlup) {
