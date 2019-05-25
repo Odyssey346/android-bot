@@ -29,7 +29,7 @@ prefix: .
 * Dirty Unicorns
 * XenonHD
 
-### Comment l'installer:
+### How to Install:
 Download and Install NodeJS : https://nodejs.org/en/
 
 Download the repo : https://github.com/Pharuxtan/android-bot/archive/master.zip
@@ -42,7 +42,7 @@ Open the file config.json:
 * put your token
 * put the language (fr, en)
 
-### Comment l'utiliser:
+### How to use:
  Tap on the Command Prompt `node index.js`
  
  add the bot to your server and then do .help
