@@ -477,7 +477,7 @@ client.on("message", message => {
 	}
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
-	async function rom(url, urlup, body, btlg, cosp, crdroid, xml, dirty, error, end, cdn, cdnup, bkpurl, bkpurlup) {
+	async function rom(url, urlup, body, btlg, cosp, crdroid, xml, dirty, error, end, cdn, cdnup, bkpurl, bkpurlup, posp) {
 		return new Promise(function(resolve, reject){
 			if(body){
 				if(error){
@@ -651,7 +651,14 @@ client.on("message", message => {
 					try{
 						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
 							if(end){
-								resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+								if(posp){
+									var json = {};
+									json["bkp"] = false
+									json["json"] = JSON.parse(bodyurl).response.slice(-1)[0]
+									resolve(json)
+								} else {
+									resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+								}
 							} else {
 								resolve(JSON.parse(bodyurl).response[0])
 							}
@@ -661,7 +668,14 @@ client.on("message", message => {
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
 									if(end){
-										resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+										if(posp){
+											var json = {};
+											json["bkp"] = false
+											json["json"] = JSON.parse(bodyurl).response.slice(-1)[0]
+											resolve(json)
+										} else {
+											resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+										}
 									} else {
 										resolve(JSON.parse(bodyurl).response[0])
 									}
@@ -676,7 +690,14 @@ client.on("message", message => {
 						}, function(err, responses, bodyurl){
 							if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
 								if(end){
-									resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+									if(posp){
+										var json = {};
+										json["bkp"] = true
+										json["json"] = JSON.parse(bodyurl).response.slice(-1)[0]
+										resolve(json)
+									} else {
+										resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+									}
 								} else {
 									resolve(JSON.parse(bodyurl).response[0])
 								}
@@ -685,10 +706,13 @@ client.on("message", message => {
 									url: bkpurlup
 								}, function(err, responses, bodyurl) {
 									if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-										if(end){
-											resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+										if(posp){
+											var json = {};
+											json["bkp"] = true
+											json["json"] = JSON.parse(bodyurl).response.slice(-1)[0]
+											resolve(json)
 										} else {
-											resolve(JSON.parse(bodyurl).response[0])
+											resolve(JSON.parse(bodyurl).response.slice(-1)[0])
 										}
 									} else {
 										resolve(false);
@@ -998,12 +1022,24 @@ client.on("message", message => {
 			const start = "https://api.potatoproject.co/checkUpdate?device="
 			const bkp = "http://api.strangebits.co.in/checkUpdate?device="
 			//Weekly
-			rom(`${start}${codename}&type=weekly`, `${start}${codenameup}&type=weekly`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=weekly`, `${bkp}${codenameup}&type=weekly`).then(week => {
+			rom(`${start}${codename}&type=weekly`, `${start}${codenameup}&type=weekly`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=weekly`, `${bkp}${codenameup}&type=weekly`, true).then(week => {
 			//Mashed
-			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`).then(mash => {
-				function check(response){
-					if(response){
-						return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`, true).then(mash => {
+				function check(resp){
+					if(resp.json !== undefined){
+						if(resp.bkp){
+							var response = resp.json;
+							var dl;
+							if(response.url.indexOf('mirror.potatoproject.co') !== -1){
+								dl = response.url.replace("mirror.potatoproject.co", "mirror.sidsun.com")
+							} else {
+								dl = response.url
+							}
+							return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+						} else {
+							var response = resp.json;
+							return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+						}
 					} else {
 						return lang.norom
 					}
@@ -1678,7 +1714,8 @@ client.on("message", message => {
 			//XenonHD (Official)
 			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_official.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_official.xml`, `XenonHD (${lang.official}) (xenon)`).then(xenono => {
 			//XenonHD (Experimental)
-			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_experimental.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`).then(xenone => {
+			romxml(`
+			`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`).then(xenone => {
 				
 				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone
 				
