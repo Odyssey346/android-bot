@@ -712,7 +712,7 @@ client.on("message", message => {
 											json["json"] = JSON.parse(bodyurl).response.slice(-1)[0]
 											resolve(json)
 										} else {
-											resolve(JSON.parse(bodyurl).response.slice(-1)[0])
+											resolve(JSON.parse(bodyurl).response[0])
 										}
 									} else {
 										resolve(false);
@@ -1714,8 +1714,7 @@ client.on("message", message => {
 			//XenonHD (Official)
 			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_official.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_official.xml`, `XenonHD (${lang.official}) (xenon)`).then(xenono => {
 			//XenonHD (Experimental)
-			romxml(`
-			`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`).then(xenone => {
+			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_experimental.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`).then(xenone => {
 				
 				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone
 				
