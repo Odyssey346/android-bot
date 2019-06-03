@@ -809,7 +809,7 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}rr`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase
+			const codenameup = content.split(' ')[1].toUpperCase();
 			const start = "https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/"
 			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
 				if(response){
