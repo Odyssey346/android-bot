@@ -726,7 +726,7 @@ client.on("message", message => {
 		});
 	}
 	//HavocOS
-	if(content.startsWith(`${prefix}havoc`)){
+	if(content.startsWith(`${prefix}havoc`) || content.startsWith(`${prefix}havocos`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -746,7 +746,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//PixysOS
-	} else if(content.startsWith(`${prefix}pixy`)){
+	} else if(content.startsWith(`${prefix}pixy`) || content.startsWith(`${prefix}pixys`) || content.startsWith(`${prefix}pixysos`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -766,7 +766,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//PearlOS
-	} else if(content.startsWith(`${prefix}pearl`)){
+	} else if(content.startsWith(`${prefix}pearl`) || content.startsWith(`${prefix}pearlos`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -786,7 +786,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//DotOS
-	} else if(content.startsWith(`${prefix}dotos`)){
+	} else if(content.startsWith(`${prefix}dotos` || content.startsWith(`${prefix}dot`))){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -806,7 +806,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//ResurrectionRemix
-	} else if(content.startsWith(`${prefix}rr`)){
+	} else if(content.startsWith(`${prefix}rr`) || content.startsWith(`${prefix}resurrection`) || content.startsWith(`${prefix}resurrectionremix`) || content.startsWith(`${prefix}rros`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -826,7 +826,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//SuperiorOS
-	} else if(content.startsWith(`${prefix}superior`)){
+	} else if(content.startsWith(`${prefix}superior`) || content.startsWith(`${prefix}superioros`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase
@@ -846,7 +846,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//ViperOS
-	} else if(content.startsWith(`${prefix}viper`)){
+	} else if(content.startsWith(`${prefix}viper`) || content.startsWith(`${prefix}viperos`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -900,7 +900,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//Evolution-X
-	} else if(content.startsWith(`${prefix}evo`) || content.startsWith(`${prefix}evox`)){
+	} else if(content.startsWith(`${prefix}evo`) || content.startsWith(`${prefix}evox`) || content.startsWith(`${prefix}evolutionx`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			if(codename !== "enchilada"){
@@ -924,7 +924,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//AOSP Extended AEX
-	} else if(content.startsWith(`${prefix}aex`)){
+	} else if(content.startsWith(`${prefix}aex`) || content.startsWith(`${prefix}aospextended`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -982,7 +982,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//Pixel Experience
-	} else if(content.startsWith(`${prefix}pe`)){
+	} else if(content.startsWith(`${prefix}pe`) || content.startsWith(`${prefix}pixelexperience`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1015,7 +1015,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//Potato Open Source Project POSP
-	} else if(content.startsWith(`${prefix}posp`) || content.startsWith(`${prefix}potato`)){
+	} else if(content.startsWith(`${prefix}posp`) || content.startsWith(`${prefix}potato`) || content.startsWith(`${prefix}potatorom`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1055,7 +1055,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//RevengeOS
-	} else if(content.startsWith(`${prefix}revenge`)){
+	} else if(content.startsWith(`${prefix}revenge`) || content.startsWith(`${prefix}revengeos`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1156,7 +1156,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//AOSiP
-	} else if(content.startsWith(`${prefix}aosip`)){
+	} else if(content.startsWith(`${prefix}aosip`) || content.startsWith(`${prefix}illusion`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1183,7 +1183,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//ArrowOS
-	} else if(content.startsWith(`${prefix}arrow`)){
+	} else if(content.startsWith(`${prefix}arrow`) || content.startsWith(`${prefix}arrowos`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1203,7 +1203,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//Liquid Remix
-	} else if(content.startsWith(`${prefix}liquid`)){
+	} else if(content.startsWith(`${prefix}liquid`) || content.startsWith(`${prefix}liquidremix`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1240,7 +1240,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//Dirty Unicorns
-	} else if(content.startsWith(`${prefix}dirty`)){
+	} else if(content.startsWith(`${prefix}dirty`) || content.startsWith(`${prefix}dirtyunicorns`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1270,7 +1270,7 @@ client.on("message", message => {
 			send(lang.cdnerr)
 		}
 	//XenonHD
-	} else if(content.startsWith(`${prefix}xenon`)){
+	} else if(content.startsWith(`${prefix}xenon`) || content.startsWith(`${prefix}xenonhd`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
@@ -1719,7 +1719,8 @@ client.on("message", message => {
 				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone
 				
 				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && pospw === false && pospm === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false){
-					send(lang.romserr+" `"+devicename(codename)+"`")
+					console.log(message.guild.id);
+          send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
 					function tof(f){
