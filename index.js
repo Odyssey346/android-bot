@@ -227,7 +227,7 @@ client.on("message", message => {
 						var log = logm + "\n" + "Magisk Manager" + loga;
 						const embed = new Discord.RichEmbed()
 							.setColor(0x30756a)
-							.setTitle("<:magisk:573148683290542100> Magisk Stable")
+							.setTitle("Magisk Stable")
 							.addField("Magisk Manager", "**"+lang.version+"**: "+magisks.app.version+" `"+magisks.app.versionCode+"`"+`\n**${lang.download}**: [Magisk Manager ${magisks.app.version}](${magisks.app.link})`, true)
 							.addField("Magisk Installer", "**"+lang.version+"**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})`, true)
 							.addField("ChangeLog", "```"+log+"```", false)
@@ -247,7 +247,7 @@ client.on("message", message => {
 						var log = logm + "\n" + "Magisk Manager" + loga;
 						const embed = new Discord.RichEmbed()
 							.setColor(0x30756a)
-							.setTitle("<:magisk:573148683290542100> Magisk Beta")
+							.setTitle("Magisk Beta")
 							.addField("Magisk Manager", "**"+lang.version+"**: "+magiskb.app.version+" `"+magiskb.app.versionCode+"`"+`\n**${lang.download}**: [Magisk Manager ${magiskb.app.version}](${magiskb.app.link})`, true)
 							.addField("Magisk Installer", "**"+lang.version+"**: "+magiskb.magisk.version+" `"+magiskb.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magiskb.magisk.version}](${magiskb.magisk.link})\n - [Magisk Uninstaller](${magiskb.uninstaller.link})`, true)
 							.addField("ChangeLog", "```"+log+"```", false)
@@ -263,7 +263,7 @@ client.on("message", message => {
 				}, function(err, response, log){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x30756a)
-						.setTitle("<:magisk:573148683290542100> Magisk Canary")
+						.setTitle("Magisk Canary")
 						.addField("Magisk Manager", "**"+lang.version+"**: "+magiskc.app.version+" `"+magiskc.app.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Manager ${magiskc.app.version}](${magiskc.app.link})\n - [SNET ${magiskc.snet.versionCode}](${magiskc.snet.link})`, true)
 						.addField("Magisk Installer", "**"+lang.version+"**: "+magiskc.magisk.version+" `"+magiskc.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magiskc.magisk.version}](${magiskc.magisk.link})\n - [Magisk Uninstaller](${magiskc.uninstaller.link})`, true)
 						.addField("ChangeLog", "```"+log+"```", false)
