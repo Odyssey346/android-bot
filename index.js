@@ -280,7 +280,7 @@ client.on("message", message => {
 			magisk(`https://raw.githubusercontent.com/topjohnwu/magisk_files/master/canary_builds/canary.json`).then(magiskc => {
 				const embed = new Discord.RichEmbed()
 					.setColor(0x30756a)
-					.setTitle("<:magisk:573148683290542100> Magisk")
+					.setTitle("Magisk")
 					.addField("Stable", "** **", false)
 					.addField("Magisk Manager", "**"+lang.version+"**: "+magisks.app.version+" `"+magisks.app.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Manager ${magisks.app.version}](${magisks.app.link})\n - [ChangeLog](${magisks.app.note})`, true)
 					.addField("Magisk Installer", "**"+lang.version+"**: "+magisks.magisk.version+" `"+magisks.magisk.versionCode+"`"+`\n**${lang.download}**: \n - [Magisk Installer ${magisks.magisk.version}](${magisks.magisk.link})\n - [Magisk Uninstaller](${magisks.uninstaller.link})\n - [ChangeLog](${magisks.magisk.note})`, true)
