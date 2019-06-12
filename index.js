@@ -92,7 +92,7 @@ client.on("message", message => {
 				.setTitle(lang.help.roms.title)
 				.setDescription(lang.help.roms.desc)
 				.addField(lang.help.roms.available, roms, false)
-				.addField(lang.help.roms.use.title, "`"+prefix+"<rom> <nom_de_code>`\n"+lang.help.roms.use.example+": `"+prefix+"havoc whyred`\n"+lang.help.roms.use.cmdroms+" `"+prefix+"roms`.\n\n"+lang.help.roms.use.note, false)
+				.addField(lang.help.roms.use.title, "`"+prefix+"<rom> <codename>`\n"+lang.help.roms.use.example+": `"+prefix+"havoc whyred`\n"+lang.help.roms.use.cmdroms+" `"+prefix+"roms`.\n"+lang.help.roms.use.cdnroms+"`"+prefix+"roms <codename>`\n"+lang.help.roms.use.example+": `"+prefix+"roms daisy`\n\n"+lang.help.roms.use.note, false)
 				.setFooter(`${lang.help.roms.help} | ${prefix}help roms (here)`);
 			const s = content.split(' ')[2];
 			if(s === "here"){
@@ -1718,6 +1718,27 @@ client.on("message", message => {
 					});
 				});
 			}
+			async function romaicp(url, urlup, name) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url
+					}, function(err, responses, bodyurl){
+						if(JSON.parse(bodyurl).error === undefined){
+							resolve(`${name}\n`)
+						} else {
+							request({
+								url: urlup
+							}, function(err, responses, bodyurl) {
+								if(JSON.parse(bodyurl).error === undefined){
+									resolve(`${name}\n`)
+								} else {
+									resolve(false);
+								}
+							});
+						}
+					});
+				});
+			}
 			//HavocOS
 			roms(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)").then(havoc => {
 			//PixysOS
@@ -1783,7 +1804,7 @@ client.on("message", message => {
 			//Kraken Open Tentacles Project KOTP
 			roms(`https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codenameup}.json`, "Kraken Open Tentacles Project (kotp/kraken)").then(kotp => {
 			//Android Ice Cold Project AICP
-			rombody(`http://ota.aicp-rom.com/update.php?device=${codename}`, `http://ota.aicp-rom.com/update.php?device=${codenameup}`, "Android Ice Cold Project (aicp)").then(aicp => {
+			romaicp(`http://ota.aicp-rom.com/update.php?device=${codename}`, `http://ota.aicp-rom.com/update.php?device=${codenameup}`, "Android Ice Cold Project (aicp)").then(aicp => {
 				
 				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone, kotp, aicp
 				
