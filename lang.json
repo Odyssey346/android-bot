@@ -25,7 +25,7 @@
                     "title":"Utilisation",
                     "example":"Exemple",
                     "cmdroms":"Vous pouvez également afficher les ROMs disponibles avec",
-					"cdnroms":"Vous pouvez également chercher un modèle précis sur toute les roms disponible: ",
+					"cdnroms":"Vous pouvez également chercher un modèle précis sur toute les roms disponibles: ",
                     "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
                 },
                 "help":"Aide Roms"
