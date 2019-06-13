@@ -16,7 +16,7 @@ if(langfile[configlang] === undefined){
 //end
 var lang = langfile[configlang];
 const client = new Discord.Client();
-const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)\n", "Dirty Unicorns (dirty)\n", "XenonHD (xenon)\n", "Kraken Open Tentacles Project (kotp/kraken)\n", "Android Ice Cold Project (aicp)\n"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
+const roms = ["DotOS (dotos)\n", "Evolution-X (evo/evox)\n", "HavocOS (havoc)\n", "PearlOS (pearl)\n", "PixysOS (pixy)\n", "Potato Open Sauce Project (posp/potato)\n", "ViperOS (viper)\n", "LineageOS (los/lineage)\n", "Pixel Experience (pe)\n", "BootleggersROM (btlg/bootleggers)\n", "AOSP Extended (aex)\n", "crDroid (crdroid)\n", "Syberia (syberia)\n", "Clean Open Source Project (cosp/clean)\n", "Resurrection Remix (rr)\n", "SuperiorOS (superior)\n", "RevengeOS (revenge)\n", "Android Open Source illusion Project (aosip)\n", "ArrowOS (arrow)\n", "Liquid Remix (liquid)\n", "Dirty Unicorns (dirty)\n", "XenonHD (xenon)\n", "Kraken Open Tentacles Project (kotp/kraken)\n", "Android Ice Cold Project (aicp)\n", "NitrogenOS (nitrogen)\n"].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join('');
 function timeConverter(timestamp){
   var a = new Date(timestamp * 1000);
   var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -1380,6 +1380,26 @@ client.on("message", message => {
 		} else {
 			send(lang.cdnerr)
 		}
+	//NitrogenOS
+	} else if(content.startsWith(`${prefix}nitrogen`) || content.startsWith(`${prefix}nitrogenos`)){
+		const codename = content.split(' ')[1];
+		if(codename !== undefined){
+			const codenameup = content.split(' ')[1].toUpperCase
+			const start = "https://raw.githubusercontent.com/nitrogen-project/OTA/p/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true).then(response => {
+				if(response){
+					const embed = new Discord.RichEmbed()
+						.setColor(0x009999)
+						.setTitle(`NitrogenOS | ${devicename(codename)}`)
+						.setDescription("**"+lang.date+"**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+pretty(response.filesize)+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+					send({embed});
+				} else {
+					send(lang.romerr+" `"+devicename(codename)+"`")
+				}
+			});
+		} else {
+			send(lang.cdnerr)
+		}
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
 		const codename = content.split(' ')[1];
@@ -1805,11 +1825,13 @@ client.on("message", message => {
 			roms(`https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codenameup}.json`, "Kraken Open Tentacles Project (kotp/kraken)").then(kotp => {
 			//Android Ice Cold Project AICP
 			romaicp(`http://ota.aicp-rom.com/update.php?device=${codename}`, `http://ota.aicp-rom.com/update.php?device=${codenameup}`, "Android Ice Cold Project (aicp)").then(aicp => {
+			//NitrogenOS
+			roms(`https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codename}.json`, `https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codenameup}.json`, "NitrogenOS (nitrogen)").then(nitrogen => {
 				
-				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone, kotp, aicp
+				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone, kotp, aicp, nitrogen
 				
 				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && pospw === false && pospm === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false && kotp === false && aicp === false){
+				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && pospw === false && pospm === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false && kotp === false && aicp === false && nitrogen === false){
          				send(lang.romserr+" `"+devicename(codename)+"`")
 				} else {
 					
@@ -1824,11 +1846,11 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0xFFFFFF)
 						.setTitle(`${lang.roms} ${devicename(codename)}`)
-						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(pospw), tof(pospm), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone), tof(kotp), tof(aicp)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
+						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(pospw), tof(pospm), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone), tof(kotp), tof(aicp), tof(nitrogen)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
 					send({embed});
 				}
 				
-			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
