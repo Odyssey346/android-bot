@@ -28,6 +28,9 @@ prefix: .
 * Liquid Remix
 * Dirty Unicorns
 * XenonHD
+* Kraken Open Tentacles Project (KOTP)
+* Android Ice Cold Project (AICP)
+* NitrogenOS
 
 ### How to Install:
 Download and Install NodeJS : https://nodejs.org/en/
