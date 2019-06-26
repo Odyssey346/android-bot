@@ -54,8 +54,8 @@ Open the file config.json:
  
  Q1: Why when I start the bot I have `Cannot find module` ?
  
- R1: Have you installed all the packages with `npm install` ?
+ A1: Have you installed all the packages with `npm install` ?
  
  Q2: Why when I start the bot I have `UnhandledPromiseRejectionWarning: Error: Incorrect login details were provided.` ?
  
- R2: Did you put or do mistakes with your token in the config.json ?
+ A2: Did you put or do mistakes with your token in the config.json ?
