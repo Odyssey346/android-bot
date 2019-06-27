@@ -1469,6 +1469,7 @@ client.on("message", message => {
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
+			message.channel.startTyping();
 			async function roms(url, urlup, name) {
 				return new Promise(function(resolve, reject) {
 					request({
@@ -1913,6 +1914,7 @@ client.on("message", message => {
 						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(pospw), tof(pospm), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone), tof(kotp), tof(aicp), tof(nitrogen)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
 					send({embed});
 				}
+				message.channel.stopTyping();
 				
 			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
