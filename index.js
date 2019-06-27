@@ -475,7 +475,7 @@ client.on("message", message => {
 		}
 	//Codename Search
 	} else if(content.startsWith(`${prefix}cdn`)){
-		const srch = content.split(' ').slice(1).join(' ')
+		const srch = message.content.split(' ').slice(1).join(' ')
 		if(srch !== undefined){
 			var values = Object.values(require("./device.json"));
 			var keys = Object.keys(require("./device.json"));
