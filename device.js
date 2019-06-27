@@ -31,17 +31,6 @@ function d(d) {
         }
         return str;
       }
-      devices["bacon"] = "OnePlus One";
-      devices["onyx"] = "OnePlus X";
-      devices["cheeseburger"] = "OnePlus 5";
-      devices["dumpling"] = "OnePlus 5T";
-      devices["enchilada"] = "OnePlus 6";
-      devices["fajita"] = "OnePlus 6T";
-      devices["guacamole"] = "OnePlus 7 Pro";
-      devices["guacamoleb"] = "OnePlus 7";
-      devices["tissot"] = "Xiaomi Mi A1";
-      devices["daisy"] = "Xiaomi Mi A2 Lite";
-      devices["lavender"] = "Xiaomi Redmi Note 7";
       babyparse.parse(iconv.decode(Buffer.from(data, 'binary'), 'utf-16le')).data.forEach(parts => {
         if(parts.length === 4){
           if(parts[1] !== ""){
@@ -59,6 +48,17 @@ function d(d) {
           }
         }
       });
+      devices["bacon"] = "OnePlus One";
+      devices["onyx"] = "OnePlus X";
+      devices["cheeseburger"] = "OnePlus 5";
+      devices["dumpling"] = "OnePlus 5T";
+      devices["enchilada"] = "OnePlus 6";
+      devices["fajita"] = "OnePlus 6T";
+      devices["guacamole"] = "OnePlus 7 Pro";
+      devices["guacamoleb"] = "OnePlus 7";
+      devices["tissot"] = "Xiaomi Mi A1";
+      devices["daisy"] = "Xiaomi Mi A2 Lite";
+      devices["lavender"] = "Xiaomi Redmi Note 7";
       fs.writeFile('./device.json', JSON.stringify(devices, null, 4), err => {if(err) throw err});
     });
   }, 1800000)
