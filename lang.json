@@ -15,6 +15,7 @@
                 "inv":"Avoir l'invite du bot",
 				"lang":"Changer la langue du bot",
 				"prefix":"Changer le prefix du bot",
+				"cdn":"Trouver le codename de son appareil",
                 "help":"Aide"
             },
             "roms":{
@@ -25,7 +26,7 @@
                     "title":"Utilisation",
                     "example":"Exemple",
                     "cmdroms":"Vous pouvez également afficher les ROMs disponibles avec",
-					"cdnroms":"Vous pouvez également chercher un modèle précis sur toute les roms disponibles: ",
+					"cdnroms":"Vous pouvez également chercher un modèle précis sur toute les roms disponible: ",
                     "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
                 },
                 "help":"Aide Roms"
@@ -50,6 +51,12 @@
 		"prefix":{
 			"nop":"Veuillez entrer un prefix !",
 			"suc":"Le prefix a bien été changé en"
+		},
+		"cdn":{
+			"nocdn":"Aucun codename pour ce nom trouvé",
+			"nosrch":"Veuillez mettre un nom d'appareil",
+			"lot":"Trop d'élément de recherche, veuillez réessayer avec plus de précision",
+			"srch":"Recherche"
 		},
         "download":"Télécharger",
         "date":"Date",
@@ -83,6 +90,7 @@
                 "inv":"Have the bot invite",
 				"lang":"Change the language of the bot",
 				"prefix":"Change the bot prefix",
+				"cdn":"Find the codename of your device",
                 "help":"Help"
             },
             "roms":{
@@ -118,6 +126,12 @@
 		"prefix":{
 			"nop":"Please enter a prefix!",
 			"suc":"The prefix has been changed to"
+		},
+		"cdn":{
+			"nocdn":"No codename for this name find",
+			"nosrch":"Please enter a device name",
+			"lot":"Too many search items, please try again with more precision",
+			"srch":"Search"
 		},
         "download":"Download",
         "date":"Date",
