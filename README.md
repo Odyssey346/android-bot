@@ -31,6 +31,7 @@ prefix: .
 * Kraken Open Tentacles Project (KOTP)
 * Android Ice Cold Project (AICP)
 * NitrogenOS
+* CerberusOS
 
 ### How to Install:
 Download and Install NodeJS : https://nodejs.org/en/
