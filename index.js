@@ -1912,7 +1912,7 @@ client.on("message", message => {
 			romaicp(`http://ota.aicp-rom.com/update.php?device=${codename}`, `http://ota.aicp-rom.com/update.php?device=${codenameup}`, "Android Ice Cold Project (aicp)").then(aicp => {
 			//NitrogenOS
 			roms(`https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codename}.json`, `https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codenameup}.json`, "NitrogenOS (nitrogen)").then(nitrogen => {
-			//HavocOS
+			//CerberusOS
 			roms(`https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codename}/build.json`, `https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codenameup}/build.json`, "CerberusOS (cerberus)").then(cerberus => {
 				
 				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone, kotp, aicp, nitrogen, cerberus
