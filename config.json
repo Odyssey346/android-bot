@@ -1,5 +1,7 @@
 {
 	"token": "",
 	"prefix": ".",
-	"lang": "en"
+	"lang": "en",
+	"ci": "github client_id",
+	"cs": "github client_secret"
 }
