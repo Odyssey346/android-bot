@@ -14,6 +14,7 @@
     "xml-js": "latest",
     "fs": "latest",
     "iconv-lite": "latest",
-    "babyparse": "latest"
+    "babyparse": "latest",
+    "firebase": "latest"
   }
 }
