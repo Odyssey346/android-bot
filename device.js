@@ -59,6 +59,7 @@ function d(d) {
       devices["tissot"] = "Xiaomi Mi A1";
       devices["daisy"] = "Xiaomi Mi A2 Lite";
       devices["lavender"] = "Xiaomi Redmi Note 7";
+      devices["tulip"] = "Xiaomi Redmi Note 6";
       fs.writeFile('./device.json', JSON.stringify(devices, null, 4), err => {if(err) throw err});
     });
   }, 1800000)
