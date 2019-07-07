@@ -36,7 +36,7 @@ function devicename(codename){
 		return codename;
 	}
 }
-
+var app = require('firebase').initializeApp({apiKey: "AIzaSyAjfPSshzXoje3pewbnfpJYhlRrbNRmFEU",authDomain: "twrpbuilder.firebaseapp.com",databaseURL: "https://twrpbuilder.firebaseio.com",projectId: "twrpbuilder",storageBucket: "twrpbuilder.appspot.com",messagingSenderId: "1079738297898"});
 
 var prefix = config.prefix;
 
@@ -330,7 +330,6 @@ client.on("message", message => {
 							.setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
 						send({embed});
           } else {
-            var app = require('firebase').initializeApp({apiKey: "AIzaSyAjfPSshzXoje3pewbnfpJYhlRrbNRmFEU",authDomain: "twrpbuilder.firebaseapp.com",databaseURL: "https://twrpbuilder.firebaseio.com",projectId: "twrpbuilder",storageBucket: "twrpbuilder.appspot.com",messagingSenderId: "1079738297898"});
             function reverseSnapshot(snap){var reverseSnap = [];snap.forEach(function(data){var val = data.val();reverseSnap.push(val)});return reverseSnap.reverse();}
             app.database().ref("Builds").orderByKey().once("value").then(function(snapshot) {
               var response = reverseSnapshot(snapshot).find(cdn => cdn.codeName === codename);
