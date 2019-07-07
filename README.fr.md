@@ -45,6 +45,10 @@ Puis tapez `npm install`
 Ouvrez le fichier config.json:
 * Mettez votre token
 * Mettez la langue (fr, en)
+* Mettez l'id client de votre app GitHub Oauth
+* Mettez le secret client de votre app GitHub Oauth
+
+Pour créer son App GitHub Oauth, allez ici : https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/
 
 ### Comment l'utiliser:
  Tapez sur votre Invite de Commande `node index.js`
