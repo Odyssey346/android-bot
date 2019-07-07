@@ -318,7 +318,7 @@ client.on("message", message => {
 					const embed = new Discord.RichEmbed()
 						.setColor(0x0091CA)
 						.setTitle(`TWRP | ${devicename(codename)}`)
-				.setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
+				    .setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
 					send({embed});
 				} else {
 					var body = JSON.parse(bodyurl);
@@ -329,9 +329,41 @@ client.on("message", message => {
 							.setTitle(`TWRP | ${devicename(codename)}`)
 							.setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
 						send({embed});
-					} else {
-						send(lang.twrperr+" `"+devicename(codename)+"`");
-					}
+          } else {
+            var app = require('firebase').initializeApp({apiKey: "AIzaSyAjfPSshzXoje3pewbnfpJYhlRrbNRmFEU",authDomain: "twrpbuilder.firebaseapp.com",databaseURL: "https://twrpbuilder.firebaseio.com",projectId: "twrpbuilder",storageBucket: "twrpbuilder.appspot.com",messagingSenderId: "1079738297898"});
+            function reverseSnapshot(snap){var reverseSnap = [];snap.forEach(function(data){var val = data.val();reverseSnap.push(val)});return reverseSnap.reverse();}
+            app.database().ref("Builds").orderByKey().once("value").then(function(snapshot) {
+              var response = reverseSnapshot(snapshot).find(cdn => cdn.codeName === codename);
+              if(response !== undefined){
+                request({
+                  url: response.url.replace("https://github.com/", "https://api.github.com/repos/") + `?client_id=${config.ci}&client_secret=${config.cs}`, json: true, headers: {'User-Agent': 'android bot'}
+                }, function(err, resp, json){
+                  var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
+                  const embed = new Discord.RichEmbed()
+                    .setColor(0x0091CA)
+                    .setTitle(`TWRP Builder | ${devicename(codename)}`)
+                    .addField(`**${lang.download}**:`, dl)
+                  send({embed});
+                })
+              } else {
+                var response = reverseSnapshot(snapshot).find(cdn => cdn.codeName === codenameup);
+                if(response !== undefined){
+                  request({
+                    url: response.url.replace("https://github.com/", "https://api.github.com/repos/") + `?client_id=${config.ci}&client_secret=${config.cs}`, json: true, headers: {'User-Agent': 'android bot'}
+                  }, function(err, resp, json){
+                    var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
+                    const embed = new Discord.RichEmbed()
+                      .setColor(0x0091CA)
+                      .setTitle(`TWRP Builder | ${devicename(codename)}`)
+                      .addField(`**${lang.download}**:`, dl)
+                    send({embed});
+                  })
+                } else {
+                  send(lang.twrperr+" `"+devicename(codename)+"`");
+                }
+              }
+            });
+          }
 				}
 			});
 		} else {
@@ -356,10 +388,10 @@ client.on("message", message => {
 				const variant = content.split(' ')[3];
 				function sendembed(){
 					request.get({
-						url: `https://api.github.com/repos/opengapps/${arch}/tags`, headers: {'User-Agent': 'android bot'}
+						url: `https://api.github.com/repos/opengapps/${arch}/tags` + `?client_id=${config.ci}&client_secret=${config.cs}`, headers: {'User-Agent': 'android bot'}
 					}, function(err, response, nbody){
 						request.get({
-							url: `https://api.github.com/repos/opengapps/${arch}/releases/latest`, headers: {'User-Agent': 'android bot'}
+							url: `https://api.github.com/repos/opengapps/${arch}/releases/latest` + `?client_id=${config.ci}&client_secret=${config.cs}`, headers: {'User-Agent': 'android bot'}
 						}, function(err, response, body){
 							var time = JSON.parse(nbody)[0].name;
 							var search = JSON.parse(body).assets.find(s => s.name.indexOf(`open_gapps-${arch}-${ver}-${variant}-${time}.zip`) !== -1);
