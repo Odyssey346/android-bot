@@ -338,12 +338,16 @@ client.on("message", message => {
                 request({
                   url: response.url.replace("https://github.com/", "https://api.github.com/repos/") + `?client_id=${config.ci}&client_secret=${config.cs}`, json: true, headers: {'User-Agent': 'android bot'}
                 }, function(err, resp, json){
-                  var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
-                  const embed = new Discord.RichEmbed()
-                    .setColor(0x0091CA)
-                    .setTitle(`TWRP Builder | ${devicename(codename)}`)
-                    .addField(`**${lang.download}**:`, dl)
-                  send({embed});
+                  try {
+                    var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
+                    const embed = new Discord.RichEmbed()
+                      .setColor(0x0091CA)
+                      .setTitle(`TWRP Builder | ${devicename(codename)}`)
+                      .addField(`**${lang.download}**:`, dl)
+                    send({embed});
+                  } catch(e) {
+                    send(lang.twrperr+" `"+devicename(codename)+"`");
+                  }
                 })
               } else {
                 var response = reverseSnapshot(snapshot).find(cdn => cdn.codeName === codenameup);
@@ -351,12 +355,16 @@ client.on("message", message => {
                   request({
                     url: response.url.replace("https://github.com/", "https://api.github.com/repos/") + `?client_id=${config.ci}&client_secret=${config.cs}`, json: true, headers: {'User-Agent': 'android bot'}
                   }, function(err, resp, json){
-                    var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
-                    const embed = new Discord.RichEmbed()
-                      .setColor(0x0091CA)
-                      .setTitle(`TWRP Builder | ${devicename(codename)}`)
-                      .addField(`**${lang.download}**:`, dl)
-                    send({embed});
+                    try {
+                      var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
+                      const embed = new Discord.RichEmbed()
+                        .setColor(0x0091CA)
+                        .setTitle(`TWRP Builder | ${devicename(codename)}`)
+                        .addField(`**${lang.download}**:`, dl)
+                      send({embed});
+                    } catch(e) {
+                      send(lang.twrperr+" `"+devicename(codename)+"`");
+                    }
                   })
                 } else {
                   send(lang.twrperr+" `"+devicename(codename)+"`");
