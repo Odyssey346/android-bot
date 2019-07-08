@@ -313,7 +313,7 @@ client.on("message", message => {
 				url: `https://twrp.me/search.json`
 			}, function(err, responses, bodyurl) {
 				var body = JSON.parse(bodyurl);
-				var response = body.find(cdn => cdn.title.indexOf(`(${codename})`) !== -1);
+				var response = body.find(cdn => cdn.title.toLowerCase().indexOf(`(${codename})`) !== -1);
 				if(response !== undefined){
 					const embed = new Discord.RichEmbed()
 						.setColor(0x0091CA)
@@ -321,56 +321,28 @@ client.on("message", message => {
 				    .setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
 					send({embed});
 				} else {
-					var body = JSON.parse(bodyurl);
-					var response = body.find(cdn => cdn.title.indexOf(`(${codenameup})`) !== -1);
-					if(response !== undefined){
-						const embed = new Discord.RichEmbed()
-							.setColor(0x0091CA)
-							.setTitle(`TWRP | ${devicename(codename)}`)
-							.setDescription(`**${lang.download}**: [${response.title}](https://twrp.me${response.url})`)
-						send({embed});
-          } else {
-            function reverseSnapshot(snap){var reverseSnap = [];snap.forEach(function(data){var val = data.val();reverseSnap.push(val)});return reverseSnap.reverse();}
-            app.database().ref("Builds").orderByKey().once("value").then(function(snapshot) {
-              var response = reverseSnapshot(snapshot).find(cdn => cdn.codeName === codename);
-              if(response !== undefined){
-                request({
-                  url: response.url.replace("https://github.com/", "https://api.github.com/repos/") + `?client_id=${config.ci}&client_secret=${config.cs}`, json: true, headers: {'User-Agent': 'android bot'}
-                }, function(err, resp, json){
-                  try {
-                    var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
-                    const embed = new Discord.RichEmbed()
-                      .setColor(0x0091CA)
-                      .setTitle(`TWRP Builder | ${devicename(codename)}`)
-                      .addField(`**${lang.download}**:`, dl)
-                    send({embed});
-                  } catch(e) {
-                    send(lang.twrperr+" `"+devicename(codename)+"`");
-                  }
-                })
-              } else {
-                var response = reverseSnapshot(snapshot).find(cdn => cdn.codeName === codenameup);
-                if(response !== undefined){
-                  request({
-                    url: response.url.replace("https://github.com/", "https://api.github.com/repos/") + `?client_id=${config.ci}&client_secret=${config.cs}`, json: true, headers: {'User-Agent': 'android bot'}
-                  }, function(err, resp, json){
-                    try {
-                      var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
-                      const embed = new Discord.RichEmbed()
-                        .setColor(0x0091CA)
-                        .setTitle(`TWRP Builder | ${devicename(codename)}`)
-                        .addField(`**${lang.download}**:`, dl)
-                      send({embed});
-                    } catch(e) {
-                      send(lang.twrperr+" `"+devicename(codename)+"`");
-                    }
-                  })
-                } else {
+          function reverseSnapshot(snap){var reverseSnap = [];snap.forEach(function(data){var val = data.val();reverseSnap.push(val)});return reverseSnap.reverse();}
+          app.database().ref("Builds").orderByKey().once("value").then(function(snapshot) {
+            var response = reverseSnapshot(snapshot).find(cdn => cdn.codeName.toLowerCase() === codename);
+            if(response !== undefined){
+              request({
+                url: response.url.replace("https://github.com/", "https://api.github.com/repos/") + `?client_id=${config.ci}&client_secret=${config.cs}`, json: true, headers: {'User-Agent': 'android bot'}
+              }, function(err, resp, json){
+                try {
+                  var dl = json.assets.map(d => {return `[${d.name}](${d.browser_download_url}) \`${pretty(d.size)}\``}).join("\n");
+                  const embed = new Discord.RichEmbed()
+                    .setColor(0x0091CA)
+                    .setTitle(`TWRP Builder | ${devicename(codename)}`)
+                    .addField(`**${lang.download}**:`, dl)
+                  send({embed});
+                } catch(e) {
                   send(lang.twrperr+" `"+devicename(codename)+"`");
                 }
-              }
-            });
-          }
+              })
+            } else {
+              send(lang.twrperr+" `"+devicename(codename)+"`");
+            }
+          });
 				}
 			});
 		} else {
