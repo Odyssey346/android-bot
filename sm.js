@@ -33,11 +33,19 @@ function d(d) {
       }
       babyparse.parse(iconv.decode(Buffer.from(data, 'binary'), 'utf-16le')).data.forEach(parts => {
         if(parts.length === 4){
-          if(parts[0] === "Samsung"){
+          if(parts[0] === "Samsung" && cleanup(parts[1]).toLowerCase().search("chromebook") === -1){
             if(cleanup(parts[1]).toLowerCase().search(cleanup(parts[0]).toLowerCase()) !== -1){
-              devices[parts[3].toLowerCase()] = cleanup(`\`${parts[2]}\`: ${parts[1]}`)
-            } else {	
-              devices[parts[3].toLowerCase()] = cleanup(`\`${parts[2]}\`: ${parts[0]} ${parts[1]}`)
+              if(cleanup(parts[3]).toLowerCase().search(cleanup(parts[1]).toLowerCase()) === -1){
+                devices[parts[3].toLowerCase()] = cleanup(`\`${parts[2]}\`: ${parts[1]} (${parts[3]})`)
+              } else {
+                devices[parts[3].toLowerCase()] = cleanup(`\`${parts[2]}\`: ${parts[1]}`)
+              }
+            } else {
+              if(cleanup(parts[3]).toLowerCase().search(cleanup(parts[1]).toLowerCase()) === -1){
+                devices[parts[3].toLowerCase()] = cleanup(`\`${parts[2]}\`: ${parts[0]} ${parts[1]} (${parts[3]})`)
+              } else {
+                devices[parts[3].toLowerCase()] = cleanup(`\`${parts[2]}\`: ${parts[0]} ${parts[1]}`)
+              }
             }
           }
         }
