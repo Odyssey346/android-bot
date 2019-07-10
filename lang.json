@@ -16,6 +16,7 @@
 				"lang":"Changer la langue du bot",
 				"prefix":"Changer le prefix du bot",
 				"cdn":"Trouver le codename de son appareil",
+              "sm":"Trouver le codename de son appareil samsung avec le model",
                 "help":"Aide"
             },
             "roms":{
@@ -95,6 +96,7 @@
 				"lang":"Change the language of the bot",
 				"prefix":"Change the bot prefix",
 				"cdn":"Find the codename of your device",
+              "sm":"Find the codename of your samsung device with the model",
                 "help":"Help"
             },
             "roms":{
