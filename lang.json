@@ -55,8 +55,8 @@
 		"cdn":{
 			"nocdn":"Aucun codename pour ce nom trouvé",
 			"nosrch":"Veuillez mettre un nom d'appareil",
-			"lot":"Trop d'élément de recherche, veuillez réessayer avec plus de précision",
-			"srch":"Recherche"
+			"lot":"Trop d'élément de recherche ({results} résultats), veuillez réessayer avec plus de précision",
+      "result":"Résultat"
 		},
         "download":"Télécharger",
         "date":"Date",
@@ -130,8 +130,8 @@
 		"cdn":{
 			"nocdn":"No codename for this name find",
 			"nosrch":"Please enter a device name",
-			"lot":"Too many search items, please try again with more precision",
-			"srch":"Search"
+			"lot":"Too many search items ({results} results), please try again with more precision",
+      "result":"Result"
 		},
         "download":"Download",
         "date":"Date",
