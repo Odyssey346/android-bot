@@ -499,8 +499,14 @@ client.on("message", message => {
 				ids = num.indexOf(element, ids + 1);
 			}
 			var result = indices.map(n => { return `\`${keys[n]}\`: ${values[n]}`})
+      var s;
+      if(result.length <= 1){
+        s = "";
+      } else {
+        s = "s";
+      }
 			const embed = new Discord.RichEmbed()
-				.setTitle(`${lang.cdn.srch} | ${srch}`)
+				.setTitle(`${result.length} ${lang.cdn.result + s} | ${srch}`)
 				.setColor(0xFFFFFF);
 			if(result[0] === undefined){
 				return send(lang.cdn.nocdn)
@@ -535,7 +541,7 @@ client.on("message", message => {
 					i++
 				} while (i <= result.length)
 				if(arr.length > 6){
-					return send(lang.cdn.lot)
+					return send(lang.cdn.lot.replace("{results}", result.length))
 				} else {
 					for(i=0; i<arr.length; i++){
 						embed.addField(i, arr[i].replace(undefined, ""), true)
