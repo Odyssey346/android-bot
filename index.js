@@ -5,6 +5,7 @@ const convert = require('xml-js');
 const android = require('android-versions');
 const fs = require('fs');
 require("./device.js")(null);
+require("./sm.js")(null);
 const config = require('./config.json');
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 //Language Verifier
@@ -80,6 +81,7 @@ client.on("message", message => {
 			"`"+prefix+"twrp <codename>`: "+lang.help.default.twrp+"\n"+
 			"`"+prefix+"gapps <arch> <ver> <variant>`: "+lang.help.default.gapps+"\n"+
 			"`"+prefix+"cdn <device>`: "+lang.help.default.cdn+"\n"+
+      "`"+prefix+"sm <model>`: "+lang.help.default.sm+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
 			"`"+prefix+"prefix`: "+lang.help.default.prefix+"\n"+
@@ -487,7 +489,7 @@ client.on("message", message => {
 	//Codename Search
 	} else if(content.startsWith(`${prefix}cdn`)){
 		const srch = message.content.split(' ').slice(1).join(' ')
-		if(srch !== undefined){
+		if(srch !== ""){
 			var values = Object.values(require("./device.json"));
 			var keys = Object.keys(require("./device.json"));
 			var num = values.map(n => n.toLowerCase()).map(n => n.indexOf(srch.toLowerCase()) !== -1);
@@ -551,6 +553,74 @@ client.on("message", message => {
 			send(embed);
 		} else {
 			send(lang.cdn.nosrch)
+		}
+	//Samsung Codename Search
+	} else if(content.startsWith(`${prefix}sm`)){
+		const srch = message.content.split(' ').slice(1).join(' ')
+		if(srch !== ""){
+			var values = Object.values(require("./sm.json"));
+			var keys = Object.keys(require("./sm.json"));
+			var num = keys.map(n => n.toLowerCase()).map(n => n.indexOf(srch.toLowerCase()) !== -1);
+			var indices = [];
+			var element = true;
+			var ids = num.indexOf(element);
+			while (ids != -1) {
+				indices.push(ids);
+				ids = num.indexOf(element, ids + 1);
+			}
+      var result = indices.map(n => values[n]);
+      var s;
+      if(result.length <= 1){
+        s = "";
+      } else {
+        s = "s";
+      }
+			const embed = new Discord.RichEmbed()
+				.setTitle(`${result.length} ${lang.cdn.result + s} | ${srch}`)
+				.setColor(0xFFFFFF);
+			if(result[0] === undefined){
+				return send(lang.sm.nomodel)
+			} else if(result.join("\n").length <= 2048){
+				embed.setDescription(result.join("\n"));
+			} else {
+				var txt;
+				var arr = [];
+				var i = 0;
+				do{
+					txt += result[i] + "\n"
+					if(txt.length > 1024){
+						txt.split("\n").slice(0, -1).join("\n");
+						i--
+						var n = true
+						do {
+							if(txt.length > 1024){
+								txt.split("\n").slice(0, -1).join("\n");
+								i--
+								arr.push(txt)
+								txt = "";
+							} else {
+								arr.push(txt)
+								txt = "";
+								n = false
+							}
+						} while(n)
+					} else if(txt.length <= 1024 && txt.length >= 985) {
+						arr.push(txt)
+						txt = "";
+					}
+					i++
+				} while (i <= result.length)
+				if(arr.length > 6){
+					return send(lang.cdn.lot.replace("{results}", result.length))
+				} else {
+					for(i=0; i<arr.length; i++){
+						embed.addField(i, arr[i].replace(undefined, ""), true)
+					}
+				}
+			}
+			send(embed);
+		} else {
+			send(lang.sm.nosrch)
 		}
 	}
 });
