@@ -58,6 +58,10 @@
 			"lot":"Trop d'élément de recherche ({results} résultats), veuillez réessayer avec plus de précision",
       "result":"Résultat"
 		},
+      "sm":{
+        "nomodel": "Aucun codename/appareil pour ce model trouvé",
+        "nosrch": "Veuillez mettre un model Samsung"
+      },
         "download":"Télécharger",
         "date":"Date",
         "size":"Taille",
@@ -133,6 +137,10 @@
 			"lot":"Too many search items ({results} results), please try again with more precision",
       "result":"Result"
 		},
+      "sm":{
+        "nomodel": "No codename/device for this model found",
+        "nosrch": "Please put a Samsung model"
+      },
         "download":"Download",
         "date":"Date",
         "size":"Size",
