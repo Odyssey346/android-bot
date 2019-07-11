@@ -81,7 +81,8 @@ client.on("message", message => {
 			"`"+prefix+"twrp <codename>`: "+lang.help.default.twrp+"\n"+
 			"`"+prefix+"gapps <arch> <ver> <variant>`: "+lang.help.default.gapps+"\n"+
 			"`"+prefix+"cdn <device>`: "+lang.help.default.cdn+"\n"+
-      "`"+prefix+"sm <model>`: "+lang.help.default.sm+"\n"+
+      			"`"+prefix+"sm <model>`: "+lang.help.default.sm+"\n"+
+			"`"+prefix+"gplay`: "+lang.help.default.gplay+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
 			"`"+prefix+"prefix`: "+lang.help.default.prefix+"\n"+
@@ -625,6 +626,175 @@ client.on("message", message => {
 	}
 });
 
+//Play Store
+client.on("message", message => {
+	const content = message.content.toLowerCase();
+	const channel = message.channel;
+	const member = message.member;
+	const author = message.author;
+	const guildfile = require('./guild.json');
+	var l;
+	if(message.channel.type !== "dm"){
+		if(guildfile[message.guild.id] !== undefined){
+			lang = langfile[guildfile[message.guild.id].lang];
+			l = guildfile[message.guild.id].lang;
+			prefix = guildfile[message.guild.id].prefix
+		} else {
+			lang = langfile['en'];
+			l = "en";
+			guildfile[message.guild.id] = {
+				lang: 'en',
+				prefix: config.prefix
+			}
+			fs.writeFile('./guild.json', JSON.stringify(guildfile, null, 4), err => {
+				if(err) throw err;
+			})
+		}
+	} else {
+		lang = langfile['en'];
+		l = "en";
+	}
+	function send(msg){channel.send(msg)};
+	function sendmp(msg){author.send(msg).catch(() => send(msg))};
+	function chunk(array, size){const chunked_arr = [];for(let i = 0; i < array.length; i++){const last = chunked_arr[chunked_arr.length - 1];if(!last || last.length === size){chunked_arr.push([array[i]]);} else {last.push(array[i]);}}return chunked_arr}
+	function cut(text, length){if(text == null){return "";}if (text.length <= length) {return text;}return text.substring(0, length).substring(0, text.lastIndexOf(" ")) + "..."}
+	if(content.startsWith(`${prefix}gplay`)){
+		var opt = content.split(" ")[1]
+		function sendgh(){
+			var e = new Discord.RichEmbed()
+				.setTitle("Google Play")
+				.addField(lang.gplay.sendgh.usage+":", `\`${prefix}gplay <option>\``)
+				.addField(lang.gplay.sendgh.opt+":", "`app`: "+lang.gplay.sendgh.apph+"\n`search`: "+lang.gplay.sendgh.searchh+"\n`perms`: "+lang.gplay.sendgh.permsh)
+			send(e)
+		}
+		if(opt !== undefined){
+			var check = content.split(" ")[2]
+			if(opt === "app"){
+				if(check !== undefined){
+					gplay.app({appId: check, lang: l}).then(json => {
+						var e = new Discord.RichEmbed()
+							.setTitle(json.title).setURL(json.url).setThumbnail(json.icon)
+							.setDescription(json.summary)
+							.addField(lang.gplay.app.price, json.priceText, true)
+							.addField(lang.gplay.app.installs, json.installs, true)
+							.addField(lang.gplay.app.av, json.androidVersionText, true)
+							.addField(lang.gplay.app.size, json.size, true)
+							.addField(lang.gplay.app.score, json.scoreText, true)
+							.addField(lang.gplay.app.genre, json.genre, true)
+							.setFooter(`${lang.gplay.app.by} ${json.developer} | ${json.appId}`)
+						send(e)
+					}).catch(err => {
+						send(lang.gplay.app.noapp);
+					});
+				} else {
+					var e = new Discord.RichEmbed()
+						.setTitle(lang.gplay.sendgh.app)
+						.addField(lang.gplay.sendgh.usage+":", `\`${prefix}gplay app <appID>\``)
+						.addField(lang.gplay.sendgh.example+":", `\`${prefix}gplay app com.google.android.apps.messaging\``)
+					send(e)
+				}
+			} else if(opt === "search"){
+				if(check !== undefined){
+					gplay.search({term: message.content.split(" ").slice(2).join(" "), num: 1, lang: l}).then(m => {
+						gplay.app({appId: m[0].appId, lang: l}).then(json => {
+							var e = new Discord.RichEmbed()
+								.setTitle(json.title).setURL(json.url).setThumbnail(json.icon)
+								.setDescription(json.summary)
+								.addField(lang.gplay.app.price, json.priceText, true)
+								.addField(lang.gplay.app.installs, json.installs, true)
+								.addField(lang.gplay.app.av, json.androidVersionText, true)
+								.addField(lang.gplay.app.size, json.size, true)
+								.addField(lang.gplay.app.score, json.scoreText, true)
+								.addField(lang.gplay.app.genre, json.genre, true)
+								.setFooter(`${lang.gplay.app.by} ${json.developer} | ${json.appId}`)
+							send(e)
+						})
+					}).catch(err => {
+						send(lang.gplay.app.nosrch)
+					});
+				} else {
+					var e = new Discord.RichEmbed()
+						.setTitle(lang.gplay.sendgh.search)
+						.addField(lang.gplay.sendgh.usage+":", `\`${prefix}gplay search <appName>\``)
+						.addField(lang.gplay.sendgh.example+":", `\`${prefix}gplay search google message\``)
+					send(e)
+				}
+			} else if(opt === "perms"){
+				function sendh(){
+					var e = new Discord.RichEmbed()
+						.setTitle(lang.gplay.sendgh.perms)
+						.addField(lang.gplay.sendgh.usage+":", `${lang.gplay.perms.id}: \`${prefix}gplay perms id <appID>\`\n${lang.gplay.perms.name}: \`${prefix}gplay perms id <appName>\``)
+						.addField(lang.gplay.sendgh.example+":", `${lang.gplay.perms.id}: \`${prefix}gplay perms id com.google.android.apps.messaging\`\n${lang.gplay.perms.name}: \`${prefix}gplay perms name google message\``)
+					send(e)
+				}
+				if(check !== undefined){
+					opt = content.split(" ")[2]
+					if(opt !== undefined){
+						check = content.split(" ")[3]
+						if(opt === "id"){
+							if(check !== undefined){
+								gplay.app({appId: check, lang: l}).then(app => {
+									gplay.permissions({appId: check, lang: l}).then(json => {
+										var desc = `${json[0].permission}`;
+										for(let i = 1; i < json.length; i++){
+											desc += `**,** ${json[i].permission}`
+										}
+										var e = new Discord.RichEmbed()
+											.setTitle(lang.gplay.perms.for + app.title)
+											.setFooter(app.appId)
+										    .setDescription(cut(desc, 2045));
+										send(e)
+									}).catch(err => {
+										send(lang.gplay.perms.nopermid);
+									})
+								}).catch(err => {
+									send(lang.gplay.perms.noappid);
+								});
+							} else {
+								sendh()
+							}
+						} else if(opt === "name"){
+							if(check !== undefined){
+								gplay.search({term: message.content.split(" ").slice(3).join(" "), num: 1, lang: l}).then(m => {
+									gplay.app({appId: m[0].appId, lang: l}).then(app => {
+										gplay.permissions({appId: app.appId, lang: l}).then(json => {
+											var desc = `${json[0].permission}`;
+											for(let i = 1; i < json.length; i++){
+												desc += `**,** ${json[i].permission}`
+											}
+											var e = new Discord.RichEmbed()
+												.setTitle(lang.gplay.perms.for + app.title)
+												.setFooter(app.appId)
+											    .setDescription(cut(desc, 2045));
+											send(e)
+										}).catch(err => {
+											send(lang.gplay.perms.nopermname+"\nappName: " + app.title);
+										})
+									})
+								}).catch(err => {
+									send(lang.gplay.perms.noappname)
+								});
+							} else {
+								sendh()
+							}
+						} else {
+							sendh()
+						}
+					} else {
+						sendh()
+					}
+				} else {
+					sendh()
+				}
+			} else {
+				sendgh()
+			}
+		} else {
+			sendgh()
+		}
+	}
+});
+		
 //Custom ROM
 client.on("message", message => {
 	const content = message.content.toLowerCase();
