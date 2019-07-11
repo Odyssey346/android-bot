@@ -15,6 +15,7 @@
     "fs": "latest",
     "iconv-lite": "latest",
     "babyparse": "latest",
-    "firebase": "latest"
+    "firebase": "latest",
+    "google-play-scraper": "latest"
   }
 }
