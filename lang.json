@@ -1,162 +1,230 @@
 {
-    "fr":{
-        "connect":"Connecter sur",
-        "help":{
-            "default":{
-                "title":"Page d'aide",
-                "android":"Avoir des info sur une version d'Android particulière",
-                "magisk":{
-                    "text":"Avoir la version de magisk la plus récente",
-                    "ver":"Version"
-                },
-                "twrp":"Savoir si TWRP est Officiel pour votre appareil",
-                "gapps":"Avoir une Version particulière d'OpenGapps",
-                "roms":"Voir les commandes pour les Customs ROMs",
-                "inv":"Avoir l'invite du bot",
-				"lang":"Changer la langue du bot",
-				"prefix":"Changer le prefix du bot",
-				"cdn":"Trouver le codename de son appareil",
-              "sm":"Trouver le codename de son appareil samsung avec le model",
-                "help":"Aide"
-            },
-            "roms":{
-                "title":"Page d'aide pour les Customs ROMs",
-                "desc":"Récupère les dernières versions des appareils officiellement pris en charge",
-                "available":"ROMs Disponibles",
-                "use":{
-                    "title":"Utilisation",
-                    "example":"Exemple",
-                    "cmdroms":"Vous pouvez également afficher les ROMs disponibles avec",
-					"cdnroms":"Vous pouvez également chercher un modèle précis sur toute les roms disponible: ",
-                    "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
-                },
-                "help":"Aide Roms"
-            }
+  "fr":{
+    "connect":"Connecter sur",
+    "help":{
+      "default":{
+        "title":"Page d'aide",
+        "android":"Avoir des info sur une version d'Android particulière",
+        "magisk":{
+          "text":"Avoir la version de magisk la plus récente",
+          "ver":"Version"
         },
-        "android":{
-            "versioncode":"Code de Version",
-            "error":"Veuillez entrer une version d'android ou une version d'api correct"
-        },
-        "gapps":{
-            "noarch":"Veuillez entrer une Architecture:",
-            "nover":"Veuillez entrer une Version correcte pour cette Architecture:",
-            "novar":"Veuillez entrer une Variante:",
-            "varerr":"Veuillez entrer une Variant correcte pour cette Version:",
-            "archerr":"Veuillez entrer une Architecture correcte:"
-        },
-        "lang":{
-            "nol":"Veuillez entrer un langage !",
-            "err":"Veuillez entrer un langage correct !",
-            "suc":"La langue a bien été changé en"
-        },
-		"prefix":{
-			"nop":"Veuillez entrer un prefix !",
-			"suc":"Le prefix a bien été changé en"
-		},
-		"cdn":{
-			"nocdn":"Aucun codename pour ce nom trouvé",
-			"nosrch":"Veuillez mettre un nom d'appareil",
-			"lot":"Trop d'élément de recherche ({results} résultats), veuillez réessayer avec plus de précision",
-      "result":"Résultat"
-		},
-      "sm":{
-        "nomodel": "Aucun codename/appareil pour ce model trouvé",
-        "nosrch": "Veuillez mettre un model Samsung"
+        "twrp":"Savoir si TWRP est Officiel pour votre appareil",
+        "gapps":"Avoir une Version particulière d'OpenGapps",
+        "roms":"Voir les commandes pour les Customs ROMs",
+        "inv":"Avoir l'invite du bot",
+        "lang":"Changer la langue du bot",
+        "prefix":"Changer le prefix du bot",
+        "cdn":"Trouver le codename de son appareil",
+        "sm":"Trouver le codename de son appareil samsung avec le model",
+		"gplay":"Voir les commandes pour Google Play",
+        "help":"Aide"
       },
-        "download":"Télécharger",
-        "date":"Date",
-        "size":"Taille",
-        "version":"Version",
-        "cdnerr":"Veuillez entrer un nom de code !",
-        "twrperr":"TWRP n'a pas était trouver pour",
-        "romerr":"Aucune ROM trouvé pour",
-        "norom":"Aucune ROM",
-        "romserr":"Aucune ROMs Disponibles pour",
-        "roms":"ROMs Disponibles pour",
-        "official":"Officiel",
-        "beta":"Beta",
-        "experimental":"Experimental",
-		"dm":"Vous ne pouvez pas effectuer cette commande en message privé !",
-		"perm":"Vous n'avez pas la permission d'effectuer cette commande"
+      "roms":{
+        "title":"Page d'aide pour les Customs ROMs",
+        "desc":"Récupère les dernières versions des appareils officiellement pris en charge",
+        "available":"ROMs Disponibles",
+        "use":{
+          "title":"Utilisation",
+          "example":"Exemple",
+          "cmdroms":"Vous pouvez également afficher les ROMs disponibles avec",
+          "cdnroms":"Vous pouvez également chercher un modèle précis sur toute les roms disponible: ",
+          "note":"**Note:**\nSi le bot vous répond `Aucune ROM trouvé pour <nom_appareil>/<nom_de_code>` c'est que la rom n'est pas disponible officiellement pour votre appareil."
+        },
+        "help":"Aide Roms"
+      }
     },
-    "en":{
-        "connect":"Connect on",
-        "help":{
-            "default":{
-                "title":"Help",
-                "android":"Have information on a particular version of Android",
-                "magisk":{
-                    "text":"Have the most recent version of magisk",
-                    "ver":"Version"
-                },
-                "twrp":"Find if TWRP is Official for your device",
-                "gapps":"Have a particular version of OpenGapps",
-                "roms":"See commands for Customs ROMs",
-                "inv":"Have the bot invite",
-				"lang":"Change the language of the bot",
-				"prefix":"Change the bot prefix",
-				"cdn":"Find the codename of your device",
-              "sm":"Find the codename of your samsung device with the model",
-                "help":"Help"
-            },
-            "roms":{
-                "title":"Help for Customs ROMs",
-                "desc":"Fetches the latest builds of officially supported devices",
-                "available":"Available ROMs",
-                "use":{
-                    "title":"Usage",
-                    "example":"Example",
-                    "cmdroms":"You can also view available ROMs with",
-					"cdnroms":"You can also search for a specific model on all available roms: ",
-                    "note":"**Note:**\nIf the bot answers `No ROM found for <device_name>/<code_name>` it means that the rom is not officially available for your device."
-                },
-                "help":"Roms Help"
-            }
+    "android":{
+      "versioncode":"Code de Version",
+      "error":"Veuillez entrer une version d'android ou une version d'api correct"
+    },
+    "gapps":{
+      "noarch":"Veuillez entrer une Architecture:",
+      "nover":"Veuillez entrer une Version correcte pour cette Architecture:",
+      "novar":"Veuillez entrer une Variante:",
+      "varerr":"Veuillez entrer une Variant correcte pour cette Version:",
+      "archerr":"Veuillez entrer une Architecture correcte:"
+    },
+    "lang":{
+      "nol":"Veuillez entrer un langage !",
+      "err":"Veuillez entrer un langage correct !",
+      "suc":"La langue a bien été changé en"
+    },
+    "prefix":{
+      "nop":"Veuillez entrer un prefix !",
+      "suc":"Le prefix a bien été changé en"
+    },
+    "cdn":{
+      "nocdn":"Aucun codename pour ce nom trouvé",
+      "nosrch":"Veuillez mettre un nom d'appareil",
+      "lot":"Trop d'élément de recherche ({results} résultats), veuillez réessayer avec plus de précision",
+      "result":"Résultat"
+    },
+    "sm":{
+      "nomodel":"Aucun codename/appareil pour ce model trouvé",
+      "nosrch":"Veuillez mettre un model Samsung"
+    },
+	"gplay":{
+	  "sendgh": {
+	    "usage": "Utilisation",
+		"opt": "Options",
+		"example": "Exemple",
+		"apph": "rechercher une app par son id",
+		"searchh": "rechercher une app par son nom",
+		"permsh": "rechercher une app apr son nom/id",
+		"app": "Rechercher une App Google Play par son ID",
+		"search": "Rechercher une App Google Play par son Nom",
+		"perms": "Rechercher les permissions d'une application"
+	  },
+	  "app": {
+	    "price": "Prix",
+		"installs": "Installations",
+		"av": "Version d'Android",
+		"size": "Taille",
+		"score": "Score",
+		"genre": "Genre",
+		"by": "Par",
+		"noapp": "Pas d'application trouver pour cette id",
+		"nosrch": "Pas d'application trouver pour se nom"
+	  },
+	  "perms":{
+	    "for": "Les permissions pour ",
+		"nopermid": "Aucune Permissions pour cette id d'application",
+		"noappid": "Aucune application pour cette id",
+		"nopermname": "Aucune Permissions pour se nom d'application",
+		"noappname": "Aucune application pour se nom",
+		"id": "Par ID",
+		"name": "Par Nom"
+	  }
+	},
+    "download":"Télécharger",
+    "date":"Date",
+    "size":"Taille",
+    "version":"Version",
+    "cdnerr":"Veuillez entrer un nom de code !",
+    "twrperr":"TWRP n'a pas était trouver pour",
+    "romerr":"Aucune ROM trouvé pour",
+    "norom":"Aucune ROM",
+    "romserr":"Aucune ROMs Disponibles pour",
+    "roms":"ROMs Disponibles pour",
+    "official":"Officiel",
+    "beta":"Beta",
+    "experimental":"Experimental",
+    "dm":"Vous ne pouvez pas effectuer cette commande en message privé !",
+    "perm":"Vous n'avez pas la permission d'effectuer cette commande"
+  },
+  "en":{
+    "connect":"Connect on",
+    "help":{
+      "default":{
+        "title":"Help",
+        "android":"Have information on a particular version of Android",
+        "magisk":{
+          "text":"Have the most recent version of magisk",
+          "ver":"Version"
         },
-        "android":{
-            "versioncode":"Version Code",
-            "error":"Please enter a correct android or api version"
-        },
-        "gapps":{
-            "noarch":"Please enter an Architecture:",
-            "nover":"Please enter a correct version for this Architecture:",
-            "novar":"Please enter a Variant:",
-            "varerr":"Please enter a correct Variant for this Version:",
-            "archerr":"Please enter a correct Architecture:"
-        },
-        "lang":{
-            "nol":"Please enter a language!",
-            "err":"Please enter a correct language!",
-            "suc":"The language has been changed to"
-        },
-		"prefix":{
-			"nop":"Please enter a prefix!",
-			"suc":"The prefix has been changed to"
-		},
-		"cdn":{
-			"nocdn":"No codename for this name find",
-			"nosrch":"Please enter a device name",
-			"lot":"Too many search items ({results} results), please try again with more precision",
-      "result":"Result"
-		},
-      "sm":{
-        "nomodel": "No codename/device for this model found",
-        "nosrch": "Please put a Samsung model"
+        "twrp":"Find if TWRP is Official for your device",
+        "gapps":"Have a particular version of OpenGapps",
+        "roms":"See commands for Customs ROMs",
+        "inv":"Have the bot invite",
+        "lang":"Change the language of the bot",
+        "prefix":"Change the bot prefix",
+        "cdn":"Find the codename of your device",
+        "sm":"Find the codename of your samsung device with the model",
+		"gplay":"See Google Play commands",
+        "help":"Help"
       },
-        "download":"Download",
-        "date":"Date",
-        "size":"Size",
-        "version":"Version",
-        "cdnerr":"Please enter a codename!",
-        "twrperr":"TWRP was not found for",
-        "romerr":"No ROM found for",
-        "norom":"No ROM",
-        "romserr":"No ROMs Available for",
-        "roms":"ROMs Available for",
-        "official":"Official",
-        "beta":"Beta",
-        "experimental":"Experimental",
-		"dm":"You cannot make this command on direct message!",
-		"perm":"You don't have permission to make this command"
-    }
+      "roms":{
+        "title":"Help for Customs ROMs",
+        "desc":"Fetches the latest builds of officially supported devices",
+        "available":"Available ROMs",
+        "use":{
+          "title":"Usage",
+          "example":"Example",
+          "cmdroms":"You can also view available ROMs with",
+          "cdnroms":"You can also search for a specific model on all available roms: ",
+          "note":"**Note:**\nIf the bot answers `No ROM found for <device_name>/<code_name>` it means that the rom is not officially available for your device."
+        },
+        "help":"Roms Help"
+      }
+    },
+    "android":{
+      "versioncode":"Version Code",
+      "error":"Please enter a correct android or api version"
+    },
+    "gapps":{
+      "noarch":"Please enter an Architecture:",
+      "nover":"Please enter a correct version for this Architecture:",
+      "novar":"Please enter a Variant:",
+      "varerr":"Please enter a correct Variant for this Version:",
+      "archerr":"Please enter a correct Architecture:"
+    },
+    "lang":{
+      "nol":"Please enter a language!",
+      "err":"Please enter a correct language!",
+      "suc":"The language has been changed to"
+    },
+    "prefix":{
+      "nop":"Please enter a prefix!",
+      "suc":"The prefix has been changed to"
+    },
+    "cdn":{
+      "nocdn":"No codename for this name find",
+      "nosrch":"Please enter a device name",
+      "lot":"Too many search items ({results} results), please try again with more precision",
+      "result":"Result"
+    },
+    "sm":{
+      "nomodel":"No codename/device for this model found",
+      "nosrch":"Please put a Samsung model"
+    },
+	"gplay":{
+	  "sendgh": {
+	    "usage": "Usage",
+		"opt": "Options",
+		"example": "Example",
+		"apph": "search app by id",
+		"searchh": "search app by name",
+		"permsh": "search app permissions by id or name",
+		"app": "Search Google Play App By ID",
+		"search": "Search Google Play App By Name",
+		"perms": "Search Google Play App Permissions"
+	  },
+	  "app": {
+	    "price": "Price",
+		"installs": "Installs",
+		"av": "Android version",
+		"size": "Size",
+		"score": "Score",
+		"genre": "Genre",
+		"by": "By",
+		"noapp": "No APP find for this ID",
+		"nosrch": "No APP find for this name"
+	  },
+	  "perms":{
+	    "for": "Permissions for ",
+		"nopermid": "No Permissions find for this appID",
+		"noappid": "No APP find for this appID",
+		"nopermname": "No Permissions find for this appName",
+		"noappname": "No APP find for this appName",
+		"id": "By ID",
+		"name": "By Nom"
+	  }
+	},
+    "download":"Download",
+    "date":"Date",
+    "size":"Size",
+    "version":"Version",
+    "cdnerr":"Please enter a codename!",
+    "twrperr":"TWRP was not found for",
+    "romerr":"No ROM found for",
+    "norom":"No ROM",
+    "romserr":"No ROMs Available for",
+    "roms":"ROMs Available for",
+    "official":"Official",
+    "beta":"Beta",
+    "experimental":"Experimental",
+    "dm":"You cannot make this command on direct message!",
+    "perm":"You don't have permission to make this command"
+  }
 }
