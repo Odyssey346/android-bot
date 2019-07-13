@@ -140,7 +140,7 @@
       "roms":{
         "title":"Help for Customs ROMs",
         "desc":"Fetches the latest builds of officially supported devices",
-        "available":"Available ROMs",
+        "available":"ROMs Available",
         "use":{
           "title":"Usage",
           "example":"Example",
