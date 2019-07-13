@@ -312,6 +312,7 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}twrp`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
+			message.channel.startTyping();
 			const codenameup = content.split(' ')[1].toUpperCase();
 			request({
 				url: `https://twrp.me/search.json`
@@ -348,6 +349,7 @@ client.on("message", message => {
             }
           });
 				}
+				message.channel.stopTyping();
 			});
 		} else {
 			send(lang.cdnerr)
