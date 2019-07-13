@@ -83,6 +83,7 @@ client.on("message", message => {
 			"`"+prefix+"cdn <device>`: "+lang.help.default.cdn+"\n"+
       			"`"+prefix+"sm <model>`: "+lang.help.default.sm+"\n"+
 			"`"+prefix+"gplay`: "+lang.help.default.gplay+"\n"+
+			"`"+prefix+"ahru <search>`: "+lang.help.default.ahru+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
 			"`"+prefix+"prefix`: "+lang.help.default.prefix+"\n"+
@@ -623,6 +624,40 @@ client.on("message", message => {
 		} else {
 			send(lang.sm.nosrch)
 		}
+	//Android Host RU Search
+	} else if(content.startsWith(`${prefix}ahru`)){
+		var srch = message.content.split(" ").slice(1).join(" ");
+		request({
+			url: `https://androidhost.ru/ajax/_search.ajax.php?sEcho=3&iColumns=1&sColumns=&iDisplayStart=0&iDisplayLength=150&filterText=${srch}&filterType=%20HTTP/1.1`, json: true
+		}, function(err, resp, json){
+			var totalRecords = json.iTotalRecords;
+			var result = json.aaData.map(d => {d = require("node-html-parser").parse(d[0]).childNodes[1].childNodes;var das = d[2].childNodes[0].rawText;return `[${d[0].childNodes[0].childNodes[0].rawText}](${d[1].childNodes[0].rawText}) \`${das.split("Dated Uploaded:")[1].split("&nbsp;")[0].trim().split("/").join("-")}\` \`${das.split("Filesize:")[1].trim().replace(" ", "")}\``})
+			const embed = new Discord.RichEmbed()
+				.setTitle(`androidhost.ru | ${srch}`)
+				.setColor(0xFFFFFF);
+			if(result[0] === undefined){
+				return send(lang.nofile)
+			} else if(result.join("\n").length <= 2048){
+				embed.setDescription(result.join("\n"));
+			} else {
+				var txt;
+				var i = 0;
+				var n = true
+				var desc;
+				do{
+					txt += (result[i] + "\n")
+					if(txt.length >= 2048){
+						desc = txt.split("\n").slice(0, -1).slice(0, -1).join("\n");
+						n = false
+					} else {
+						i++
+					}
+				} while (n)
+				console.log(desc.length)
+				embed.setDescription(desc.replace("undefined", ""));
+			}
+			send(embed);
+		});
 	}
 });
 
