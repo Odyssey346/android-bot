@@ -18,6 +18,7 @@
         "cdn":"Trouver le codename de son appareil",
         "sm":"Trouver le codename de son appareil samsung avec le model",
 		"gplay":"Voir les commandes pour Google Play",
+		"ahru":"Chercher un fichier sur [androidhost.ru](https://androidhost.ru/)",
         "help":"Aide"
       },
       "roms":{
@@ -111,7 +112,8 @@
     "beta":"Beta",
     "experimental":"Experimental",
     "dm":"Vous ne pouvez pas effectuer cette commande en message privé !",
-    "perm":"Vous n'avez pas la permission d'effectuer cette commande"
+    "perm":"Vous n'avez pas la permission d'effectuer cette commande",
+	"nofile":"Aucun fichier trouvé"
   },
   "en":{
     "connect":"Connect on",
@@ -132,6 +134,7 @@
         "cdn":"Find the codename of your device",
         "sm":"Find the codename of your samsung device with the model",
 		"gplay":"See Google Play commands",
+		"ahru":"Search file on [androidhost.ru](https://androidhost.ru/)",
         "help":"Help"
       },
       "roms":{
@@ -225,6 +228,7 @@
     "beta":"Beta",
     "experimental":"Experimental",
     "dm":"You cannot make this command on direct message!",
-    "perm":"You don't have permission to make this command"
+    "perm":"You don't have permission to make this command",
+	"nofile":"No file found"
   }
 }
