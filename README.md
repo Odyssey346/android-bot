@@ -32,6 +32,7 @@ prefix: .
 * Android Ice Cold Project (AICP)
 * NitrogenOS
 * CerberusOS
+* MSM Xtended
 
 ### How to Install:
 Download and Install NodeJS : https://nodejs.org/en/
