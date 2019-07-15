@@ -834,7 +834,7 @@ client.on("message", message => {
 		
 //Custom ROM
 client.on("message", message => {
-	const content = message.content.toLowerCase();
+	const content = message.content.toLowerCase().replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').trim();
 	const channel = message.channel;
 	const member = message.member;
 	const author = message.author;
