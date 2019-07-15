@@ -310,10 +310,10 @@ client.on("message", message => {
 		});
 	//TWRP
 	} else if(content.startsWith(`${prefix}twrp`)){
-		const codename = content.split(' ')[1];
+		const codename = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(' ')[1];
 		if(codename !== undefined){
-			message.channel.startTyping();
-			const codenameup = content.split(' ')[1].toUpperCase();
+      message.channel.startTyping();
+			const codenameup = codename.toUpperCase();
 			request({
 				url: `https://twrp.me/search.json`
 			}, function(err, responses, bodyurl) {
@@ -349,7 +349,7 @@ client.on("message", message => {
             }
           });
 				}
-				message.channel.stopTyping();
+        message.channel.stopTyping();
 			});
 		} else {
 			send(lang.cdnerr)
