@@ -663,8 +663,8 @@ client.on("message", message => {
 		});
 	//DeviceSpecification
 	} else if(content.startsWith(`${prefix}specs`)){
-		const search = content.substr(parseInt(prefix.length + 6));
-		if(content.split(' ')[1] !== undefined){
+		const search = message.content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ").slice(1).join(" ")
+		if(search !== ""){
       var language;
       if(message.channel.type !== "dm"){
         language = guildfile[message.guild.id].lang;
