@@ -19,6 +19,7 @@
         "sm":"Trouver le codename de son appareil samsung avec le model",
 		"gplay":"Voir les commandes pour Google Play",
 		"ahru":"Chercher un fichier sur [androidhost.ru](https://androidhost.ru/)",
+        "specs":"Avoir les Specifications d'un appareil",
         "help":"Aide"
       },
       "roms":{
@@ -98,6 +99,13 @@
 		"name": "Par Nom"
 	  }
 	},
+	  "specs":{
+	     "nosrch": "Veuillez entrer un nom d'appareil !",
+		 "err": "Votre appareil existe-t-il ?",
+		 "title": "Liste des appareils recherchés",
+      "unconfirmed": "Non confirmé",
+      "confirmed": "Confirmé"
+	  },
     "download":"Télécharger",
     "date":"Date",
     "size":"Taille",
@@ -135,6 +143,7 @@
         "sm":"Find the codename of your samsung device with the model",
 		"gplay":"See Google Play commands",
 		"ahru":"Search file on [androidhost.ru](https://androidhost.ru/)",
+        "specs":"Have the Specifications of a device",
         "help":"Help"
       },
       "roms":{
@@ -214,6 +223,13 @@
 		"name": "By Nom"
 	  }
 	},
+	  "specs":{
+	     "nosrch": "Please enter a device name!",
+		 "err": "Does your device exist?",
+		 "title": "List of searched devices",
+      "unconfirmed": "Unconfirmed",
+      "confirmed": "Confirmed"
+	  },
     "download":"Download",
     "date":"Date",
     "size":"Size",
