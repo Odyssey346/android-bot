@@ -73,7 +73,7 @@
 		"example": "Exemple",
 		"apph": "rechercher une app par son id",
 		"searchh": "rechercher une app par son nom",
-		"permsh": "rechercher une app apr son nom/id",
+		"permsh": "rechercher une app par son nom/id",
 		"app": "Rechercher une App Google Play par son ID",
 		"search": "Rechercher une App Google Play par son Nom",
 		"perms": "Rechercher les permissions d'une application"
