@@ -812,7 +812,7 @@ client.on("message", message => {
 				}
 			} else if(opt === "search"){
 				if(check !== undefined){
-					gplay.search({term: cont.split(" ").slice(2).join(" "), num: 1, lang: l}).then(m => {
+					gplay.search({term: cont.split(" ").slice(1).join(" "), num: 1, lang: l}).then(m => {
 						gplay.app({appId: m[0].appId, lang: l}).then(json => {
 							var e = new Discord.RichEmbed()
 								.setTitle(json.title).setURL(json.url).setThumbnail(json.icon)
