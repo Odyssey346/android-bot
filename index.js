@@ -84,6 +84,7 @@ client.on("message", message => {
       			"`"+prefix+"sm <model>`: "+lang.help.default.sm+"\n"+
 			"`"+prefix+"gplay`: "+lang.help.default.gplay+"\n"+
 			"`"+prefix+"ahru <search>`: "+lang.help.default.ahru+"\n"+
+			"`"+prefix+"specs <device_name>`: "+lang.help.default.specs+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
 			"`"+prefix+"prefix`: "+lang.help.default.prefix+"\n"+
@@ -660,6 +661,84 @@ client.on("message", message => {
 			}
 			send(embed);
 		});
+	//DeviceSpecification
+	} else if(content.startsWith(`${prefix}specs`)){
+		const search = content.substr(parseInt(prefix.length + 6));
+		if(content.split(' ')[1] !== undefined){
+      var language;
+      if(message.channel.type !== "dm"){
+        language = guildfile[message.guild.id].lang;
+      } else {
+        language = "en";
+      }
+			request.get({
+				url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${search}`
+			}, function(err, response, fbody){
+				if(fbody === "0"){
+					send(lang.specs.err)
+				} else {
+					var HTMLParser = require('node-html-parser');
+					var embed = new Discord.RichEmbed()
+						.setColor(0xffffff)
+						.setTitle(lang.specs.title)
+						.setDescription(`**:one: : ${HTMLParser.parse(JSON.parse(fbody)[0].html).childNodes[2].childNodes[0].rawText}**\n**:two: : ${HTMLParser.parse(JSON.parse(fbody)[1].html).childNodes[2].childNodes[0].rawText}**\n**:three: : ${HTMLParser.parse(JSON.parse(fbody)[2].html).childNodes[2].childNodes[0].rawText}**\n**:four: : ${HTMLParser.parse(JSON.parse(fbody)[3].html).childNodes[2].childNodes[0].rawText}**\n**:five: : ${HTMLParser.parse(JSON.parse(fbody)[4].html).childNodes[2].childNodes[0].rawText}**\n`)
+						.setFooter('Source: DeviceSpecifications')
+					message.channel.send(embed).then(msg => {
+						var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
+						msg.react(reaction_numbers[1]).then(() => msg.react(reaction_numbers[2])).then(() => msg.react(reaction_numbers[3])).then(() => msg.react(reaction_numbers[4])).then(() => msg.react(reaction_numbers[5]));
+						const filter = (reaction, user) => {
+							return [reaction_numbers[1], reaction_numbers[2], reaction_numbers[3], reaction_numbers[4], reaction_numbers[5]].includes(reaction.emoji.name) && user.id === message.author.id;
+						};
+						async function number(){
+							return new Promise(async function(resolve, reject){
+								msg.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+									.then(collected => {
+										const reaction = collected.first();
+										if(reaction.emoji.name === reaction_numbers[1]){
+											resolve(0)
+										} else if(reaction.emoji.name === reaction_numbers[2]){
+											resolve(1)
+										} else if(reaction.emoji.name === reaction_numbers[3]){
+											resolve(2)
+										} else if(reaction.emoji.name === reaction_numbers[4]){
+											resolve(3)
+										} else {
+											resolve(4)
+										}
+									})
+									.catch(collected => {});
+							});
+						}
+						number().then(n => {
+							request.get({
+								url: JSON.parse(fbody)[n].url
+							}, function(err, response, body){
+								var root = HTMLParser.parse(body);
+								var name = HTMLParser.parse(JSON.parse(fbody)[n].html).childNodes[2].childNodes[0].rawText;
+								var img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
+                var t = root.querySelector('.unconfirmed-specifications')
+                var unconfirmed;
+                if(t !== null){
+                  unconfirmed = lang.specs.unconfirmed
+                } else {
+                  unconfirmed = lang.specs.confirmed
+                }
+								const embed = new Discord.RichEmbed()
+									.setColor(0xffffff)
+									.setTitle(name)
+									.setURL(JSON.parse(fbody)[n].url)
+									.setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
+									.setThumbnail(img)
+									.setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
+								msg.edit(embed);
+							});
+						})
+					});
+				}
+			});
+		} else {
+			send(lang.specs.nosrch)
+		}
 	}
 });
 
