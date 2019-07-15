@@ -696,7 +696,8 @@ client.on("message", message => {
 	function chunk(array, size){const chunked_arr = [];for(let i = 0; i < array.length; i++){const last = chunked_arr[chunked_arr.length - 1];if(!last || last.length === size){chunked_arr.push([array[i]]);} else {last.push(array[i]);}}return chunked_arr}
 	function cut(text, length){if(text == null){return "";}if (text.length <= length) {return text;}return text.substring(0, length).substring(0, text.lastIndexOf(" ")) + "..."}
 	if(content.startsWith(`${prefix}gplay`)){
-		var opt = content.split(" ")[1]
+		var opt = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1]
+		var cont = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ").slice(1).join(" ")
 		function sendgh(){
 			var e = new Discord.RichEmbed()
 				.setTitle("Google Play")
@@ -705,7 +706,7 @@ client.on("message", message => {
 			send(e)
 		}
 		if(opt !== undefined){
-			var check = content.split(" ")[2]
+			var check = cont.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1]
 			if(opt === "app"){
 				if(check !== undefined){
 					gplay.app({appId: check, lang: l}).then(json => {
@@ -732,7 +733,7 @@ client.on("message", message => {
 				}
 			} else if(opt === "search"){
 				if(check !== undefined){
-					gplay.search({term: message.content.split(" ").slice(2).join(" "), num: 1, lang: l}).then(m => {
+					gplay.search({term: cont.split(" ").slice(2).join(" "), num: 1, lang: l}).then(m => {
 						gplay.app({appId: m[0].appId, lang: l}).then(json => {
 							var e = new Discord.RichEmbed()
 								.setTitle(json.title).setURL(json.url).setThumbnail(json.icon)
@@ -760,17 +761,19 @@ client.on("message", message => {
 				function sendh(){
 					var e = new Discord.RichEmbed()
 						.setTitle(lang.gplay.sendgh.perms)
-						.addField(lang.gplay.sendgh.usage+":", `${lang.gplay.perms.id}: \`${prefix}gplay perms id <appID>\`\n${lang.gplay.perms.name}: \`${prefix}gplay perms id <appName>\``)
+						.addField(lang.gplay.sendgh.usage+":", `${lang.gplay.perms.id}: \`${prefix}gplay perms id <appID>\`\n${lang.gplay.perms.name}: \`${prefix}gplay perms name <appName>\``)
 						.addField(lang.gplay.sendgh.example+":", `${lang.gplay.perms.id}: \`${prefix}gplay perms id com.google.android.apps.messaging\`\n${lang.gplay.perms.name}: \`${prefix}gplay perms name google message\``)
 					send(e)
 				}
 				if(check !== undefined){
-					opt = content.split(" ")[2]
+					opt = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[2]
+          cont = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ").slice(2).join(" ")
 					if(opt !== undefined){
-						check = content.split(" ")[3]
+						check = cont.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1]
 						if(opt === "id"){
 							if(check !== undefined){
-								gplay.app({appId: check, lang: l}).then(app => {
+                var id = cont.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1]
+								gplay.app({appId: id, lang: l}).then(app => {
 									gplay.permissions({appId: check, lang: l}).then(json => {
 										var desc = `${json[0].permission}`;
 										for(let i = 1; i < json.length; i++){
@@ -792,7 +795,7 @@ client.on("message", message => {
 							}
 						} else if(opt === "name"){
 							if(check !== undefined){
-								gplay.search({term: message.content.split(" ").slice(3).join(" "), num: 1, lang: l}).then(m => {
+								gplay.search({term: cont.split(" ").slice(1).join(" "), num: 1, lang: l}).then(m => {
 									gplay.app({appId: m[0].appId, lang: l}).then(app => {
 										gplay.permissions({appId: app.appId, lang: l}).then(json => {
 											var desc = `${json[0].permission}`;
