@@ -62,6 +62,10 @@ function d(d) {
       devices["daisy"] = "Xiaomi Mi A2 Lite";
       devices["lavender"] = "Xiaomi Redmi Note 7";
       devices["tulip"] = "Xiaomi Redmi Note 6";
+      devices["laurus"] = "Xiaomi Mi CC9e";
+      devices["pyxis"] = "Xiaomi Mi CC9";
+      devices["vela"] = "Xiaomi Mi CC9 Meitu Edition";
+      devices["onclite"] = "Xiaomi Redmi 7 India";
       fs.writeFile('./device.json', JSON.stringify(devices, null, 4), err => {if(err) throw err;});
     });
   }, 1800000)
