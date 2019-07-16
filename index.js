@@ -84,6 +84,7 @@ client.on("message", message => {
       			"`"+prefix+"sm <model>`: "+lang.help.default.sm+"\n"+
 			"`"+prefix+"gplay`: "+lang.help.default.gplay+"\n"+
 			"`"+prefix+"ahru <search>`: "+lang.help.default.ahru+"\n"+
+      			"`"+prefix+"miui <version/codename> [<codename>]`: "+lang.help.default.miui+"\n"+
 			"`"+prefix+"specs <device_name>`: "+lang.help.default.specs+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
@@ -738,6 +739,247 @@ client.on("message", message => {
 			});
 		} else {
 			send(lang.specs.nosrch)
+		}
+	//MIUI Latest
+	} else if(content.startsWith(`${prefix}miui`)){
+		var cont = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim();
+		var cdn = cont.split(" ")[1];
+		if(cdn !== undefined){
+			function eea(rjson, fjson){var r = rjson.filter(c => c.version.indexOf("EU") !== -1)[0];var f = fjson.filter(c => c.version.indexOf("EU") !== -1)[0];if(r !== undefined){return `**EEA**: \`${r.version}\`: [recovery](${r.download}) \`${r.size}\` | [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function china(rjson, fjson){var r = rjson.filter(c => c.version.indexOf("CN") !== -1)[0];var f = fjson.filter(c => c.version.indexOf("CN") !== -1)[0];if(r !== undefined){return `**China**: \`${r.version}\`: [recovery](${r.download}) \`${r.size}\` | [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function global(rjson, fjson){var r = rjson.filter(c => c.version.indexOf("MI") !== -1)[0];var f = fjson.filter(c => c.version.indexOf("MI") !== -1)[0];if(r !== undefined){return `**Global**: \`${r.version}\`: [recovery](${r.download}) \`${r.size}\` | [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function india(rjson, fjson){var r = rjson.filter(c => c.version.indexOf("IN") !== -1)[0];var f = fjson.filter(c => c.version.indexOf("IN") !== -1)[0];if(r !== undefined){return `**India**: \`${r.version}\`: [recovery](${r.download}) \`${r.size}\` | [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function russia(rjson, fjson){var r = rjson.filter(c => c.version.indexOf("RU") !== -1)[0];var f = fjson.filter(c => c.version.indexOf("RU") !== -1)[0];if(r !== undefined){return `**Russia**: \`${r.version}\`: [recovery](${r.download}) \`${r.size}\` | [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function developer(rjson, fjson){return `**MIUI ${lang.version}**: \`${rjson.version}\`\n**Android ${lang.version}**: \`${rjson.android}\`\n**${lang.download}**: [recovery](${rjson.download}) \`${rjson.size}\` | [fastboot](${fjson.download}) \`${fjson.size}\``}
+			function feea(fjson){var f = fjson.filter(c => c.version.indexOf("EU") !== -1)[0];if(f !== undefined){return `**EEA**: \`${f.version}\`: [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function fchina(fjson){var f = fjson.filter(c => c.version.indexOf("CN") !== -1)[0];if(f !== undefined){return `**China**: \`${f.version}\`: [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function fglobal(fjson){var f = fjson.filter(c => c.version.indexOf("MI") !== -1)[0];if(f !== undefined){return `**Global**: \`${f.version}\`: [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function findia(fjson){var f = fjson.filter(c => c.version.indexOf("IN") !== -1)[0];if(f !== undefined){return `**India**: \`${f.version}\`: [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function frussia(fjson){var f = fjson.filter(c => c.version.indexOf("RU") !== -1)[0];if(f !== undefined){return `**Russia**: \`${f.version}\`: [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
+			function fdeveloper(fjson){return `**MIUI ${lang.version}**: \`${fjson.version}\`\n**Android ${lang.version}**: \`${fjson.android}\`\n**${lang.download}**: [fastboot](${fjson.download}) \`${fjson.size}\``}
+			if(cdn === "stable"){
+				cdn = cont.split(" ")[2];
+				request({
+					url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/stable_fastboot/stable_fastboot.json", json:true
+				}, function(ferr, fresp, fjson){
+					request({
+						url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/stable_recovery/stable_recovery.json", json:true
+					}, function(rerr, rresp, rjson){
+						fjson = Object.values(fjson).filter(c => c.codename.indexOf(cdn) !== -1);
+						rjson = Object.values(rjson).filter(c => c.codename.indexOf(cdn) !== -1);
+						if(rjson[0] !== undefined || fjson[0] !== undefined){
+							if(rjson[0] !== undefined && fjson[0] !== undefined){
+								var e = new Discord.RichEmbed()
+									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setColor(0xFF740E)
+									.setDescription(china(rjson, fjson)+global(rjson, fjson)+eea(rjson, fjson)+russia(rjson, fjson)+india(rjson, fjson))
+								send(e)
+							} else {
+								var e = new Discord.RichEmbed()
+									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setColor(0xFF740E)
+									.setDescription(fchina(fjson)+fglobal(fjson)+feea(fjson)+frussia(fjson)+findia(fjson))
+								send(e)
+							}
+						} else {
+							request({
+								url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/stable_fastboot/stable_fastboot.json", json:true
+							}, function(ferr, fresp, fjson){
+								request({
+									url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/stable_recovery/stable_recovery.json", json:true
+								}, function(rerr, rresp, rjson){
+									fjson = Object.values(fjson).filter(c => c.codename.indexOf(cdn) !== -1);
+									rjson = Object.values(rjson).filter(c => c.codename.indexOf(cdn) !== -1);
+									if(rjson[0] !== undefined || fjson[0] !== undefined){
+										if(rjson[0] !== undefined && fjson[0] !== undefined){
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setColor(0xFF740E)
+												.setDescription(china(rjson, fjson)+global(rjson, fjson)+eea(rjson, fjson)+russia(rjson, fjson)+india(rjson, fjson))
+											send(e)
+										} else {
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setColor(0xFF740E)
+												.setDescription(fchina(fjson)+fglobal(fjson)+feea(fjson)+frussia(fjson)+findia(fjson))
+											send(e)
+										}
+									} else {
+										send(lang.miui.nos.replace("{model}", devicename(cdn)))
+									}
+								})
+							})
+						}
+					})
+				})
+			} else if(cdn === "weekly" || cdn === "developer"){
+				cdn = cont.split(" ")[2];
+				request({
+					url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/weekly_fastboot/weekly_fastboot.json", json:true
+				}, function(ferr, fresp, fjson){
+					request({
+						url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/weekly_recovery/weekly_recovery.json", json:true
+					}, function(rerr, rresp, rjson){
+						fjson = Object.values(fjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+						rjson = Object.values(rjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+						if(rjson !== undefined || fjson !== undefined){
+							if(rjson !== undefined && fjson !== undefined){
+								var e = new Discord.RichEmbed()
+									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setColor(0xFF740E)
+									.setDescription(developer(rjson, fjson))
+								send(e)
+							} else {
+								var e = new Discord.RichEmbed()
+									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setColor(0xFF740E)
+									.setDescription(fdeveloper(fjson))
+								send(e)
+							}
+						} else {
+							request({
+								url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/weekly_fastboot/weekly_fastboot.json", json:true
+							}, function(ferr, fresp, fjson){
+								request({
+									url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/weekly_recovery/weekly_recovery.json", json:true
+								}, function(rerr, rresp, rjson){
+									fjson = Object.values(fjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+									rjson = Object.values(rjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+									if(rjson !== undefined || fjson !== undefined){
+										if(rjson !== undefined && fjson !== undefined){
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setColor(0xFF740E)
+												.setDescription(developer(rjson, fjson))
+											send(e)
+										} else {
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setColor(0xFF740E)
+												.setDescription(fdeveloper(fjson))
+											send(e)
+										}
+									} else {
+										send(lang.miui.nod.replace("{model}", devicename(cdn)))
+									}
+								})
+							})
+						}
+					})
+				})
+			} else {
+				request({
+					url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/stable_fastboot/stable_fastboot.json", json:true
+				}, function(sferr, sfresp, sfjson){
+					request({
+						url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/stable_recovery/stable_recovery.json", json:true
+					}, function(srerr, srresp, srjson){
+						request({
+							url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/weekly_fastboot/weekly_fastboot.json", json:true
+						}, function(wferr, wfresp, wfjson){
+							request({
+								url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/weekly_recovery/weekly_recovery.json", json:true
+							}, function(wrerr, wrresp, wrjson){
+								sfjson = Object.values(sfjson).filter(c => c.codename.indexOf(cdn) !== -1);
+								srjson = Object.values(srjson).filter(c => c.codename.indexOf(cdn) !== -1);
+								wfjson = Object.values(wfjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+								wrjson = Object.values(wrjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+								if(srjson[0] !== undefined || sfjson[0] !== undefined){
+									if(srjson[0] !== undefined && sfjson[0] !== undefined){
+										if(wfjson !== undefined){
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setColor(0xFF740E)
+												.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
+												.addField("Developer:", developer(wrjson, wfjson))
+											send(e)
+										} else {
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setColor(0xFF740E)
+												.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
+											send(e)
+										}
+									} else {
+										if(wfjson !== undefined){
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setColor(0xFF740E)
+												.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
+												.addField("Developer:", fdeveloper(wfjson))
+											send(e)
+										} else {
+											var e = new Discord.RichEmbed()
+												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setColor(0xFF740E)
+												.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
+											send(e)
+										}
+									}
+								} else {
+									request({
+										url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/stable_fastboot/stable_fastboot.json", json:true
+									}, function(sferr, sfresp, sfjson){
+										request({
+											url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/stable_recovery/stable_recovery.json", json:true
+										}, function(srerr, srresp, srjson){
+											request({
+												url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/weekly_fastboot/weekly_fastboot.json", json:true
+											}, function(wferr, wfresp, wfjson){
+												request({
+													url: "https://raw.githubusercontent.com/XiaomiFirmwareUpdater/miui-updates-tracker/master/EOL/weekly_recovery/weekly_recovery.json", json:true
+												}, function(wrerr, wrresp, wrjson){
+													sfjson = Object.values(sfjson).filter(c => c.codename.indexOf(cdn) !== -1);
+													srjson = Object.values(srjson).filter(c => c.codename.indexOf(cdn) !== -1);
+													wfjson = Object.values(wfjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+													wrjson = Object.values(wrjson).filter(c => c.codename.indexOf(cdn) !== -1)[0];
+													if(srjson[0] !== undefined || sfjson[0] !== undefined){
+														if(srjson[0] !== undefined && sfjson[0] !== undefined){
+															if(wfjson !== undefined){
+																var e = new Discord.RichEmbed()
+																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setColor(0xFF740E)
+																	.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
+																	.addField("Developer:", developer(wrjson, wfjson))
+																send(e)
+															} else {
+																var e = new Discord.RichEmbed()
+																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setColor(0xFF740E)
+																	.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
+																send(e)
+															}
+														} else {
+															if(wfjson !== undefined){
+																var e = new Discord.RichEmbed()
+																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setColor(0xFF740E)
+																	.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
+																	.addField("Developer:", fdeveloper(wfjson))
+																send(e)
+															} else {
+																var e = new Discord.RichEmbed()
+																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setColor(0xFF740E)
+																	.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
+																send(e)
+															}
+														}
+													} else {
+														send(lang.miui.nog.replace("{model}", devicename(cdn)));
+													}
+												})
+											})
+										})
+									})
+								}
+							})
+						})
+					})
+				})
+			}
+		} else {
+			send(lang.miui.noc.replace("{version}", "`stable`|`developer`/`weekly`"))
 		}
 	}
 });
