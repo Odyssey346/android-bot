@@ -19,6 +19,7 @@
         "sm":"Trouver le codename de son appareil samsung avec le model",
 		"gplay":"Voir les commandes pour Google Play",
 		"ahru":"Chercher un fichier sur [androidhost.ru](https://androidhost.ru/)",
+        "miui":"Télécharger MIUI depuis le codename d'un appareil",
         "specs":"Avoir les Specifications d'un appareil",
         "help":"Aide"
       },
@@ -106,6 +107,12 @@
       "unconfirmed": "Non confirmé",
       "confirmed": "Confirmé"
 	  },
+	"miui": {
+	  "nos": "MIUI Stable n'a pas été trouvé pour `{model}`",
+	  "nod": "MIUI Developer n'a pas été trouvé pour `{model}`",
+	  "nog": "MIUI n'a pas été trouvé pour `{model}`",
+	  "noc": "Veuillez mettre un codename ou une version de miui ({version}) et le codename"
+	},
     "download":"Télécharger",
     "date":"Date",
     "size":"Taille",
@@ -143,6 +150,7 @@
         "sm":"Find the codename of your samsung device with the model",
 		"gplay":"See Google Play commands",
 		"ahru":"Search file on [androidhost.ru](https://androidhost.ru/)",
+        "miui":"Download MIUI from the codename of a device",
         "specs":"Have the Specifications of a device",
         "help":"Help"
       },
@@ -230,6 +238,12 @@
       "unconfirmed": "Unconfirmed",
       "confirmed": "Confirmed"
 	  },
+	"miui": {
+	  "nos": "MIUI Stable has not been found for `{model}`",
+	  "nod": "MIUI Developer has not been found for `{model}`",
+	  "nog": "MIUI has not been found for `{model}`",
+	  "noc": "Please put a codename or a version of miui ({version}) and the codename"
+	},
     "download":"Download",
     "date":"Date",
     "size":"Size",
