@@ -770,13 +770,13 @@ client.on("message", message => {
 						if(rjson[0] !== undefined || fjson[0] !== undefined){
 							if(rjson[0] !== undefined && fjson[0] !== undefined){
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setTitle(`MIUI Stable | ${devicename(cdn)}`)
 									.setColor(0xFF740E)
 									.setDescription(china(rjson, fjson)+global(rjson, fjson)+eea(rjson, fjson)+russia(rjson, fjson)+india(rjson, fjson))
 								send(e)
 							} else {
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setTitle(`MIUI Stable | ${devicename(cdn)}`)
 									.setColor(0xFF740E)
 									.setDescription(fchina(fjson)+fglobal(fjson)+feea(fjson)+frussia(fjson)+findia(fjson))
 								send(e)
@@ -793,13 +793,13 @@ client.on("message", message => {
 									if(rjson[0] !== undefined || fjson[0] !== undefined){
 										if(rjson[0] !== undefined && fjson[0] !== undefined){
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setTitle(`MIUI Stable | ${devicename(cdn)}`)
 												.setColor(0xFF740E)
 												.setDescription(china(rjson, fjson)+global(rjson, fjson)+eea(rjson, fjson)+russia(rjson, fjson)+india(rjson, fjson))
 											send(e)
 										} else {
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setTitle(`MIUI Stable | ${devicename(cdn)}`)
 												.setColor(0xFF740E)
 												.setDescription(fchina(fjson)+fglobal(fjson)+feea(fjson)+frussia(fjson)+findia(fjson))
 											send(e)
@@ -825,13 +825,13 @@ client.on("message", message => {
 						if(rjson !== undefined || fjson !== undefined){
 							if(rjson !== undefined && fjson !== undefined){
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setTitle(`MIUI Developer | ${devicename(cdn)}`)
 									.setColor(0xFF740E)
 									.setDescription(developer(rjson, fjson))
 								send(e)
 							} else {
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI | ${devicename(cdn)}`)
+									.setTitle(`MIUI Developer | ${devicename(cdn)}`)
 									.setColor(0xFF740E)
 									.setDescription(fdeveloper(fjson))
 								send(e)
@@ -848,13 +848,13 @@ client.on("message", message => {
 									if(rjson !== undefined || fjson !== undefined){
 										if(rjson !== undefined && fjson !== undefined){
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setTitle(`MIUI Developer | ${devicename(cdn)}`)
 												.setColor(0xFF740E)
 												.setDescription(developer(rjson, fjson))
 											send(e)
 										} else {
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}`)
+												.setTitle(`MIUI Developer | ${devicename(cdn)}`)
 												.setColor(0xFF740E)
 												.setDescription(fdeveloper(fjson))
 											send(e)
