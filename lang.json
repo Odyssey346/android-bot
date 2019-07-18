@@ -21,6 +21,7 @@
 		"ahru":"Chercher un fichier sur [androidhost.ru](https://androidhost.ru/)",
         "miui":"Télécharger MIUI depuis le codename d'un appareil",
         "specs":"Avoir les Specifications d'un appareil",
+        "gcam":"Avoir les 10 dernières mises à jour de Gcam",
         "help":"Aide"
       },
       "roms":{
@@ -128,7 +129,8 @@
     "experimental":"Experimental",
     "dm":"Vous ne pouvez pas effectuer cette commande en message privé !",
     "perm":"Vous n'avez pas la permission d'effectuer cette commande",
-	"nofile":"Aucun fichier trouvé"
+	"nofile":"Aucun fichier trouvé",
+    "gcam": "Les 10 plus récente mise à jour"
   },
   "en":{
     "connect":"Connect on",
@@ -152,6 +154,7 @@
 		"ahru":"Search file on [androidhost.ru](https://androidhost.ru/)",
         "miui":"Download MIUI from the codename of a device",
         "specs":"Have the Specifications of a device",
+        "gcam":"Get 10 latest updates of Gcam",
         "help":"Help"
       },
       "roms":{
@@ -189,7 +192,7 @@
       "suc":"The prefix has been changed to"
     },
     "cdn":{
-      "nocdn":"No codename for this name find",
+      "nocdn":"No codename find for this name",
       "nosrch":"Please enter a device name",
       "lot":"Too many search items ({results} results), please try again with more precision",
       "result":"Result"
@@ -259,6 +262,7 @@
     "experimental":"Experimental",
     "dm":"You cannot make this command on direct message!",
     "perm":"You don't have permission to make this command",
-	"nofile":"No file found"
+	"nofile":"No file found",
+    "gcam": "10 Latest Updates APK"
   }
 }
