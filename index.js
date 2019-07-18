@@ -982,6 +982,7 @@ client.on("message", message => {
 		} else {
 			send(lang.miui.noc.replace("{version}", "`stable`|`developer`/`weekly`"))
 		}
+	//Gcam
 	} else if(content.startsWith(`${prefix}gcam`)){
 	    var dev = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1]
 	    let Parser = require('rss-parser');
@@ -997,7 +998,6 @@ client.on("message", message => {
 		}
 	      }
 	      if(arr[0] !== undefined){
-		console.log(arr)
 		for(var i = 0; i<10; i++){
 		  try{
 		    var a = arr[i].title.split(": ")[0]
