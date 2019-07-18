@@ -86,6 +86,7 @@ client.on("message", message => {
 			"`"+prefix+"ahru <search>`: "+lang.help.default.ahru+"\n"+
       			"`"+prefix+"miui <version/codename> [<codename>]`: "+lang.help.default.miui+"\n"+
 			"`"+prefix+"specs <device_name>`: "+lang.help.default.specs+"\n"+
+			"`"+prefix+"gcam`: "+lang.help.default.gcam+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
 			"`"+prefix+"prefix`: "+lang.help.default.prefix+"\n"+
@@ -981,6 +982,22 @@ client.on("message", message => {
 		} else {
 			send(lang.miui.noc.replace("{version}", "`stable`|`developer`/`weekly`"))
 		}
+	} else if(content.startsWith(`${prefix}gcam`)){
+	    let Parser = require('rss-parser');
+	    let parser = new Parser();
+	    let feed = await parser.parseURL('https://www.celsoazevedo.com/files/android/google-camera/dev-feed.xml');
+	    var items = feed.items;
+	    var desc;
+	    for(var i = 0; i<10; i++){
+	      var a = items[i].title.split(": ")[0]
+	      var d = items[i].title.split(": ")[1]
+	      desc += `**${a}**: [${d}](${items[i].link})\n`
+	    }
+	    var e = new Discord.RichEmbed()
+	      .setTitle(lang.gcam)
+	      .setColor(0xFFFFFF)
+	      .setDescription(desc.replace(undefined, ""))
+	    send(e)
 	}
 });
 
