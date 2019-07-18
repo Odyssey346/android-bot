@@ -983,21 +983,48 @@ client.on("message", message => {
 			send(lang.miui.noc.replace("{version}", "`stable`|`developer`/`weekly`"))
 		}
 	} else if(content.startsWith(`${prefix}gcam`)){
+	    var dev = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1]
 	    let Parser = require('rss-parser');
 	    let parser = new Parser();
 	    let feed = await parser.parseURL('https://www.celsoazevedo.com/files/android/google-camera/dev-feed.xml');
 	    var items = feed.items;
 	    var desc;
-	    for(var i = 0; i<10; i++){
-	      var a = items[i].title.split(": ")[0]
-	      var d = items[i].title.split(": ")[1]
-	      desc += `**${a}**: [${d}](${items[i].link})\n`
+	    if(dev !== undefined){
+	      var arr = [];
+	      for(var i = 0; i<items.length; i++){
+		if(items[i].title.toLowerCase().indexOf(`${dev}:`) !== -1){
+		  arr.push(items[i])
+		}
+	      }
+	      if(arr[0] !== undefined){
+		console.log(arr)
+		for(var i = 0; i<10; i++){
+		  try{
+		    var a = arr[i].title.split(": ")[0]
+		    var d = arr[i].title.split(": ")[1]
+		    desc += `[${d}](${arr[i].link})\n`
+		  } catch(e){}
+		}
+		var e = new Discord.RichEmbed()
+		  .setTitle(`${lang.gcam.latest.replace("{n}", arr.length)} ${lang.gcam.dev} ${arr[0].title.split(": ")[0]}`)
+		  .setColor(0xFFFFFF)
+		  .setDescription(desc.replace(undefined, ""))
+		send(e)
+	      } else {
+		send(lang.gcam.no)
+	      }
+	    } else {
+	      for(var i = 0; i<10; i++){
+		var a = items[i].title.split(": ")[0]
+		var d = items[i].title.split(": ")[1]
+		desc += `**${a}**: [${d}](${items[i].link})\n`
+	      }
+	      var e = new Discord.RichEmbed()
+		.setTitle(lang.gcam.latest.replace("{n}", "10"))
+		.setColor(0xFFFFFF)
+		.setDescription(desc.replace(undefined, ""))
+	      send(e)
 	    }
-	    var e = new Discord.RichEmbed()
-	      .setTitle(lang.gcam)
-	      .setColor(0xFFFFFF)
-	      .setDescription(desc.replace(undefined, ""))
-	    send(e)
 	}
 });
 
