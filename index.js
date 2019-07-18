@@ -86,7 +86,7 @@ client.on("message", message => {
 			"`"+prefix+"ahru <search>`: "+lang.help.default.ahru+"\n"+
       			"`"+prefix+"miui <version/codename> [<codename>]`: "+lang.help.default.miui+"\n"+
 			"`"+prefix+"specs <device_name>`: "+lang.help.default.specs+"\n"+
-			"`"+prefix+"gcam`: "+lang.help.default.gcam+"\n"+
+			"`"+prefix+"gcam <mod>`: "+lang.help.default.gcam+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
 			"`"+prefix+"prefix`: "+lang.help.default.prefix+"\n"+
