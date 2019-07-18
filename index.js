@@ -1005,8 +1005,14 @@ client.on("message", message => {
 		    desc += `[${d}](${arr[i].link})\n`
 		  } catch(e){}
 		}
+		var l;
+		if(arr.length > 10){
+		  l = 10
+		} else {
+		  l = arr.length
+		}
 		var e = new Discord.RichEmbed()
-		  .setTitle(`${lang.gcam.latest.replace("{n}", arr.length)} ${lang.gcam.dev} ${arr[0].title.split(": ")[0]}`)
+		  .setTitle(`${lang.gcam.latest.replace("{n}", l)} ${lang.gcam.dev} ${arr[0].title.split(": ")[0]}`)
 		  .setColor(0xFFFFFF)
 		  .setDescription(desc.replace(undefined, ""))
 		send(e)
