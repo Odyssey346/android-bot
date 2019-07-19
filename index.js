@@ -84,8 +84,8 @@ client.on("message", message => {
       			"`"+prefix+"sm <model>`: "+lang.help.default.sm+"\n"+
 			"`"+prefix+"gplay`: "+lang.help.default.gplay+"\n"+
 			"`"+prefix+"ahru <search>`: "+lang.help.default.ahru+"\n"+
+			"`"+prefix+"specs <device_name/codename>`: "+lang.help.default.specs+"\n"+
       			"`"+prefix+"miui <version/codename> [<codename>]`: "+lang.help.default.miui+"\n"+
-			"`"+prefix+"specs <device_name>`: "+lang.help.default.specs+"\n"+
 			"`"+prefix+"gcam <mod>`: "+lang.help.default.gcam+"\n"+
 			"`"+prefix+"help roms`: "+lang.help.default.roms+"\n"+
 			"`"+prefix+"lang`: "+lang.help.default.lang+"\n"+
