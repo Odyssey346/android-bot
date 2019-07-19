@@ -676,16 +676,14 @@ client.on("message", message => {
 			request.get({
 				url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${search}`
 			}, function(err, response, fbody){
-				if(fbody === "0"){
-					send(lang.specs.err)
-				} else {
-					var HTMLParser = require('node-html-parser');
-          var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
+				var HTMLParser = require('node-html-parser');
+        var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
+        async function sendspecs(srch){
           var arr = [];
           var desc;
           var n = 0;
           for(var i=0; i<5; i++){
-            if(JSON.parse(fbody)[i] !== undefined){
+            if(JSON.parse(srch)[i] !== undefined){
               var t;
               if(i == 0){
                 t = ":one:"
@@ -698,17 +696,17 @@ client.on("message", message => {
               } else if(i == 4){
                 t = ":five:"
               }
-              desc += `**${t} : ${HTMLParser.parse(JSON.parse(fbody)[i].html).childNodes[2].childNodes[0].rawText}**\n`
+              desc += `**${t} : ${HTMLParser.parse(JSON.parse(srch)[i].html).childNodes[2].childNodes[0].rawText}**\n`
               n += 1
               arr.push(reaction_numbers[i+1])
             }
           }
           if(n == 1){
             request.get({
-              url: JSON.parse(fbody)[0].url
+              url: JSON.parse(srch)[0].url
             }, function(err, response, body){
               var root = HTMLParser.parse(body);
-              var name = HTMLParser.parse(JSON.parse(fbody)[0].html).childNodes[2].childNodes[0].rawText;
+              var name = HTMLParser.parse(JSON.parse(srch)[0].html).childNodes[2].childNodes[0].rawText;
               var img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
               var t = root.querySelector('.unconfirmed-specifications')
               var unconfirmed;
@@ -720,7 +718,7 @@ client.on("message", message => {
               const embed = new Discord.RichEmbed()
                 .setColor(0xffffff)
                 .setTitle(name)
-                .setURL(JSON.parse(fbody)[0].url)
+                .setURL(JSON.parse(srch)[0].url)
                 .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
                 .setThumbnail(img)
                 .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
@@ -761,10 +759,10 @@ client.on("message", message => {
               }
               number().then(n => {
                 request.get({
-                  url: JSON.parse(fbody)[n].url
+                  url: JSON.parse(srch)[n].url
                 }, function(err, response, body){
                   var root = HTMLParser.parse(body);
-                  var name = HTMLParser.parse(JSON.parse(fbody)[n].html).childNodes[2].childNodes[0].rawText;
+                  var name = HTMLParser.parse(JSON.parse(srch)[n].html).childNodes[2].childNodes[0].rawText;
                   var img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
                   var t = root.querySelector('.unconfirmed-specifications')
                   var unconfirmed;
@@ -776,7 +774,7 @@ client.on("message", message => {
                   const embed = new Discord.RichEmbed()
                     .setColor(0xffffff)
                     .setTitle(name)
-                    .setURL(JSON.parse(fbody)[n].url)
+                    .setURL(JSON.parse(srch)[n].url)
                     .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
                     .setThumbnail(img)
                     .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
@@ -785,6 +783,22 @@ client.on("message", message => {
               })
             });
           }
+        }
+				if(fbody === "0") {
+          var cdn = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1];
+          var check = devicename(cdn);
+          if(check !== cdn){
+            request.get({
+              url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check}`
+            }, function(err, response, fbody){
+              if(fbody === "0") return send(lang.specs.err)
+              sendspecs(fbody)
+            })
+          } else {
+            return send(lang.specs.err)
+          }
+        } else {
+          sendspecs(fbody)
         }
 			});
 		} else {
