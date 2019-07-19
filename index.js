@@ -807,7 +807,8 @@ client.on("message", message => {
 	//MIUI Latest
 	} else if(content.startsWith(`${prefix}miui`)){
 		var cont = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim();
-		var cdn = cont.split(" ")[1];
+		var cdn = cont.split(" ")[1].replace("_sprout", "");
+    var real = cont.split(" ")[1];
 		if(cdn !== undefined){
 			function eea(rjson, fjson){var r = rjson.filter(c => c.version.indexOf("EU") !== -1)[0];var f = fjson.filter(c => c.version.indexOf("EU") !== -1)[0];if(r !== undefined){return `**EEA**: \`${r.version}\`: [recovery](${r.download}) \`${r.size}\` | [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
 			function china(rjson, fjson){var r = rjson.filter(c => c.version.indexOf("CN") !== -1)[0];var f = fjson.filter(c => c.version.indexOf("CN") !== -1)[0];if(r !== undefined){return `**China**: \`${r.version}\`: [recovery](${r.download}) \`${r.size}\` | [fastboot](${f.download}) \`${f.size}\` | \`Android ${f.android}\`\n`} else {return ""}}
@@ -834,13 +835,13 @@ client.on("message", message => {
 						if(rjson[0] !== undefined || fjson[0] !== undefined){
 							if(rjson[0] !== undefined && fjson[0] !== undefined){
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI Stable | ${devicename(cdn)}`)
+									.setTitle(`MIUI Stable | ${devicename(real)}`)
 									.setColor(0xFF740E)
 									.setDescription(china(rjson, fjson)+global(rjson, fjson)+eea(rjson, fjson)+russia(rjson, fjson)+india(rjson, fjson))
 								send(e)
 							} else {
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI Stable | ${devicename(cdn)}`)
+									.setTitle(`MIUI Stable | ${devicename(real)}`)
 									.setColor(0xFF740E)
 									.setDescription(fchina(fjson)+fglobal(fjson)+feea(fjson)+frussia(fjson)+findia(fjson))
 								send(e)
@@ -857,19 +858,19 @@ client.on("message", message => {
 									if(rjson[0] !== undefined || fjson[0] !== undefined){
 										if(rjson[0] !== undefined && fjson[0] !== undefined){
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI Stable | ${devicename(cdn)}`)
+												.setTitle(`MIUI Stable | ${devicename(real)}`)
 												.setColor(0xFF740E)
 												.setDescription(china(rjson, fjson)+global(rjson, fjson)+eea(rjson, fjson)+russia(rjson, fjson)+india(rjson, fjson))
 											send(e)
 										} else {
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI Stable | ${devicename(cdn)}`)
+												.setTitle(`MIUI Stable | ${devicename(real)}`)
 												.setColor(0xFF740E)
 												.setDescription(fchina(fjson)+fglobal(fjson)+feea(fjson)+frussia(fjson)+findia(fjson))
 											send(e)
 										}
 									} else {
-										send(lang.miui.nos.replace("{model}", devicename(cdn)))
+										send(lang.miui.nos.replace("{model}", devicename(real)))
 									}
 								})
 							})
@@ -889,13 +890,13 @@ client.on("message", message => {
 						if(rjson !== undefined || fjson !== undefined){
 							if(rjson !== undefined && fjson !== undefined){
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI Developer | ${devicename(cdn)}`)
+									.setTitle(`MIUI Developer | ${devicename(real)}`)
 									.setColor(0xFF740E)
 									.setDescription(developer(rjson, fjson))
 								send(e)
 							} else {
 								var e = new Discord.RichEmbed()
-									.setTitle(`MIUI Developer | ${devicename(cdn)}`)
+									.setTitle(`MIUI Developer | ${devicename(real)}`)
 									.setColor(0xFF740E)
 									.setDescription(fdeveloper(fjson))
 								send(e)
@@ -912,19 +913,19 @@ client.on("message", message => {
 									if(rjson !== undefined || fjson !== undefined){
 										if(rjson !== undefined && fjson !== undefined){
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI Developer | ${devicename(cdn)}`)
+												.setTitle(`MIUI Developer | ${devicename(real)}`)
 												.setColor(0xFF740E)
 												.setDescription(developer(rjson, fjson))
 											send(e)
 										} else {
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI Developer | ${devicename(cdn)}`)
+												.setTitle(`MIUI Developer | ${devicename(real)}`)
 												.setColor(0xFF740E)
 												.setDescription(fdeveloper(fjson))
 											send(e)
 										}
 									} else {
-										send(lang.miui.nod.replace("{model}", devicename(cdn)))
+										send(lang.miui.nod.replace("{model}", devicename(real)))
 									}
 								})
 							})
@@ -952,14 +953,14 @@ client.on("message", message => {
 									if(srjson[0] !== undefined && sfjson[0] !== undefined){
 										if(wfjson !== undefined){
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 												.setColor(0xFF740E)
 												.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
 												.addField("Developer:", developer(wrjson, wfjson))
 											send(e)
 										} else {
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 												.setColor(0xFF740E)
 												.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
 											send(e)
@@ -967,14 +968,14 @@ client.on("message", message => {
 									} else {
 										if(wfjson !== undefined){
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 												.setColor(0xFF740E)
 												.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
 												.addField("Developer:", fdeveloper(wfjson))
 											send(e)
 										} else {
 											var e = new Discord.RichEmbed()
-												.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+												.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 												.setColor(0xFF740E)
 												.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
 											send(e)
@@ -1001,14 +1002,14 @@ client.on("message", message => {
 														if(srjson[0] !== undefined && sfjson[0] !== undefined){
 															if(wfjson !== undefined){
 																var e = new Discord.RichEmbed()
-																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 																	.setColor(0xFF740E)
 																	.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
 																	.addField("Developer:", developer(wrjson, wfjson))
 																send(e)
 															} else {
 																var e = new Discord.RichEmbed()
-																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 																	.setColor(0xFF740E)
 																	.setDescription(china(srjson, sfjson)+global(srjson, sfjson)+eea(srjson, sfjson)+russia(srjson, sfjson)+india(srjson, sfjson))
 																send(e)
@@ -1016,21 +1017,21 @@ client.on("message", message => {
 														} else {
 															if(wfjson !== undefined){
 																var e = new Discord.RichEmbed()
-																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 																	.setColor(0xFF740E)
 																	.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
 																	.addField("Developer:", fdeveloper(wfjson))
 																send(e)
 															} else {
 																var e = new Discord.RichEmbed()
-																	.setTitle(`MIUI | ${devicename(cdn)}\nStable:`)
+																	.setTitle(`MIUI | ${devicename(real)}\nStable:`)
 																	.setColor(0xFF740E)
 																	.setDescription(fchina(sfjson)+fglobal(sfjson)+feea(sfjson)+frussia(sfjson)+findia(sfjson))
 																send(e)
 															}
 														}
 													} else {
-														send(lang.miui.nog.replace("{model}", devicename(cdn)));
+														send(lang.miui.nog.replace("{model}", devicename(real)));
 													}
 												})
 											})
