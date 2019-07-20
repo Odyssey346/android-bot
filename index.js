@@ -678,10 +678,11 @@ client.on("message", message => {
 			}, function(err, response, fbody){
 				var HTMLParser = require('node-html-parser');
         var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
-        async function sendspecs(srch){
+        async function sendspecs(srch, words){
           var arr = [];
           var desc;
           var n = 0;
+          var name = [];
           for(var i=0; i<5; i++){
             if(JSON.parse(srch)[i] !== undefined){
               var t;
@@ -699,6 +700,7 @@ client.on("message", message => {
               desc += `**${t} : ${HTMLParser.parse(JSON.parse(srch)[i].html).childNodes[2].childNodes[0].rawText}**\n`
               n += 1
               arr.push(reaction_numbers[i+1])
+              name.push(HTMLParser.parse(JSON.parse(srch)[i].html).childNodes[2].childNodes[0].rawText)
             }
           }
           if(n == 1){
@@ -707,7 +709,12 @@ client.on("message", message => {
             }, function(err, response, body){
               var root = HTMLParser.parse(body);
               var name = HTMLParser.parse(JSON.parse(srch)[0].html).childNodes[2].childNodes[0].rawText;
-              var img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
+              var img;
+              try {
+                img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
+              } catch(e){
+                img = JSON.parse(srch)[0].html.split("background: url(")[1].split("); ")[0].replace("40/main.jpg", "320/main.jpg");
+              }
               var t = root.querySelector('.unconfirmed-specifications')
               var unconfirmed;
               if(t !== null){
@@ -725,80 +732,171 @@ client.on("message", message => {
               send(embed);
             });
           } else {
-            var embed = new Discord.RichEmbed()
-              .setColor(0xffffff)
-              .setTitle(lang.specs.title)
-              .setDescription(desc.replace(undefined, ""))
-              .setFooter('Source: DeviceSpecifications')
-            message.channel.send(embed).then(async (msg) => {
-              for(var i=1; i<(n+1); i++){
-                await msg.react(reaction_numbers[i])
-              }
-              const filter = (reaction, user) => {
-                return arr.includes(reaction.emoji.name) && user.id === message.author.id;
-              };
-              async function number(){
-                return new Promise(async function(resolve, reject){
-                  msg.awaitReactions(filter, { max: 1, time: 300000, errors: ['time'] })
-                    .then(collected => {
-                      const reaction = collected.first();
-                      if(reaction.emoji.name === reaction_numbers[1]){
-                        resolve(0)
-                      } else if(reaction.emoji.name === reaction_numbers[2]){
-                        resolve(1)
-                      } else if(reaction.emoji.name === reaction_numbers[3]){
-                        resolve(2)
-                      } else if(reaction.emoji.name === reaction_numbers[4]){
-                        resolve(3)
-                      } else if(reaction.emoji.name === reaction_numbers[5]){
-                        resolve(4)
-                      }
-                    })
-                    .catch(collected => {});
-                });
-              }
-              number().then(n => {
-                request.get({
-                  url: JSON.parse(srch)[n].url
-                }, function(err, response, body){
-                  var root = HTMLParser.parse(body);
-                  var name = HTMLParser.parse(JSON.parse(srch)[n].html).childNodes[2].childNodes[0].rawText;
-                  var img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
-                  var t = root.querySelector('.unconfirmed-specifications')
-                  var unconfirmed;
-                  if(t !== null){
-                    unconfirmed = lang.specs.unconfirmed
-                  } else {
-                    unconfirmed = lang.specs.confirmed
-                  }
-                  const embed = new Discord.RichEmbed()
-                    .setColor(0xffffff)
-                    .setTitle(name)
-                    .setURL(JSON.parse(srch)[n].url)
-                    .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
-                    .setThumbnail(img)
-                    .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
-                  msg.edit(embed);
-                });
-              })
-            });
+            var num = name.map(na => na.toLowerCase().replace(/\s/gm, "")).map(n => n === words.toLowerCase().replace(/\s/gm, ""));
+            var result = [];
+            var element = true;
+            var ids = num.indexOf(element);
+            while (ids != -1) {
+              result.push(ids);
+              ids = num.indexOf(element, ids + 1);
+            }
+		      	if(result[0] !== undefined){
+              var n = result[0];
+              request.get({
+                url: JSON.parse(srch)[n].url
+              }, function(err, response, body){
+                var root = HTMLParser.parse(body);
+                var name = HTMLParser.parse(JSON.parse(srch)[n].html).childNodes[2].childNodes[0].rawText;
+                var img;
+                try {
+                  img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
+                } catch(e){
+                  img = JSON.parse(srch)[n].html.split("background: url(")[1].split("); ")[0].replace("40/main.jpg", "320/main.jpg");
+                }
+                var t = root.querySelector('.unconfirmed-specifications')
+                var unconfirmed;
+                if(t !== null){
+                  unconfirmed = lang.specs.unconfirmed
+                } else {
+                  unconfirmed = lang.specs.confirmed
+                }
+                const embed = new Discord.RichEmbed()
+                  .setColor(0xffffff)
+                  .setTitle(name)
+                  .setURL(JSON.parse(srch)[n].url)
+                  .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
+                  .setThumbnail(img)
+                  .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
+                send(embed);
+              });
+            } else {
+              var embed = new Discord.RichEmbed()
+                .setColor(0xffffff)
+                .setTitle(lang.specs.title)
+                .setDescription(desc.replace(undefined, ""))
+                .setFooter('Source: DeviceSpecifications')
+              message.channel.send(embed).then(async (msg) => {
+                const filter = (reaction, user) => {
+                  return arr.includes(reaction.emoji.name) && user.id === message.author.id;
+                };
+                async function number(){
+                  return new Promise(async function(resolve, reject){
+                    msg.awaitReactions(filter, { max: 1, time: 300000, errors: ['time'] })
+                      .then(collected => {
+                        const reaction = collected.first();
+                        if(reaction.emoji.name === reaction_numbers[1]){
+                          resolve(0)
+                        } else if(reaction.emoji.name === reaction_numbers[2]){
+                          resolve(1)
+                        } else if(reaction.emoji.name === reaction_numbers[3]){
+                          resolve(2)
+                        } else if(reaction.emoji.name === reaction_numbers[4]){
+                          resolve(3)
+                        } else if(reaction.emoji.name === reaction_numbers[5]){
+                          resolve(4)
+                        }
+                      })
+                      .catch(collected => {});
+                    for(var i=1; i<(n+1); i++){
+                      await msg.react(reaction_numbers[i])
+                    }
+                  });
+                }
+                number().then(n => {
+                  request.get({
+                    url: JSON.parse(srch)[n].url
+                  }, function(err, response, body){
+                    var root = HTMLParser.parse(body);
+                    var name = HTMLParser.parse(JSON.parse(srch)[n].html).childNodes[2].childNodes[0].rawText;
+                    var img;
+                    try {
+                      img = root.querySelector('#model-image').rawAttrs.split("url(")[1].replace(');"', '');
+                    } catch(e){
+                      img = JSON.parse(srch)[n].html.split("background: url(")[1].split("); ")[0].replace("40/main.jpg", "320/main.jpg");
+                    }
+                    var t = root.querySelector('.unconfirmed-specifications')
+                    var unconfirmed;
+                    if(t !== null){
+                      unconfirmed = lang.specs.unconfirmed
+                    } else {
+                      unconfirmed = lang.specs.confirmed
+                    }
+                    const embed = new Discord.RichEmbed()
+                      .setColor(0xffffff)
+                      .setTitle(name)
+                      .setURL(JSON.parse(srch)[n].url)
+                      .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
+                      .setThumbnail(img)
+                      .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
+                    msg.edit(embed);
+                  });
+                })
+              });
+            }
           }
         }
 				if(fbody === "0") {
           var cdn = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1];
           var check = devicename(cdn);
           if(check !== cdn){
-            request.get({
-              url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check}`
-            }, function(err, response, fbody){
-              if(fbody === "0") return send(lang.specs.err)
-              sendspecs(fbody)
-            })
+            if(message.content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[2] !== undefined){
+              var sword = message.content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ").slice(2).join(" ")
+              request.get({
+                url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check} ${sword}`
+              }, function(err, response, fbody){
+                if(fbody === "0"){
+                  request.get({
+                    url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check}`
+                  }, function(err, response, fbody){
+                    if(fbody === "0") return send(lang.specs.err)
+                    sendspecs(fbody, check)
+                  })
+                } else {
+                  sendspecs(fbody, `${check} ${sword}`)
+                }
+              })
+            } else {
+              request.get({
+                url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check}`
+              }, function(err, response, fbody){
+                if(fbody === "0") return send(lang.specs.err)
+                sendspecs(fbody, check)
+              })
+            }
           } else {
             return send(lang.specs.err)
           }
         } else {
-          sendspecs(fbody)
+          var cdn = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1];
+          var check = devicename(cdn);
+          if(check !== cdn){
+            if(message.content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[2] !== undefined){
+              var sword = message.content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ").slice(2).join(" ")
+              request.get({
+                url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check} ${sword}`
+              }, function(err, response, fbody){
+                if(fbody === "0"){
+                  request.get({
+                    url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check}`
+                  }, function(err, response, fbody){
+                    if(fbody === "0") return sendspecs(fbody, search)
+                    sendspecs(fbody, check)
+                  })
+                } else {
+                  sendspecs(fbody, `${check} ${sword}`)
+                }
+              })
+            } else {
+              request.get({
+                url: `https://www.devicespecifications.com/index.php?action=search&language=${language}&search=${check}`
+              }, function(err, response, fbody){
+                if(fbody === "0") return sendspecs(fbody, search)
+                sendspecs(fbody, check)
+              })
+            }
+          } else {
+            sendspecs(fbody, search)
+          }
         }
 			});
 		} else {
