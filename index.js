@@ -739,7 +739,7 @@ client.on("message", message => {
               };
               async function number(){
                 return new Promise(async function(resolve, reject){
-                  msg.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+                  msg.awaitReactions(filter, { max: 1, time: 300000, errors: ['time'] })
                     .then(collected => {
                       const reaction = collected.first();
                       if(reaction.emoji.name === reaction_numbers[1]){
