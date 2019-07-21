@@ -495,69 +495,79 @@ client.on("message", message => {
 		}
 	//Codename Search
 	} else if(content.startsWith(`${prefix}cdn`)){
-		const srch = message.content.split(' ').slice(1).join(' ')
+		const srch = message.content.split(' ').slice(1).join(' ').trim()
 		if(srch !== ""){
-			var values = Object.values(require("./device.json"));
-			var keys = Object.keys(require("./device.json"));
-			var num = values.map(n => n.toLowerCase()).map(n => n.indexOf(srch.toLowerCase()) !== -1);
-			var indices = [];
-			var element = true;
-			var ids = num.indexOf(element);
-			while (ids != -1) {
-				indices.push(ids);
-				ids = num.indexOf(element, ids + 1);
-			}
-			var result = indices.map(n => { return `\`${keys[n]}\`: ${values[n]}`})
-      var s;
-      if(result.length <= 1){
-        s = "";
+      if(srch.startsWith("/s ")){
+        const device = require('./device.json');
+        var cdn = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(' ')[2]
+        if(device[cdn] !== undefined){
+          return send(lang.cdn.tc+"`"+device[cdn]+"`"); 
+        } else {
+          return send(lang.cdn.nod);
+        }
       } else {
-        s = "s";
+        var values = Object.values(require("./device.json"));
+        var keys = Object.keys(require("./device.json"));
+        var num = values.map(n => n.toLowerCase().replace(/\s/gm, "")).map(n => n.indexOf(srch.toLowerCase().replace(/\s/gm, "")) !== -1);
+        var indices = [];
+        var element = true;
+        var ids = num.indexOf(element);
+        while (ids != -1) {
+          indices.push(ids);
+          ids = num.indexOf(element, ids + 1);
+        }
+        var result = indices.map(n => { return `\`${keys[n]}\`: ${values[n]}`})
+        var s;
+        if(result.length <= 1){
+          s = "";
+        } else {
+          s = "s";
+        }
+        const embed = new Discord.RichEmbed()
+          .setTitle(`${result.length} ${lang.cdn.result + s} | ${srch}`)
+          .setColor(0xFFFFFF);
+        if(result[0] === undefined){
+          return send(lang.cdn.nocdn)
+        } else if(result.join("\n").length <= 2048){
+          embed.setDescription(result.join("\n"));
+        } else {
+          var txt;
+          var arr = [];
+          var i = 0;
+          do{
+            txt += result[i] + "\n"
+            if(txt.length > 1024){
+              txt.split("\n").slice(0, -1).join("\n");
+              i--
+              var n = true
+              do {
+                if(txt.length > 1024){
+                  txt.split("\n").slice(0, -1).join("\n");
+                  i--
+                  arr.push(txt)
+                  txt = "";
+                } else {
+                  arr.push(txt)
+                  txt = "";
+                  n = false
+                }
+              } while(n)
+            } else if(txt.length <= 1024 && txt.length >= 985) {
+              arr.push(txt)
+              txt = "";
+            }
+            i++
+          } while (i <= result.length)
+          if(arr.length > 6){
+            return send(lang.cdn.lot.replace("{results}", result.length))
+          } else {
+            for(i=0; i<arr.length; i++){
+              embed.addField(i, arr[i].replace(undefined, ""), true)
+            }
+          }
+        }
+        send(embed);
       }
-			const embed = new Discord.RichEmbed()
-				.setTitle(`${result.length} ${lang.cdn.result + s} | ${srch}`)
-				.setColor(0xFFFFFF);
-			if(result[0] === undefined){
-				return send(lang.cdn.nocdn)
-			} else if(result.join("\n").length <= 2048){
-				embed.setDescription(result.join("\n"));
-			} else {
-				var txt;
-				var arr = [];
-				var i = 0;
-				do{
-					txt += result[i] + "\n"
-					if(txt.length > 1024){
-						txt.split("\n").slice(0, -1).join("\n");
-						i--
-						var n = true
-						do {
-							if(txt.length > 1024){
-								txt.split("\n").slice(0, -1).join("\n");
-								i--
-								arr.push(txt)
-								txt = "";
-							} else {
-								arr.push(txt)
-								txt = "";
-								n = false
-							}
-						} while(n)
-					} else if(txt.length <= 1024 && txt.length >= 985) {
-						arr.push(txt)
-						txt = "";
-					}
-					i++
-				} while (i <= result.length)
-				if(arr.length > 6){
-					return send(lang.cdn.lot.replace("{results}", result.length))
-				} else {
-					for(i=0; i<arr.length; i++){
-						embed.addField(i, arr[i].replace(undefined, ""), true)
-					}
-				}
-			}
-			send(embed);
 		} else {
 			send(lang.cdn.nosrch)
 		}
