@@ -1830,23 +1830,19 @@ client.on("message", message => {
 	} else if(content.startsWith(`${prefix}evo`) || content.startsWith(`${prefix}evox`) || content.startsWith(`${prefix}evolutionx`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
-			if(codename !== "enchilada"){
-				const codenameup = content.split(' ')[1].toUpperCase();
-				const start = "https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/"
-				rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true).then(response => {
-					if(response){
-						const embed = new Discord.RichEmbed()
-							.setColor(0xb0c9ce)
-							.setTitle(`Evolution-X | ${devicename(codename)}`)
-							.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						send(lang.romerr+" `"+devicename(codename)+"`")
-					}
-				});
-			} else {
-				send(lang.romerr+" `"+devicename(codename)+"`")
-			}
+			const codenameup = content.split(' ')[1].toUpperCase();
+			const start = "https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/"
+			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true).then(response => {
+				if(response){
+					const embed = new Discord.RichEmbed()
+						.setColor(0xb0c9ce)
+						.setTitle(`Evolution-X | ${devicename(codename)}`)
+						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+					send({embed});
+				} else {
+					send(lang.romerr+" `"+devicename(codename)+"`")
+				}
+			});
 		} else {
 			send(lang.cdnerr)
 		}
@@ -2206,7 +2202,6 @@ client.on("message", message => {
 			rom(`${start}ota_${codename}_official.xml`, `${start}ota_${codenameup}_official.xml`, false, false, false, false, true).then(off => {
 			//Experimental
 			rom(`${start}ota_${codename}_experimental.xml`, `${start}ota_${codenameup}_experimental.xml`, false, false, false, false, true).then(exp => {
-				console.log(off + exp)
 				function check(respo, n){
 					if(respo){
 						function resp(cdn, cdnup) {
@@ -2372,53 +2367,25 @@ client.on("message", message => {
 				});
 			}
 			async function rombody(url, urlup, name) {
-				if(codename === "enchilada"){
-					if(name === "Evolution-X (evo/evox)"){
-						return new Promise(function(resolve, reject) {
-							resolve(false);
-						});
-					} else {
-						return new Promise(function(resolve, reject) {
+				return new Promise(function(resolve, reject) {
+					request({
+						url
+					}, function(err, responses, bodyurl) {
+						if(responses.statusCode === 200){
+							resolve(`${name}\n`);
+						} else {
 							request({
-								url
+								url: urlup
 							}, function(err, responses, bodyurl) {
 								if(responses.statusCode === 200){
 									resolve(`${name}\n`);
 								} else {
-									request({
-										url: urlup
-									}, function(err, responses, bodyurl) {
-										if(responses.statusCode === 200){
-											resolve(`${name}\n`);
-										} else {
-											resolve(false);
-										}
-									});
+									resolve(false);
 								}
 							});
-						});
-					}
-				} else {
-					return new Promise(function(resolve, reject) {
-						request({
-							url
-						}, function(err, responses, bodyurl) {
-							if(responses.statusCode === 200){
-								resolve(`${name}\n`);
-							} else {
-								request({
-									url: urlup
-								}, function(err, responses, bodyurl) {
-									if(responses.statusCode === 200){
-										resolve(`${name}\n`);
-									} else {
-										resolve(false);
-									}
-								});
-							}
-						});
+						}
 					});
-				}
+				});
 			}
 			async function romlos(url, urlup, name) {
 				return new Promise(function(resolve, reject) {
@@ -2801,7 +2768,7 @@ client.on("message", message => {
 			roms(`https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codename}/build.json`, `https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codenameup}/build.json`, "CerberusOS (cerberus)").then(cerberus => {
 			//MSM Xtended
 			rommsm(codename, codenameup, "MSM Xtended (msm)").then(msm => {
-				
+        
 				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone, kotp, aicp, nitrogen, cerberus, msm
 				
 				
@@ -2825,7 +2792,7 @@ client.on("message", message => {
 				}
         message.channel.stopTyping();
 				
-			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
+			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
