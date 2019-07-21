@@ -62,7 +62,9 @@
       "nocdn":"Aucun codename pour ce nom trouvé",
       "nosrch":"Veuillez mettre un nom d'appareil",
       "lot":"Trop d'élément de recherche ({results} résultats), veuillez réessayer avec plus de précision",
-      "result":"Résultat"
+      "result":"Résultat",
+      "nod": "Pas d'appareil trouvé pour ce codename",
+      "tc": "ce codename correspond au "
     },
     "sm":{
       "nomodel":"Aucun codename/appareil pour ce model trouvé",
@@ -199,7 +201,9 @@
       "nocdn":"No codename find for this name",
       "nosrch":"Please enter a device name",
       "lot":"Too many search items ({results} results), please try again with more precision",
-      "result":"Result"
+      "result":"Result",
+      "nod": "No device find for this codename",
+      "tc": "This codename corresponds to the "
     },
     "sm":{
       "nomodel":"No codename/device for this model found",
