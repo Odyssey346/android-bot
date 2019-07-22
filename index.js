@@ -879,7 +879,7 @@ client.on("message", message => {
         } else {
           var cdn = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[1];
           var check = devicename(cdn);
-          if(check !== cdn){
+          if(check !== cdn && check.toLowerCase().replace(/\s/gm, "") !== "oneplusx"){
             if(message.content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ")[2] !== undefined){
               var sword = message.content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(" ").slice(2).join(" ")
               request.get({
