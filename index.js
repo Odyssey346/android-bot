@@ -693,7 +693,7 @@ client.on("message", message => {
           var desc;
           var n = 0;
           var name = [];
-          for(var i=0; i<5; i++){
+          for(var i=0; i<JSON.parse(srch).length; i++){
             if(JSON.parse(srch)[i] !== undefined){
               var t;
               if(i == 0){
@@ -707,9 +707,11 @@ client.on("message", message => {
               } else if(i == 4){
                 t = ":five:"
               }
-              desc += `**${t} : ${HTMLParser.parse(JSON.parse(srch)[i].html).childNodes[2].childNodes[0].rawText}**\n`
-              n += 1
-              arr.push(reaction_numbers[i+1])
+              if(i<5){
+                desc += `**${t} : ${HTMLParser.parse(JSON.parse(srch)[i].html).childNodes[2].childNodes[0].rawText}**\n`
+                n += 1
+                arr.push(reaction_numbers[i+1])
+              }
               name.push(HTMLParser.parse(JSON.parse(srch)[i].html).childNodes[2].childNodes[0].rawText)
             }
           }
@@ -738,11 +740,23 @@ client.on("message", message => {
                 .setURL(JSON.parse(srch)[0].url)
                 .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
                 .setThumbnail(img)
-                .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
-              send(embed);
+                .setFooter(`DeviceSpecifications | ${unconfirmed}`, "https://cdn.glitch.com/e06e70b7-0cae-44dd-99e0-73218656fa22%2Ffavicon.png?v=1563951283975")
+              message.channel.send(embed).then(async (msg) => {
+                await msg.react("❌")
+                const filter = (reaction, user) => {
+                  try {
+                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id || message.member.hasPermission("MANAGE_MESSAGES", false, true, true) && user.id !== client.user.id;
+                  } catch(e) {
+                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id && user.id !== client.user.id;
+                  }
+                };
+                msg.awaitReactions(filter, { max: 1, time: 600000, errors: ['time'] })
+                  .then(collected => {msg.delete(500);message.delete(500).catch(e => {return e})})
+                  .catch(collected => {});
+              });
             });
           } else {
-            var num = name.map(na => na.toLowerCase().replace(/\s/gm, "")).map(n => n === words.toLowerCase().replace(/\s/gm, ""));
+            var num = name.map(na => na.toLowerCase().replace(/\s/gm, "").trim()).map(na => na === words.toLowerCase().replace(/\s/gm, "").trim());
             var result = [];
             var element = true;
             var ids = num.indexOf(element);
@@ -776,18 +790,37 @@ client.on("message", message => {
                   .setURL(JSON.parse(srch)[n].url)
                   .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
                   .setThumbnail(img)
-                  .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
-                send(embed);
+                  .setFooter(`DeviceSpecifications | ${unconfirmed}`, "https://cdn.glitch.com/e06e70b7-0cae-44dd-99e0-73218656fa22%2Ffavicon.png?v=1563951283975")
+                message.channel.send(embed).then(async (msg) => {
+                  await msg.react("❌")
+                  const filter = (reaction, user) => {
+                    try {
+                      return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id || message.member.hasPermission("MANAGE_MESSAGES", false, true, true) && user.id !== client.user.id;
+                    } catch(e) {
+                      return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id && user.id !== client.user.id;
+                    }
+                  };
+                  msg.awaitReactions(filter, { max: 1, time: 600000, errors: ['time'] })
+                    .then(collected => {msg.delete(500);message.delete(500).catch(e => {return e})})
+                    .catch(collected => {});
+                });
               });
             } else {
               var embed = new Discord.RichEmbed()
                 .setColor(0xffffff)
                 .setTitle(lang.specs.title)
                 .setDescription(desc.replace(undefined, ""))
-                .setFooter('Source: DeviceSpecifications')
+                .setFooter("DeviceSpecifications", "https://cdn.glitch.com/e06e70b7-0cae-44dd-99e0-73218656fa22%2Ffavicon.png?v=1563951283975")
               message.channel.send(embed).then(async (msg) => {
                 const filter = (reaction, user) => {
                   return arr.includes(reaction.emoji.name) && user.id === message.author.id;
+                };
+                const xfilter = (reaction, user) => {
+                  try {
+                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id || message.member.hasPermission("MANAGE_MESSAGES", false, true, true) && user.id !== client.user.id;
+                  } catch(e) {
+                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id && user.id !== client.user.id;
+                  }
                 };
                 async function number(){
                   return new Promise(async function(resolve, reject){
@@ -807,12 +840,21 @@ client.on("message", message => {
                         }
                       })
                       .catch(collected => {});
+                    msg.awaitReactions(xfilter, { max: 1, time: 600000, errors: ['time'] })
+                      .then(collected => {
+                        msg.delete(500)
+                        message.delete(500).catch(e => {return e})
+                        resolve(false)
+                      })
+                      .catch(collected => {});
                     for(var i=1; i<(n+1); i++){
                       await msg.react(reaction_numbers[i])
                     }
+                    await msg.react("❌")
                   });
                 }
                 number().then(n => {
+                  if(n === false) return;
                   request.get({
                     url: JSON.parse(srch)[n].url
                   }, function(err, response, body){
@@ -837,7 +879,7 @@ client.on("message", message => {
                       .setURL(JSON.parse(srch)[n].url)
                       .setDescription(root.querySelector('#model-brief-specifications').toString().replace('<div id="model-brief-specifications">', '').split('<a href="#"')[0].split('<br />').slice(0, -1).slice(0, -1).join("\n").replace("\r\n", "").trim().replace(/(<b>)+/gm, "**").replace(/(<[/]b>)+/gm, "**"))
                       .setThumbnail(img)
-                      .setFooter(`Source: DeviceSpecifications | ${unconfirmed}`)
+                      .setFooter(`DeviceSpecifications | ${unconfirmed}`, "https://cdn.glitch.com/e06e70b7-0cae-44dd-99e0-73218656fa22%2Ffavicon.png?v=1563951283975")
                     msg.edit(embed);
                   });
                 })
