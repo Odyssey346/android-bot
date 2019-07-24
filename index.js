@@ -742,18 +742,26 @@ client.on("message", message => {
                 .setThumbnail(img)
                 .setFooter(`DeviceSpecifications | ${unconfirmed}`, "https://cdn.glitch.com/e06e70b7-0cae-44dd-99e0-73218656fa22%2Ffavicon.png?v=1563951283975")
               message.channel.send(embed).then(async (msg) => {
+                var time = new Date().getTime() + 600000
                 await msg.react("❌")
-                const filter = (reaction, user) => {
-                  try {
-                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id || message.member.hasPermission("MANAGE_MESSAGES", false, true, true) && user.id !== client.user.id;
-                  } catch(e) {
-                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id && user.id !== client.user.id;
+                client.on("messageReactionAdd", (reaction, user) => {
+                  if(new Date().getTime() > time || reaction.message.id !== msg.id) return;
+                  var hasPerm;
+                  if(msg.channel.type === "dm") {
+                    if(reaction.emoji.name === "❌" && user.id !== client.user.id && !user.bot && user.id === message.author.id){
+                      msg.delete(500)
+                    }
+                  } else {
+                    if(reaction.emoji.name === "❌" && user.id !== client.user.id && !user.bot && msg.guild.members.get(user.id).hasPermission("MANAGE_MESSAGES", false, true, true)){
+                      msg.delete(500)
+                      message.delete(500).catch(e => {return})
+                    } else if(reaction.emoji.name === "❌" && user.id !== client.user.id && !user.bot && user.id === message.author.id){
+                      msg.delete(500)
+                      message.delete(500).catch(e => {return})
+                    }
                   }
-                };
-                msg.awaitReactions(filter, { max: 1, time: 600000, errors: ['time'] })
-                  .then(collected => {msg.delete(500);message.delete(500).catch(e => {return e})})
-                  .catch(collected => {});
-              });
+                });
+              })
             });
           } else {
             var num = name.map(na => na.toLowerCase().replace(/\s/gm, "").trim()).map(na => na === words.toLowerCase().replace(/\s/gm, "").trim());
@@ -792,18 +800,26 @@ client.on("message", message => {
                   .setThumbnail(img)
                   .setFooter(`DeviceSpecifications | ${unconfirmed}`, "https://cdn.glitch.com/e06e70b7-0cae-44dd-99e0-73218656fa22%2Ffavicon.png?v=1563951283975")
                 message.channel.send(embed).then(async (msg) => {
+                  var time = new Date().getTime() + 600000
                   await msg.react("❌")
-                  const filter = (reaction, user) => {
-                    try {
-                      return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id || message.member.hasPermission("MANAGE_MESSAGES", false, true, true) && user.id !== client.user.id;
-                    } catch(e) {
-                      return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id && user.id !== client.user.id;
+                  client.on("messageReactionAdd", (reaction, user) => {
+                    if(new Date().getTime() > time || reaction.message.id !== msg.id) return;
+                    var hasPerm;
+                    if(msg.channel.type === "dm") {
+                      if(reaction.emoji.name === "❌" && user.id !== client.user.id && !user.bot && user.id === message.author.id){
+                        msg.delete(500)
+                      }
+                    } else {
+                      if(reaction.emoji.name === "❌" && user.id !== client.user.id && !user.bot && msg.guild.members.get(user.id).hasPermission("MANAGE_MESSAGES", false, true, true)){
+                        msg.delete(500)
+                        message.delete(500).catch(e => {return})
+                      } else if(reaction.emoji.name === "❌" && user.id !== client.user.id && !user.bot && user.id === message.author.id){
+                        msg.delete(500)
+                        message.delete(500).catch(e => {return})
+                      }
                     }
-                  };
-                  msg.awaitReactions(filter, { max: 1, time: 600000, errors: ['time'] })
-                    .then(collected => {msg.delete(500);message.delete(500).catch(e => {return e})})
-                    .catch(collected => {});
-                });
+                  });
+                })
               });
             } else {
               var embed = new Discord.RichEmbed()
@@ -812,41 +828,47 @@ client.on("message", message => {
                 .setDescription(desc.replace(undefined, ""))
                 .setFooter("DeviceSpecifications", "https://cdn.glitch.com/e06e70b7-0cae-44dd-99e0-73218656fa22%2Ffavicon.png?v=1563951283975")
               message.channel.send(embed).then(async (msg) => {
-                const filter = (reaction, user) => {
-                  return arr.includes(reaction.emoji.name) && user.id === message.author.id;
-                };
-                const xfilter = (reaction, user) => {
-                  try {
-                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id || message.member.hasPermission("MANAGE_MESSAGES", false, true, true) && user.id !== client.user.id;
-                  } catch(e) {
-                    return ["❌"].includes(reaction.emoji.name) && user.id === message.author.id && user.id !== client.user.id;
-                  }
-                };
                 async function number(){
                   return new Promise(async function(resolve, reject){
-                    msg.awaitReactions(filter, { max: 1, time: 300000, errors: ['time'] })
-                      .then(collected => {
-                        const reaction = collected.first();
-                        if(reaction.emoji.name === reaction_numbers[1]){
+                    var time = new Date().getTime() + 600000
+                    client.on("messageReactionAdd", (reaction, user) => {
+                      if(new Date().getTime() > time || reaction.message.id !== msg.id) return;
+                      if(msg.channel.type === "dm") {
+                        if(reaction.emoji.name === reaction_numbers[1] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
                           resolve(0)
-                        } else if(reaction.emoji.name === reaction_numbers[2]){
+                        } else if(reaction.emoji.name === reaction_numbers[2] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
                           resolve(1)
-                        } else if(reaction.emoji.name === reaction_numbers[3]){
+                        } else if(reaction.emoji.name === reaction_numbers[3] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
                           resolve(2)
-                        } else if(reaction.emoji.name === reaction_numbers[4]){
+                        } else if(reaction.emoji.name === reaction_numbers[4] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
                           resolve(3)
-                        } else if(reaction.emoji.name === reaction_numbers[5]){
+                        } else if(reaction.emoji.name === reaction_numbers[5] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
                           resolve(4)
+                        } else if(reaction.emoji.name === "❌" && user.id !== client.user.id && !user.bot && user.id === message.author.id){
+                          msg.delete(500)
                         }
-                      })
-                      .catch(collected => {});
-                    msg.awaitReactions(xfilter, { max: 1, time: 600000, errors: ['time'] })
-                      .then(collected => {
-                        msg.delete(500)
-                        message.delete(500).catch(e => {return e})
-                        resolve(false)
-                      })
-                      .catch(collected => {});
+                      } else {
+                        if(reaction.emoji.name === reaction_numbers[1] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
+                          resolve(0)
+                        } else if(reaction.emoji.name === reaction_numbers[2] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
+                          resolve(1)
+                        } else if(reaction.emoji.name === reaction_numbers[3] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
+                          resolve(2)
+                        } else if(reaction.emoji.name === reaction_numbers[4] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
+                          resolve(3)
+                        } else if(reaction.emoji.name === reaction_numbers[5] && user.id !== client.user.id && !user.bot && user.id === message.author.id && reaction.message.edits.length < 3){
+                          resolve(4)
+                        } else if(reaction.emoji.name === "❌"){
+                          if(user.id !== client.user.id && !user.bot && msg.guild.members.get(user.id).hasPermission("MANAGE_MESSAGES", false, true, true)){
+                            msg.delete(500)
+                            message.delete(500).catch(e => {return})
+                          } else if(user.id !== client.user.id && !user.bot && user.id === message.author.id){
+                            msg.delete(500)
+                            message.delete(500).catch(e => {return})
+                          }
+                        }
+                      }
+                    });
                     for(var i=1; i<(n+1); i++){
                       await msg.react(reaction_numbers[i])
                     }
@@ -854,7 +876,6 @@ client.on("message", message => {
                   });
                 }
                 number().then(n => {
-                  if(n === false) return;
                   request.get({
                     url: JSON.parse(srch)[n].url
                   }, function(err, response, body){
