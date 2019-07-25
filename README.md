@@ -23,7 +23,7 @@ prefix: .
 * Resurrection Remix
 * SuperiorOS
 * RevengeOS
-* Android Open Source illusion Project
+* Android Open Source illusion Project (AOSiP)
 * ArrowOS
 * Liquid Remix
 * Dirty Unicorns
