@@ -1266,7 +1266,50 @@ client.on("message", message => {
 		.setDescription(desc.replace(undefined, ""))
 	      send(e)
 	    }
-	}
+  } else if(content.startsWith(".reboot") || content.startsWith(".restart")){
+    if(message.author.id !== config.owner) return;
+    message.channel.send(`Restarting...`).then(msg => process.exit(1))
+  } else if(content.startsWith(`${prefix}disable`)){
+    if(message.author.id !== config.owner) return;
+    var rom = content.replace( /\\'/g, '\'' ).replace( /\\t/g, '' ).replace(/\s\s+/g, ' ').replace(/(\n|\r)+$/, '').trim().split(' ')[1];
+    var json = require("./disable.json");
+    var roms = Object.keys(json);
+    if(!roms.includes(rom)) return send(`please enter the rom you want to disable/enable : ${roms.map(n => "`"+n+"`").join(", ")}`)
+    var status;
+    if(!json[rom]){
+      status = "enabled"
+    } else {
+      status = "disabled"
+    }
+    var e = new Discord.RichEmbed()
+      .setTitle(`Disable/Enable \`${rom}\` command`)
+      .setDescription(`**Status**: \`${status}\`\n\n✅: Enable\n❌: Disable\n↩: Cancel`)
+    message.channel.send(e).then(async (msg) => {
+      var time = new Date().getTime() + 150000
+      var ed = false;
+      const writeFile = require("write-file");
+      client.on("messageReactionAdd", (reaction, user) => {
+        if(new Date().getTime() > time || reaction.message.id !== msg.id || ed) return;
+        if(reaction.emoji.name === "✅" && user.id === config.owner){
+          json[rom] = false
+          writeFile('./disable.json', JSON.stringify(json, null, 4), function(err){if (err) throw err})
+          ed = true
+          msg.edit(new Discord.RichEmbed().setTitle(`the command \`${rom}\` have been enabled`))
+        } else if(reaction.emoji.name === "❌" && user.id === config.owner){
+          json[rom] = true
+          writeFile('./disable.json', JSON.stringify(json, null, 4), function(err){if (err) throw err})
+          ed = true
+          msg.edit(new Discord.RichEmbed().setTitle(`the command \`${rom}\` have been disabled`))
+        } else if(reaction.emoji.name === "↩" && user.id === config.owner){
+          ed = true
+          msg.edit(new Discord.RichEmbed().setTitle(`canceled`))
+        }
+      });
+      await msg.react("✅");
+      await msg.react("❌");
+      await msg.react("↩");
+    });
+  }
 });
 
 //Play Store
@@ -1467,6 +1510,7 @@ client.on("message", message => {
 	}
 	function send(msg){channel.send(msg)};
 	function sendmp(msg){author.send(msg).catch(() => send(msg))};
+  const djson = require("./disable.json");
 	async function rom(url, urlup, body, btlg, cosp, crdroid, xml, dirty, error, end, cdn, cdnup, bkpurl, bkpurlup, posp) {
 		return new Promise(function(resolve, reject){
 			if(body){
@@ -1717,1145 +1761,1267 @@ client.on("message", message => {
 	}
 	//HavocOS
 	if(content.startsWith(`${prefix}havoc`) || content.startsWith(`${prefix}havocos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x1A73E8)
-						.setTitle(`HavocOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed})
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.havoc){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0x1A73E8)
+              .setTitle(`HavocOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed})
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//PixysOS
 	} else if(content.startsWith(`${prefix}pixy`) || content.startsWith(`${prefix}pixys`) || content.startsWith(`${prefix}pixysos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/"
-			rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x9abcf2)
-						.setTitle(`PixysOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.pixys){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/"
+        rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0x9abcf2)
+              .setTitle(`PixysOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//PearlOS
 	} else if(content.startsWith(`${prefix}pearl`) || content.startsWith(`${prefix}pearlos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/PearlOS/OTA/master/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x4d7dc4)
-						.setTitle(`PearlOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.pearl){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/PearlOS/OTA/master/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0x4d7dc4)
+              .setTitle(`PearlOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//DotOS
 	} else if(content.startsWith(`${prefix}dotos` || content.startsWith(`${prefix}dot`))){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/DotOS/ota_config/dot-p/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0xef2222)
-						.setTitle(`DotOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.dot){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/DotOS/ota_config/dot-p/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0xef2222)
+              .setTitle(`DotOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//ResurrectionRemix
 	} else if(content.startsWith(`${prefix}rr`) || content.startsWith(`${prefix}resurrection`) || content.startsWith(`${prefix}resurrectionremix`) || content.startsWith(`${prefix}rros`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x1A1C1D)
-						.setTitle(`Resurrection Remix | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.rr){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+          if(response){
+            var url = response.url;
+            if(url.includes("sourceforge")) url = `https://get.resurrectionremix.com/${response.filename.split("-")[4]}/${response.filename}`
+            const embed = new Discord.RichEmbed()
+              .setColor(0x1A1C1D)
+              .setTitle(`Resurrection Remix | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//SuperiorOS
 	} else if(content.startsWith(`${prefix}superior`) || content.startsWith(`${prefix}superioros`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase
-			const start = "https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0xbe1421)
-						.setTitle(`SuperiorOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.superior){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase
+        const start = "https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0xbe1421)
+              .setTitle(`SuperiorOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//ViperOS
 	} else if(content.startsWith(`${prefix}viper`) || content.startsWith(`${prefix}viperos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/Viper-Devices/official_devices/master/"
-			if(codename === "daisy"){
-				rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`, true).then(response => {
-					if(response){
-						const embed = new Discord.RichEmbed()
-							.setColor(0x4184f4)
-							.setTitle(`ViperOS | ${devicename(codename)}`)
-							.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						send(lang.romerr+" `"+devicename(codename)+"`")
-					}
-				});
-			} else {
-				rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
-					if(response){
-						const embed = new Discord.RichEmbed()
-							.setColor(0x4184f4)
-							.setTitle(`ViperOS | ${devicename(codename)}`)
-							.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-						send({embed});
-					} else {
-						send(lang.romerr+" `"+devicename(codename)+"`")
-					}
-				});
-			}
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.viper){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/Viper-Devices/official_devices/master/"
+        if(codename === "daisy"){
+          rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`, true).then(response => {
+            if(response){
+              const embed = new Discord.RichEmbed()
+                .setColor(0x4184f4)
+                .setTitle(`ViperOS | ${devicename(codename)}`)
+                .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+              send({embed});
+            } else {
+              send(lang.romerr+" `"+devicename(codename)+"`")
+            }
+          });
+        } else {
+          rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
+            if(response){
+              const embed = new Discord.RichEmbed()
+                .setColor(0x4184f4)
+                .setTitle(`ViperOS | ${devicename(codename)}`)
+                .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+              send({embed});
+            } else {
+              send(lang.romerr+" `"+devicename(codename)+"`")
+            }
+          });
+        }
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//LineageOS
 	} else if(content.startsWith(`${prefix}lineage`) || content.startsWith(`${prefix}los`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://download.lineageos.org/api/v1/"
-			rom(`${start}${codename}/nightly/*`, `${start}${codenameup}/nightly/*`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x167C80)
-						.setTitle(`LineageOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.los){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://download.lineageos.org/api/v1/"
+        rom(`${start}${codename}/nightly/*`, `${start}${codenameup}/nightly/*`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0x167C80)
+              .setTitle(`LineageOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Evolution-X
 	} else if(content.startsWith(`${prefix}evo`) || content.startsWith(`${prefix}evox`) || content.startsWith(`${prefix}evolutionx`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0xb0c9ce)
-						.setTitle(`Evolution-X | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.evo){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0xb0c9ce)
+              .setTitle(`Evolution-X | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//AOSP Extended AEX
 	} else if(content.startsWith(`${prefix}aex`) || content.startsWith(`${prefix}aospextended`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://api.aospextended.com/ota/"
-			//Pie
-			rom(`${start}${codename}/pie`, `${start}${codenameup}/pie`, true).then(pie => {
-			//Oreo
-			rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
-				function check(response){
-					if(response){
-						return "**"+lang.date+"**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+pretty(response.filesize)+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
-					} else {
-						return lang.norom
-					}
-				}
-				const embed = new Discord.RichEmbed()
-					.setColor(0xf8ba00)
-					.setTitle(`AEX | ${devicename(codename)}`)
-					.addField("Pie", check(pie))
-					.addField("Oreo", check(oreo))
-				send({embed})
-			})});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.aex){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://api.aospextended.com/ota/"
+        //Pie
+        rom(`${start}${codename}/pie`, `${start}${codenameup}/pie`, true).then(pie => {
+        //Oreo
+        rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
+          function check(response){
+            if(response){
+              return "**"+lang.date+"**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+pretty(response.filesize)+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+            } else {
+              return lang.norom
+            }
+          }
+          const embed = new Discord.RichEmbed()
+            .setColor(0xf8ba00)
+            .setTitle(`AEX | ${devicename(codename)}`)
+            .addField("Pie", check(pie))
+            .addField("Oreo", check(oreo))
+          send({embed})
+        })});
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//BootleggersROM
 	} else if(content.startsWith(`${prefix}bootleggers`) || content.startsWith(`${prefix}btlg`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://bootleggersrom-devices.github.io/api/devices.json"
-			rom(start, start, false, true, false, false, false, false, false, false, codename, codenameup).then(response => {
-				if(response){
-					function size(size, prettysize){
-						if(prettysize === "0 Bytes"){
-							if(size.indexOf("(") !== -1){
-								return size.split('(')[0]
-							} else {
-								return size
-							}
-						} else {
-							return prettysize
-						}
-					}
-					const embed = new Discord.RichEmbed()
-						.setColor(0x515262)
-						.setTitle(`BootleggersROM | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+ `${response.filename.split('-')[4].substring(0, 4)}-${response.filename.split('-')[4].substring(4, 6)}-${response.filename.split('-')[4].substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+size(response.buildsize, pretty(response.buildsize))+"`**\n**"+lang.version+"**: **`"+`${response.filename.split('-')[1].split('.')[1]}.${response.filename.split('-')[1].split('.')[2]}`+"`**\n"+`**${lang.download}**: [${response.filename}](${response.download})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.btlg){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://bootleggersrom-devices.github.io/api/devices.json"
+        rom(start, start, false, true, false, false, false, false, false, false, codename, codenameup).then(response => {
+          if(response){
+            function size(size, prettysize){
+              if(prettysize === "0 Bytes"){
+                if(size.indexOf("(") !== -1){
+                  return size.split('(')[0]
+                } else {
+                  return size
+                }
+              } else {
+                return prettysize
+              }
+            }
+            const embed = new Discord.RichEmbed()
+              .setColor(0x515262)
+              .setTitle(`BootleggersROM | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+ `${response.filename.split('-')[4].substring(0, 4)}-${response.filename.split('-')[4].substring(4, 6)}-${response.filename.split('-')[4].substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+size(response.buildsize, pretty(response.buildsize))+"`**\n**"+lang.version+"**: **`"+`${response.filename.split('-')[1].split('.')[1]}.${response.filename.split('-')[1].split('.')[2]}`+"`**\n"+`**${lang.download}**: [${response.filename}](${response.download})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Pixel Experience
 	} else if(content.startsWith(`${prefix}pe`) || content.startsWith(`${prefix}pixelexperience`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://download.pixelexperience.org/ota_v2/"
-			//Pie
-			rom(`${start}${codename}/pie`, `${start}${codenameup}/pie`, true).then(pie => {
-			//CAF
-			rom(`${start}${codename}/pie_caf`, `${start}${codenameup}/pie_caf`, true).then(caf => {
-			//Go
-			rom(`${start}${codename}/pie_go`, `${start}${codenameup}/pie_go`, true).then(go => {
-			//Oreo
-			rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
-				function check(response){
-					if(response){
-						return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
-					} else {
-						return lang.norom
-					}
-				}
-				const embed = new Discord.RichEmbed()
-					.setColor(0xf8ba00)
-					.setTitle(`Pixel Experience | ${devicename(codename)}`)
-					.addField("Pie", check(pie))
-					.addField("Pie-CAF", check(caf))
-					.addField("Pie Go", check(go))
-					.addField("Oreo", check(oreo))
-				send({embed})
-			})})})});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.pe){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://download.pixelexperience.org/ota_v2/"
+        //Pie
+        rom(`${start}${codename}/pie`, `${start}${codenameup}/pie`, true).then(pie => {
+        //CAF
+        rom(`${start}${codename}/pie_caf`, `${start}${codenameup}/pie_caf`, true).then(caf => {
+        //Go
+        rom(`${start}${codename}/pie_go`, `${start}${codenameup}/pie_go`, true).then(go => {
+        //Oreo
+        rom(`${start}${codename}/oreo`, `${start}${codenameup}/oreo`, true).then(oreo => {
+          function check(response){
+            if(response){
+              return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+            } else {
+              return lang.norom
+            }
+          }
+          const embed = new Discord.RichEmbed()
+            .setColor(0xf8ba00)
+            .setTitle(`Pixel Experience | ${devicename(codename)}`)
+            .addField("Pie", check(pie))
+            .addField("Pie-CAF", check(caf))
+            .addField("Pie Go", check(go))
+            .addField("Oreo", check(oreo))
+          send({embed})
+        })})})});
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Potato Open Source Project POSP
 	} else if(content.startsWith(`${prefix}posp`) || content.startsWith(`${prefix}potato`) || content.startsWith(`${prefix}potatorom`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://api.potatoproject.co/checkUpdate?device="
-			const bkp = "http://api.strangebits.co.in/checkUpdate?device="
-			//Weekly
-			rom(`${start}${codename}&type=weekly`, `${start}${codenameup}&type=weekly`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=weekly`, `${bkp}${codenameup}&type=weekly`, true).then(week => {
-			//Mashed
-			rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`, true).then(mash => {
-				function check(resp){
-					if(resp.json !== undefined){
-						if(resp.bkp){
-							var response = resp.json;
-							var dl;
-							if(response.url.indexOf('mirror.potatoproject.co') !== -1){
-								dl = response.url.replace("mirror.potatoproject.co", "mirror.sidsun.com")
-							} else {
-								dl = response.url
-							}
-							return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
-						} else {
-							var response = resp.json;
-							return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
-						}
-					} else {
-						return lang.norom
-					}
-				}
-				const embed = new Discord.RichEmbed()
-					.setColor(0x6a16e2)
-					.setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
-					.addField('Weekly', check(week))
-					.addField('Mashed', check(mash))
-				send({embed})
-			})});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.posp){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://api.potatoproject.co/checkUpdate?device="
+        const bkp = "http://api.strangebits.co.in/checkUpdate?device="
+        //Weekly
+        rom(`${start}${codename}&type=weekly`, `${start}${codenameup}&type=weekly`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=weekly`, `${bkp}${codenameup}&type=weekly`, true).then(week => {
+        //Mashed
+        rom(`${start}${codename}&type=mashed`, `${start}${codenameup}&type=mashed`, false, false, false, false, false, false, false, true, '', '', `${bkp}${codename}&type=mashed`, `${bkp}${codenameup}&type=mashed`, true).then(mash => {
+          function check(resp){
+            if(resp.json !== undefined){
+              if(resp.bkp){
+                var response = resp.json;
+                var dl;
+                if(response.url.indexOf('mirror.potatoproject.co') !== -1){
+                  dl = response.url.replace("mirror.potatoproject.co", "mirror.sidsun.com")
+                } else {
+                  dl = response.url
+                }
+                return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+              } else {
+                var response = resp.json;
+                return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+              }
+            } else {
+              return lang.norom
+            }
+          }
+          const embed = new Discord.RichEmbed()
+            .setColor(0x6a16e2)
+            .setTitle(`Potato Open Sauce Project | ${devicename(codename)}`)
+            .addField('Weekly', check(week))
+            .addField('Mashed', check(mash))
+          send({embed})
+        })});
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//RevengeOS
 	} else if(content.startsWith(`${prefix}revenge`) || content.startsWith(`${prefix}revengeos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/RevengeOS/releases/master/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true, true).then(response => {
-				if(response){
-					var date = response.date.split('/');
-					const embed = new Discord.RichEmbed()
-						.setColor(0x1395FA)	
-						.setTitle(`RevengeOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**"+lang.size+"**: **`"+response.size+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codename}/${response.file_name})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.revenge){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/RevengeOS/releases/master/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true, false, false, false, false, false, true, true).then(response => {
+          if(response){
+            var date = response.date.split('/');
+            const embed = new Discord.RichEmbed()
+              .setColor(0x1395FA)	
+              .setTitle(`RevengeOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+`${date[0]}-${date[1]}-${date[2]}`+"`**\n**"+lang.size+"**: **`"+response.size+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.file_name}](https://acc.dl.osdn.jp/storage/g/r/re/revengeos/${codename}/${response.file_name})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//crDroid
 	} else if(content.startsWith(`${prefix}crdroid`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			rom("https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml", '', false, false, false, true, false, false, false, false, codename, codenameup).then(response => {
-				if(response){
-					var filename = response.filename._text;
-					const embed = new Discord.RichEmbed()
-						.setColor(0x31423F)	
-						.setTitle(`crDroid | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**"+lang.version+"**: **`"+filename.split('-')[4]+"`**\n"+`**${lang.download}**: [${filename}](${response.download._text})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.crdroid){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        rom("https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml", '', false, false, false, true, false, false, false, false, codename, codenameup).then(response => {
+          if(response){
+            var filename = response.filename._text;
+            const embed = new Discord.RichEmbed()
+              .setColor(0x31423F)	
+              .setTitle(`crDroid | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**"+lang.version+"**: **`"+filename.split('-')[4]+"`**\n"+`**${lang.download}**: [${filename}](${response.download._text})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Clean Open Source Project COSP
 	} else if(content.startsWith(`${prefix}cosp`) || content.startsWith(`${prefix}clean`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://mirror.codebucket.de/cosp/getdevices.php"
-			rom(start, start, false, false, true, false, false, false, false, '', codename, codenameup).then(response => {
-				if(response){
-					const date = response.date.toString();
-					const embed = new Discord.RichEmbed()
-						.setColor(0x010101)	
-						.setTitle(`Clean Open Source Project | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+ `20${date.substring(0, 2)}-${date.substring(2, 4)}-${date.substring(4, 6)}` +"`**\n"+`**${lang.download}**: [${response.download.split('/')[5]}](${response.download})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.cosp){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://mirror.codebucket.de/cosp/getdevices.php"
+        rom(start, start, false, false, true, false, false, false, false, '', codename, codenameup).then(response => {
+          if(response){
+            const date = response.date.toString();
+            const embed = new Discord.RichEmbed()
+              .setColor(0x010101)	
+              .setTitle(`Clean Open Source Project | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+ `20${date.substring(0, 2)}-${date.substring(2, 4)}-${date.substring(4, 6)}` +"`**\n"+`**${lang.download}**: [${response.download.split('/')[5]}](${response.download})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//SyberiaOS
 	} else if(content.startsWith(`${prefix}syberia`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/syberia-project/official_devices/master"
-			rom(`${start}/a-only/${codename}.json`, `${start}/a-only/${codenameup}.json`, true, false, false, false, false, false, true).then(a => {
-				if(a){
-					const embed = new Discord.RichEmbed()
-						.setColor(0xDF766E)
-						.setTitle(`Syberia | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+ `${a.build_date.substring(0, 4)}-${a.build_date.substring(4, 6)}-${a.build_date.substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+pretty(a.filesize)+"`**\n**"+lang.version+"**: **`"+a.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${a.filename}](${a.url})`)
-					send({embed});
-				} else {
-					function abcdn(code){
-						if(code === 'fajita' || code === 'FAJITA'){
-							return 'OnePlus6T'
-						} else if(code === 'enchilada' || code === 'ENCHILADA'){
-							return 'OnePlus6'
-						} else {
-							return code
-						}
-					}
-					rom(`${start}/ab/${abcdn(codename)}.json`, `${start}/ab/${abcdn(codenameup)}.json`).then(ab => {
-						if(ab){
-							const embed = new Discord.RichEmbed()
-								.setColor(0xDF766E)
-								.setTitle(`Syberia | ${devicename(codename)}`)
-								.setDescription("**"+lang.date+"**: **`"+timeConverter(ab.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(ab.size)+"`**\n**"+lang.version+"**: **`"+ab.version+"`**\n"+`**${lang.download}**: [${ab.filename}](${ab.url})`)
-							send({embed});
-						} else {
-							send(lang.romerr+" `"+devicename(codename)+"`")
-						}
-					})
-				}
-			})
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.syberia){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/syberia-project/official_devices/master"
+        rom(`${start}/a-only/${codename}.json`, `${start}/a-only/${codenameup}.json`, true, false, false, false, false, false, true).then(a => {
+          if(a){
+            const embed = new Discord.RichEmbed()
+              .setColor(0xDF766E)
+              .setTitle(`Syberia | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+ `${a.build_date.substring(0, 4)}-${a.build_date.substring(4, 6)}-${a.build_date.substring(6, 8)}` +"`**\n**"+lang.size+"**: **`"+pretty(a.filesize)+"`**\n**"+lang.version+"**: **`"+a.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${a.filename}](${a.url})`)
+            send({embed});
+          } else {
+            function abcdn(code){
+              if(code === 'fajita' || code === 'FAJITA'){
+                return 'OnePlus6T'
+              } else if(code === 'enchilada' || code === 'ENCHILADA'){
+                return 'OnePlus6'
+              } else {
+                return code
+              }
+            }
+            rom(`${start}/ab/${abcdn(codename)}.json`, `${start}/ab/${abcdn(codenameup)}.json`).then(ab => {
+              if(ab){
+                const embed = new Discord.RichEmbed()
+                  .setColor(0xDF766E)
+                  .setTitle(`Syberia | ${devicename(codename)}`)
+                  .setDescription("**"+lang.date+"**: **`"+timeConverter(ab.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(ab.size)+"`**\n**"+lang.version+"**: **`"+ab.version+"`**\n"+`**${lang.download}**: [${ab.filename}](${ab.url})`)
+                send({embed});
+              } else {
+                send(lang.romerr+" `"+devicename(codename)+"`")
+              }
+            })
+          }
+        })
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//AOSiP
 	} else if(content.startsWith(`${prefix}aosip`) || content.startsWith(`${prefix}illusion`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://aosip.dev/"
-			//Official
-			rom(`${start}${codename}/official`, `${start}${codenameup}/official`).then(off => {
-			//Beta
-			rom(`${start}${codename}/beta`, `${start}${codenameup}/beta`).then(beta => {
-				function check(response){
-					if(response){
-						return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
-					} else {
-						return lang.norom
-					}
-				}
-				const embed = new Discord.RichEmbed()
-					.setColor(0x20458B)
-					.setTitle(`Android Open Source illusion Project | ${devicename(codename)}`)
-					.addField(lang.official, check(off))
-					.addField(lang.beta, check(beta))
-				send({embed})
-			})});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.aosip){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://aosip.dev/"
+        //Official
+        rom(`${start}${codename}/official`, `${start}${codenameup}/official`).then(off => {
+        //Beta
+        rom(`${start}${codename}/beta`, `${start}${codenameup}/beta`).then(beta => {
+          function check(response){
+            if(response){
+              return "**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`
+            } else {
+              return lang.norom
+            }
+          }
+          const embed = new Discord.RichEmbed()
+            .setColor(0x20458B)
+            .setTitle(`Android Open Source illusion Project | ${devicename(codename)}`)
+            .addField(lang.official, check(off))
+            .addField(lang.beta, check(beta))
+          send({embed})
+        })});
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//ArrowOS
 	} else if(content.startsWith(`${prefix}arrow`) || content.startsWith(`${prefix}arrowos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://update.arrowos.net/api/v1/"
-			rom(`${start}${codename}/official`, `${start}${codenameup}/official`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0xe6e6e6)
-						.setTitle(`ArrowOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed})
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.arrow){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://update.arrowos.net/api/v1/"
+        rom(`${start}${codename}/official`, `${start}${codenameup}/official`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0xe6e6e6)
+              .setTitle(`ArrowOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed})
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Liquid Remix
 	} else if(content.startsWith(`${prefix}liquid`) || content.startsWith(`${prefix}liquidremix`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/"
-			function op(cdn){
-				if(cdn === 'enchilada'){
-					return 'oneplus'
-				} else {
-					return cdn
-				}
-			}
-			rom(`${start}${op(codename)}.xml`, `${start}${codenameup}.xml`, false, false, false, false, true).then(body => {
-				if(body){
-					function resp(cdn, cdnup) {
-						var info = body.SlimOTA.Official[cdn]
-						if(info !== undefined){
-							return body.SlimOTA.Official[cdn]
-						} else {
-							return body.SlimOTA.Official[cdnup]
-						}
-					}
-					var response = resp(codename, codenameup);
-					var filename = response.Filename._text;
-					const embed = new Discord.RichEmbed()
-						.setColor(0x2D8CFD)	
-						.setTitle(`Liquid Remix | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[1].substring(0, 4)}-${filename.split('-')[1].substring(4, 6)}-${filename.split('-')[1].substring(6, 8)}` +"`**\n"+`**${lang.download}**: [${filename}](${response.RomUrl._text})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.liquid){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/"
+        function op(cdn){
+          if(cdn === 'enchilada'){
+            return 'oneplus'
+          } else {
+            return cdn
+          }
+        }
+        rom(`${start}${op(codename)}.xml`, `${start}${codenameup}.xml`, false, false, false, false, true).then(body => {
+          if(body){
+            function resp(cdn, cdnup) {
+              var info = body.SlimOTA.Official[cdn]
+              if(info !== undefined){
+                return body.SlimOTA.Official[cdn]
+              } else {
+                return body.SlimOTA.Official[cdnup]
+              }
+            }
+            var response = resp(codename, codenameup);
+            var filename = response.Filename._text;
+            const embed = new Discord.RichEmbed()
+              .setColor(0x2D8CFD)	
+              .setTitle(`Liquid Remix | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[1].substring(0, 4)}-${filename.split('-')[1].substring(4, 6)}-${filename.split('-')[1].substring(6, 8)}` +"`**\n"+`**${lang.download}**: [${filename}](${response.RomUrl._text})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Dirty Unicorns
 	} else if(content.startsWith(`${prefix}dirty`) || content.startsWith(`${prefix}dirtyunicorns`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = 'https://download.dirtyunicorns.com/api/files/'
-			//Official
-			rom(`${start}${codename}/Official`, `${start}${codenameup}/Official`, false, false, false, false, false, true).then(off => {
-			//Rc
-			rom(`${start}${codename}/Rc`, `${start}${codenameup}/Rc`, false, false, false, false, false, true).then(rc => {
-			//Weeklies
-			rom(`${start}${codename}/Weeklies`, `${start}${codenameup}/Weeklies`, false, false, false, false, false, true).then(week => {
-				function check(response, ver){
-					if(response){
-						return "**"+lang.date+"**: **`"+`${response.filename.split('-')[2].substring(0, 4)}-${response.filename.split('-')[2].substring(4, 6)}-${response.filename.split('-')[2].substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+response.filesize+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](https://download.dirtyunicorns.com/api/download/${response.filename.split('-')[0].split('_')[1]}/${ver}/${response.filename})`
-					} else {
-						return lang.norom
-					}
-				}
-				const embed = new Discord.RichEmbed()
-					.setColor(0xB00300)
-					.setTitle(`Dirty Unicorns | ${devicename(codename)}`)
-					.addField(lang.official, check(off, "Official"))
-					.addField("Rc", check(rc, "Rc"))
-					.addField("Weeklies", check(week, "Weeklies"))
-				send({embed})
-			})})});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.dirty){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = 'https://download.dirtyunicorns.com/api/files/'
+        //Official
+        rom(`${start}${codename}/Official`, `${start}${codenameup}/Official`, false, false, false, false, false, true).then(off => {
+        //Rc
+        rom(`${start}${codename}/Rc`, `${start}${codenameup}/Rc`, false, false, false, false, false, true).then(rc => {
+        //Weeklies
+        rom(`${start}${codename}/Weeklies`, `${start}${codenameup}/Weeklies`, false, false, false, false, false, true).then(week => {
+          function check(response, ver){
+            if(response){
+              return "**"+lang.date+"**: **`"+`${response.filename.split('-')[2].substring(0, 4)}-${response.filename.split('-')[2].substring(4, 6)}-${response.filename.split('-')[2].substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+response.filesize+"`**\n**"+lang.version+"**: **`"+response.filename.split('-')[1]+"`**\n"+`**${lang.download}**: [${response.filename}](https://download.dirtyunicorns.com/api/download/${response.filename.split('-')[0].split('_')[1]}/${ver}/${response.filename})`
+            } else {
+              return lang.norom
+            }
+          }
+          const embed = new Discord.RichEmbed()
+            .setColor(0xB00300)
+            .setTitle(`Dirty Unicorns | ${devicename(codename)}`)
+            .addField(lang.official, check(off, "Official"))
+            .addField("Rc", check(rc, "Rc"))
+            .addField("Weeklies", check(week, "Weeklies"))
+          send({embed})
+        })})});
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//XenonHD
 	} else if(content.startsWith(`${prefix}xenon`) || content.startsWith(`${prefix}xenonhd`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://mirrors.c0urier.net/android/teamhorizon/P/OTA/"
-			//Official
-			rom(`${start}ota_${codename}_official.xml`, `${start}ota_${codenameup}_official.xml`, false, false, false, false, true).then(off => {
-			//Experimental
-			rom(`${start}ota_${codename}_experimental.xml`, `${start}ota_${codenameup}_experimental.xml`, false, false, false, false, true).then(exp => {
-				function check(respo, n){
-					if(respo){
-						function resp(cdn, cdnup) {
-							function ver(){
-								if(n === "off"){
-									return off
-								} else {
-									return exp
-								}
-							}
-							var body = ver();
-							var info = body.XenonOTA.Pie[cdn]
-							if(info !== undefined){
-								return body.XenonOTA.Pie[cdn]
-							} else {
-								return body.XenonOTA.Pie[cdnup]
-							}
-						}
-						var response = resp(codename, codenameup)
-						var filename = response.Filename._text;
-						return "**"+lang.date+"**: **`"+ `20${filename.split('-')[1].substring(0, 2)}-${filename.split('-')[1].substring(2, 4)}-${filename.split('-')[1].substring(4, 6)}` +"`**\n"+`**${lang.download}**: [${filename}](${response.RomUrl._text})`
-					} else {
-						return lang.norom
-					}
-				}
-				const embed = new Discord.RichEmbed()
-					.setColor(0x009688)
-					.setTitle(`XenonHD | ${devicename(codename)}`)
-					.addField(lang.official, check(off, "off"))
-					.addField(lang.experimental, check(exp, "exp"))
-				send({embed})
-			})});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.xenon){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://mirrors.c0urier.net/android/teamhorizon/P/OTA/"
+        //Official
+        rom(`${start}ota_${codename}_official.xml`, `${start}ota_${codenameup}_official.xml`, false, false, false, false, true).then(off => {
+        //Experimental
+        rom(`${start}ota_${codename}_experimental.xml`, `${start}ota_${codenameup}_experimental.xml`, false, false, false, false, true).then(exp => {
+          function check(respo, n){
+            if(respo){
+              function resp(cdn, cdnup) {
+                function ver(){
+                  if(n === "off"){
+                    return off
+                  } else {
+                    return exp
+                  }
+                }
+                var body = ver();
+                var info = body.XenonOTA.Pie[cdn]
+                if(info !== undefined){
+                  return body.XenonOTA.Pie[cdn]
+                } else {
+                  return body.XenonOTA.Pie[cdnup]
+                }
+              }
+              var response = resp(codename, codenameup)
+              var filename = response.Filename._text;
+              return "**"+lang.date+"**: **`"+ `20${filename.split('-')[1].substring(0, 2)}-${filename.split('-')[1].substring(2, 4)}-${filename.split('-')[1].substring(4, 6)}` +"`**\n"+`**${lang.download}**: [${filename}](${response.RomUrl._text})`
+            } else {
+              return lang.norom
+            }
+          }
+          const embed = new Discord.RichEmbed()
+            .setColor(0x009688)
+            .setTitle(`XenonHD | ${devicename(codename)}`)
+            .addField(lang.official, check(off, "off"))
+            .addField(lang.experimental, check(exp, "exp"))
+          send({embed})
+        })});
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Kraken Open Tentacles Project KOTP
 	} else if(content.startsWith(`${prefix}kotp`) || content.startsWith(`${prefix}kraken`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0xA373EF)
-						.setTitle(`Kraken Open Tentacles Project | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.kotp){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0xA373EF)
+              .setTitle(`Kraken Open Tentacles Project | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(response.datetime)+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//Android Ice Cold Project AICP
 	} else if(content.startsWith(`${prefix}aicp`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "http://ota.aicp-rom.com/update.php?device="
-			rom(`${start}${codename}`, `${start}${codenameup}`, true).then(response => {
-				if(response){
-					response = response.updates[0]
-					var filename = response.name;
-					const embed = new Discord.RichEmbed()
-						.setColor(0xB3B5B3)
-						.setTitle(`Android Ice Cold Project | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+`${filename.split("-")[3].substring(0, 4)}-${filename.split("-")[3].substring(4, 6)}-${filename.split("-")[3].substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+response.size+"MB"+"`**\n**"+lang.version+"**: **`"+response.version.split("\n")[0]+"`**\n"+`**${lang.download}**: [${filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.aicp){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "http://ota.aicp-rom.com/update.php?device="
+        rom(`${start}${codename}`, `${start}${codenameup}`, true).then(response => {
+          if(response){
+            response = response.updates[0]
+            var filename = response.name;
+            const embed = new Discord.RichEmbed()
+              .setColor(0xB3B5B3)
+              .setTitle(`Android Ice Cold Project | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+`${filename.split("-")[3].substring(0, 4)}-${filename.split("-")[3].substring(4, 6)}-${filename.split("-")[3].substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+response.size+"MB"+"`**\n**"+lang.version+"**: **`"+response.version.split("\n")[0]+"`**\n"+`**${lang.download}**: [${filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//NitrogenOS
 	} else if(content.startsWith(`${prefix}nitrogen`) || content.startsWith(`${prefix}nitrogenos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase
-			const start = "https://raw.githubusercontent.com/nitrogen-project/OTA/p/"
-			rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0x009999)
-						.setTitle(`NitrogenOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+pretty(response.filesize)+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.nitrogen){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase
+        const start = "https://raw.githubusercontent.com/nitrogen-project/OTA/p/"
+        rom(`${start}${codename}.json`, `${start}${codenameup}.json`, true).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0x009999)
+              .setTitle(`NitrogenOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+`${response.build_date.substring(0, 4)}-${response.build_date.substring(4, 6)}-${response.build_date.substring(6, 8)}`+"`**\n**"+lang.size+"**: **`"+pretty(response.filesize)+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//CerberusOS 
 	} else if(content.startsWith(`${prefix}cerberus`) || content.startsWith(`${prefix}cerberusos`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			const start = "https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/"
-			rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
-				if(response){
-					const embed = new Discord.RichEmbed()
-						.setColor(0xE92029)
-						.setTitle(`CerberusOS | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+timeConverter(parseInt(response.datetime))+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
-					send({embed})
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.cerberus){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        const start = "https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/"
+        rom(`${start}${codename}/build.json`, `${start}${codenameup}/build.json`).then(response => {
+          if(response){
+            const embed = new Discord.RichEmbed()
+              .setColor(0xE92029)
+              .setTitle(`CerberusOS | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+timeConverter(parseInt(response.datetime))+"`**\n**"+lang.size+"**: **`"+pretty(response.size)+"`**\n**"+lang.version+"**: **`"+response.version+"`**\n"+`**${lang.download}**: [${response.filename}](${response.url})`)
+            send({embed})
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//MSM Xtended
 	} else if(content.startsWith(`${prefix}msm`) || content.startsWith(`${prefix}xtended`) || content.startsWith(`${prefix}msmxtended`)){
-		const codename = content.split(' ')[1];
-		if(codename !== undefined){
-			const codenameup = content.split(' ')[1].toUpperCase();
-			rom("https://raw.githubusercontent.com/Xtended-Pie/vendor_xtended_DevicesOTA/xp/ota.xml", '', false, false, false, true, false, false, false, false, codename, codenameup).then(response => {
-				if(response){
-					var filename = response.filename._text;
-					const embed = new Discord.RichEmbed()
-						.setColor(0x940000)	
-						.setTitle(`MSM Xtended | ${devicename(codename)}`)
-						.setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**"+lang.version+"**: **`"+filename.split('-')[6].split(".")[0]+"`**\n"+`**${lang.download}**: [${filename}](${response.download._text})`)
-					send({embed});
-				} else {
-					send(lang.romerr+" `"+devicename(codename)+"`")
-				}
-			});
-		} else {
-			send(lang.cdnerr)
-		}
+    if(djson.msm){
+      send(lang.disable)
+    } else {
+      const codename = content.split(' ')[1];
+      if(codename !== undefined){
+        const codenameup = content.split(' ')[1].toUpperCase();
+        rom("https://raw.githubusercontent.com/Xtended-Pie/vendor_xtended_DevicesOTA/xp/ota.xml", '', false, false, false, true, false, false, false, false, codename, codenameup).then(response => {
+          if(response){
+            var filename = response.filename._text;
+            const embed = new Discord.RichEmbed()
+              .setColor(0x940000)	
+              .setTitle(`MSM Xtended | ${devicename(codename)}`)
+              .setDescription("**"+lang.date+"**: **`"+ `${filename.split('-')[2].substring(0, 4)}-${filename.split('-')[2].substring(4, 6)}-${filename.split('-')[2].substring(6, 8)}` +"`**\n**"+lang.version+"**: **`"+filename.split('-')[6].split(".")[0]+"`**\n"+`**${lang.download}**: [${filename}](${response.download._text})`)
+            send({embed});
+          } else {
+            send(lang.romerr+" `"+devicename(codename)+"`")
+          }
+        });
+      } else {
+        send(lang.cdnerr)
+      }
+    }
 	//ROMs
 	} else if(content.startsWith(`${prefix}roms`)){
 		const codename = content.split(' ')[1];
 		if(codename !== undefined){
 			const codenameup = content.split(' ')[1].toUpperCase();
-      message.channel.startTyping();
-			async function roms(url, urlup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							resolve(`${name}\n`);
-						} else {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200){
-									resolve(`${name}\n`);
-								} else {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			async function rombody(url, urlup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							resolve(`${name}\n`);
-						} else {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200){
-									resolve(`${name}\n`);
-								} else {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			async function romlos(url, urlup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-							resolve(`${name}\n`);
-						} else {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-									resolve(`${name}\n`);
-								} else {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			async function romposp(url, urlup, bkpurl, bkpurlup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						try {
-							if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-								resolve(`${name}\n`);
-							} else {
-								request({
-									url: urlup
-								}, function(err, responses, bodyurl) {
-									if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-										resolve(`${name}\n`);
-									} else {
-										resolve(false);
-									}
-								});
-							}
-						} catch(err) {
-							request({
-								url: bkpurl
-							}, function(err, responses, bodyurl){
-								if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-									resolve(`${name}\n`);
-								} else {
-									request({
-										url: bkpurlup
-									}, function(err, responses, bodyurl) {
-										if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
-											resolve(`${name}\n`);
-										} else {
-											resolve(false);
-										}
-									});
-								}
-							});
-						}
-					});
-				});
-			}
-			async function rompe(url, urlup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-							resolve(`${name}\n`);
-						} else {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
-									resolve(`${name}\n`);
-								} else {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			async function rombtlg(url, codename, codenameup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200 && JSON.parse(bodyurl)[codename] !== undefined){
-							resolve(`${name}\n`);
-						} else {
-							request({
-								url
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200 && JSON.parse(bodyurl)[codenameup] !== undefined){
-									resolve(`${name}\n`);
-								} else {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			async function romcosp(code, codeup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url: `https://mirror.codebucket.de/cosp/getdevices.php`
-					}, function(err, responses, bodyurl) {
-						var body = JSON.parse(bodyurl);
-						var response = body.includes(codename);
-						if(response){
-							resolve(`${name}\n`)
-						} else {
-							request({
-								url: `https://mirror.codebucket.de/cosp/getdevices.php`
-							}, function(err, responses, bodyurl) {
-								var body = JSON.parse(bodyurl);
-								var response = body.includes(codename);
-								if(response){
-									resolve(`${name}\n`)
-								} else {
-									resolve(false)
-								}
-							});
-						}
-					});
-				});
-			}
-			async function romcrd(code, codeup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url: "https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml"
-					}, function(err, responses, bodyurl) {
-						var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
-						function resp(){
-							try {
-								return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
-							} catch (err) {
-								try {
-									return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
-								} catch (err) {
-									return false;
-								}
-							}
-						}
-						if(resp() === false){
-							resolve(false)
-						} else {
-							resolve(`${name}\n`)
-						}
-					});
-				});
-			}
-			async function rommsm(code, codeup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url: "https://raw.githubusercontent.com/Xtended-Pie/vendor_xtended_DevicesOTA/xp/ota.xml"
-					}, function(err, responses, bodyurl) {
-						var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
-						function resp(){
-							try {
-								return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
-							} catch (err) {
-								try {
-									return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
-								} catch (err) {
-									return false;
-								}
-							}
-						}
-						if(resp() === false){
-							resolve(false)
-						} else {
-							resolve(`${name}\n`)
-						}
-					});
-				});
-			}
-			async function romsyb(coden, codenup, name){
-				return new Promise(function(resolve, reject) {
-					request({
-						url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${coden}.json`
-					}, function(err, responses, bodyurl) {
-						if(responses.statusCode === 200){
-							var response = JSON.parse(bodyurl);
-							resolve(`${name}\n`);
-						} else {
-							request({
-								url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${codenup}.json`
-							}, function(err, responses, bodyurl) {
-								if(responses.statusCode === 200){
-									var response = JSON.parse(bodyurl);
-									resolve(`${name}\n`);
-								} else {
-									function ab(code){
-										if(code === 'fajita'){
-											return 'OnePlus6T'
-										} else if(code === 'enchilada'){
-											return 'OnePlus6'
-										} else if(code === 'FAJITA'){
-											return 'OnePlus6T'
-										} else if(code === 'ENCHILADA'){
-											return 'OnePlus6'
-										} else {
-											return code
-										}
-									}
-									request({
-										url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(coden)}.json`
-									}, function(err, responses, bodyurl) {
-										if(responses.statusCode === 200){
-											var body = JSON.parse(bodyurl);
-											var response = body.response[0]
-											resolve(`${name}\n`);
-										} else {
-											request({
-												url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(codenup)}.json`
-											}, function(err, responses, bodyurl) {
-												if(responses.statusCode === 200){
-													var body = JSON.parse(bodyurl);
-													var response = body.response[0]
-													resolve(`${name}\n`);
-												} else {
-													resolve(false);
-												}
-											});
-										}
-									});
-								}
-							});
-						}
-					});
-				});
-			}
-			async function romxml(url, urlup, name) {
-				return new Promise(function(resolve, reject) {
-					function urlcheck(u){
-						if(u === 'https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/enchilada.xml'){
-							return 'https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/oneplus.xml'
-						} else {
-							return u
-						}
-					}
-					request({
-						url: urlcheck(url)
-					}, function(err, responses, bodyurl) {
-						try {
-							var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
-							resolve(`${name}\n`);
-						} catch(err) {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								try {
-									var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
-									resolve(`${name}\n`);
-								} catch(err) {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			async function romdirty(url, urlup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl){
-						try {
-							var body = JSON.parse(bodyurl).slice(-1)[0];
-							resolve(`${name}\n`)
-						} catch(err) {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								try {
-									var body = JSON.parse(bodyurl).slice(-1)[0];
-									resolve(`${name}\n`)
-								} catch(err) {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			async function romaicp(url, urlup, name) {
-				return new Promise(function(resolve, reject) {
-					request({
-						url
-					}, function(err, responses, bodyurl){
-						if(JSON.parse(bodyurl).error === undefined){
-							resolve(`${name}\n`)
-						} else {
-							request({
-								url: urlup
-							}, function(err, responses, bodyurl) {
-								if(JSON.parse(bodyurl).error === undefined){
-									resolve(`${name}\n`)
-								} else {
-									resolve(false);
-								}
-							});
-						}
-					});
-				});
-			}
-			//HavocOS
-			roms(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)").then(havoc => {
-			//PixysOS
-			roms(`https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codenameup}/build.json`, "PixysOS (pixy)").then(pixy => {
-			//LineageOS
-			romlos(`https://download.lineageos.org/api/v1/${codename}/nightly/*`, `https://download.lineageos.org/api/v1/${codenameup}/nightly/*`, "LineageOS (los/lineage)").then(los => {
-			//PearlOS
-			roms(`https://raw.githubusercontent.com/PearlOS/OTA/master/${codename}.json`, `https://raw.githubusercontent.com/PearlOS/OTA/master/${codenameup}.json`, "PearlOS (pearl)").then(pearl => {
-			//DotOS
-			roms(`https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codename}.json`, `https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codenameup}.json`, "DotOS (dotos)").then(dotos => {
-			//ViperOS
-			roms(`https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codenameup}/build.json`, "ViperOS (viper)").then(viper => {
-			//Potato Open Sauce Project POSP (Weekly)
-			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=weekly`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=weekly`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=weekly`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=weekly`, "Potato Open Sauce Project (Weekly) (posp/potato)").then(pospw => {
-			//Potato Open Sauce Project POSP (Mashed)
-			romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=mashed`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (Mashed) (posp/potato)").then(pospm => {
-			//Evolution-X EVO-X
-			rombody(`https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codenameup}.json`, "Evolution-X (evo/evox)").then(evo => {
-			//AOSP Extended AEX (Pie)
-			rombody(`https://api.aospextended.com/ota/${codename}/pie`, `https://api.aospextended.com/ota/${codenameup}/pie`, "AOSP Extended (Pie) (aex)").then(aexpie => {
-			//AOSP Extended AEX (Oreo)
-			rombody(`https://api.aospextended.com/ota/${codename}/oreo`, `https://api.aospextended.com/ota/${codenameup}/oreo`, "AOSP Extended (Oreo) (aex)").then(aexoreo => {
-			//BootleggersROM BTLG
-			rombtlg(`https://bootleggersrom-devices.github.io/api/devices.json`, codename, codenameup, "BootleggersROM (btlg/bootleggers)").then(btlg => {
-			//Pixel Experience (Pie)
-			rompe(`https://download.pixelexperience.org/ota_v2/${codename}/pie`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie`, "Pixel Experience (Pie) (pe)").then(pepie => {
-			//Pixel Experience (CAF)
-			rompe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_caf`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_caf`, "Pixel Experience (CAF) (pe)").then(pecaf => {
-			//Pixel Experience (Go)
-			rompe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_go`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_go`, "Pixel Experience (Pie Go) (pe)").then(pego => {
-			//Pixel Experience (Oreo)
-			rompe(`https://download.pixelexperience.org/ota_v2/${codename}/oreo`, `https://download.pixelexperience.org/ota_v2/${codenameup}/oreo`, "Pixel Experience (Oreo) (pe)").then(peoreo => {
-			//SyberiaOS
-			romsyb(codename, codenameup, "Syberia (syberia)").then(syberia => {
-			//crDroid
-			romcrd(codename, codenameup, "crDroid (crdroid)").then(crdroid => {
-			//Clean Open Source Porject COSP
-			romcosp(codename, codenameup, "Clean Open Source Project (cosp/clean)").then(cosp => {
-			//ResurrectionRemix RR
-			roms(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)").then(rr => {
-			//SuperiorOS
-			roms(`https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`, `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`, "SuperiorOS (superior)").then(superior => {
-			//RevengeOS
-			roms(`https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`, `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`, "RevengeOS (revenge)").then(revenge => {
-			//AOSiP Official
-			roms(`https://aosip.dev/${codename}/official`, `https://aosip.dev/${codenameup}/official`, `Android Open Source illusion Project (${lang.official}) (aosip)`).then(aosipo => {
-			//AOSiP Beta
-			roms(`https://aosip.dev/${codename}/beta`, `https://aosip.dev/${codenameup}/beta`, `Android Open Source illusion Project (${lang.beta}) (aosip)`).then(aosipb => {
-			//ArrowOS
-			roms(`https://update.arrowos.net/api/v1/${codename}/official`, `https://update.arrowos.net/api/v1/${codenameup}/official`, "ArrowOS (arrow)").then(arrow => {
-			//Liquid Remix
-			romxml(`https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codename}.xml`, `https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codenameup}.xml`, "Liquid Remix (liquid)").then(liquid => {
-			//Dirty Unicorns (Official)
-			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Official`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Official`, `Dirty Unicorns (${lang.official}) (dirty)`).then(dirtyo => {
-			//Dirty Unicorns (RC)
-			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Rc`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Rc`, "Dirty Unicorns (RC) (dirty)").then(dirtyr => {
-			//Dirty Unicorns (Weeklies)
-			romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Weeklies`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Weeklies`, "Dirty Unicorns (Weeklies) (dirty)").then(dirtyw => {
-			//XenonHD (Official)
-			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_official.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_official.xml`, `XenonHD (${lang.official}) (xenon)`).then(xenono => {
-			//XenonHD (Experimental)
-			romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_experimental.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`).then(xenone => {
-			//Kraken Open Tentacles Project KOTP
-			roms(`https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codenameup}.json`, "Kraken Open Tentacles Project (kotp/kraken)").then(kotp => {
-			//Android Ice Cold Project AICP
-			romaicp(`http://ota.aicp-rom.com/update.php?device=${codename}`, `http://ota.aicp-rom.com/update.php?device=${codenameup}`, "Android Ice Cold Project (aicp)").then(aicp => {
-			//NitrogenOS
-			roms(`https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codename}.json`, `https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codenameup}.json`, "NitrogenOS (nitrogen)").then(nitrogen => {
-			//CerberusOS
-			roms(`https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codename}/build.json`, `https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codenameup}/build.json`, "CerberusOS (cerberus)").then(cerberus => {
-			//MSM Xtended
-			rommsm(codename, codenameup, "MSM Xtended (msm)").then(msm => {
-        
-				//havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone, kotp, aicp, nitrogen, cerberus, msm
-				
-				
-				if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && pospw === false && pospm === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false && kotp === false && aicp === false && nitrogen === false && cerberus === false && msm === false){
-         				send(lang.romserr+" `"+devicename(codename)+"`");
-				} else {
-					
-					function tof(f){
-						if(f !== false){
-							return `${f}`
-						} else {
-							return "";
-						}
-					}
-					
-					const embed = new Discord.RichEmbed()
-						.setColor(0xFFFFFF)
-						.setTitle(`${lang.roms} ${devicename(codename)}`)
-						.setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(pospw), tof(pospm), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone), tof(kotp), tof(aicp), tof(nitrogen), tof(cerberus), tof(msm)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
-					send({embed});
-				}
-        message.channel.stopTyping();
-				
-			})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
+      message.channel.send("Fetching ROMs...").then(msg => {
+        async function roms(url, urlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl) {
+              if(responses.statusCode === 200){
+                resolve(`${name}\n`);
+              } else {
+                request({
+                  url: urlup
+                }, function(err, responses, bodyurl) {
+                  if(responses.statusCode === 200){
+                    resolve(`${name}\n`);
+                  } else {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function rombody(url, urlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl) {
+              if(responses.statusCode === 200){
+                resolve(`${name}\n`);
+              } else {
+                request({
+                  url: urlup
+                }, function(err, responses, bodyurl) {
+                  if(responses.statusCode === 200){
+                    resolve(`${name}\n`);
+                  } else {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function romlos(url, urlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl) {
+              if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+                resolve(`${name}\n`);
+              } else {
+                request({
+                  url: urlup
+                }, function(err, responses, bodyurl) {
+                  if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+                    resolve(`${name}\n`);
+                  } else {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function romposp(url, urlup, bkpurl, bkpurlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl) {
+              try {
+                if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+                  resolve(`${name}\n`);
+                } else {
+                  request({
+                    url: urlup
+                  }, function(err, responses, bodyurl) {
+                    if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+                      resolve(`${name}\n`);
+                    } else {
+                      resolve(false);
+                    }
+                  });
+                }
+              } catch(err) {
+                request({
+                  url: bkpurl
+                }, function(err, responses, bodyurl){
+                  if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+                    resolve(`${name}\n`);
+                  } else {
+                    request({
+                      url: bkpurlup
+                    }, function(err, responses, bodyurl) {
+                      if(responses.statusCode === 200 && JSON.parse(bodyurl).response.join() !== ""){
+                        resolve(`${name}\n`);
+                      } else {
+                        resolve(false);
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function rompe(url, urlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl) {
+              if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
+                resolve(`${name}\n`);
+              } else {
+                request({
+                  url: urlup
+                }, function(err, responses, bodyurl) {
+                  if(responses.statusCode === 200 && !JSON.parse(bodyurl).error){
+                    resolve(`${name}\n`);
+                  } else {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function rombtlg(url, codename, codenameup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl) {
+              if(responses.statusCode === 200 && JSON.parse(bodyurl)[codename] !== undefined){
+                resolve(`${name}\n`);
+              } else {
+                request({
+                  url
+                }, function(err, responses, bodyurl) {
+                  if(responses.statusCode === 200 && JSON.parse(bodyurl)[codenameup] !== undefined){
+                    resolve(`${name}\n`);
+                  } else {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function romcosp(code, codeup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url: `https://mirror.codebucket.de/cosp/getdevices.php`
+            }, function(err, responses, bodyurl) {
+              var body = JSON.parse(bodyurl);
+              var response = body.includes(codename);
+              if(response){
+                resolve(`${name}\n`)
+              } else {
+                request({
+                  url: `https://mirror.codebucket.de/cosp/getdevices.php`
+                }, function(err, responses, bodyurl) {
+                  var body = JSON.parse(bodyurl);
+                  var response = body.includes(codename);
+                  if(response){
+                    resolve(`${name}\n`)
+                  } else {
+                    resolve(false)
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function romcrd(code, codeup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url: "https://raw.githubusercontent.com/crdroidandroid/android_vendor_crDroidOTA/9.0/update.xml"
+            }, function(err, responses, bodyurl) {
+              var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
+              function resp(){
+                try {
+                  return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
+                } catch (err) {
+                  try {
+                    return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
+                  } catch (err) {
+                    return false;
+                  }
+                }
+              }
+              if(resp() === false){
+                resolve(false)
+              } else {
+                resolve(`${name}\n`)
+              }
+            });
+          });
+        }
+        async function rommsm(code, codeup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url: "https://raw.githubusercontent.com/Xtended-Pie/vendor_xtended_DevicesOTA/xp/ota.xml"
+            }, function(err, responses, bodyurl) {
+              var body = convert.xml2json(bodyurl, {compact: true, spaces: 4});
+              function resp(){
+                try {
+                  return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
+                } catch (err) {
+                  try {
+                    return JSON.parse(body).OTA.manufacturer.find((m) => m[codename] !== undefined)[codename] !== undefined;
+                  } catch (err) {
+                    return false;
+                  }
+                }
+              }
+              if(resp() === false){
+                resolve(false)
+              } else {
+                resolve(`${name}\n`)
+              }
+            });
+          });
+        }
+        async function romsyb(coden, codenup, name, disable){
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${coden}.json`
+            }, function(err, responses, bodyurl) {
+              if(responses.statusCode === 200){
+                var response = JSON.parse(bodyurl);
+                resolve(`${name}\n`);
+              } else {
+                request({
+                  url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/a-only/${codenup}.json`
+                }, function(err, responses, bodyurl) {
+                  if(responses.statusCode === 200){
+                    var response = JSON.parse(bodyurl);
+                    resolve(`${name}\n`);
+                  } else {
+                    function ab(code){
+                      if(code === 'fajita'){
+                        return 'OnePlus6T'
+                      } else if(code === 'enchilada'){
+                        return 'OnePlus6'
+                      } else if(code === 'FAJITA'){
+                        return 'OnePlus6T'
+                      } else if(code === 'ENCHILADA'){
+                        return 'OnePlus6'
+                      } else {
+                        return code
+                      }
+                    }
+                    request({
+                      url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(coden)}.json`
+                    }, function(err, responses, bodyurl) {
+                      if(responses.statusCode === 200){
+                        var body = JSON.parse(bodyurl);
+                        var response = body.response[0]
+                        resolve(`${name}\n`);
+                      } else {
+                        request({
+                          url: `https://raw.githubusercontent.com/syberia-project/official_devices/master/ab/${ab(codenup)}.json`
+                        }, function(err, responses, bodyurl) {
+                          if(responses.statusCode === 200){
+                            var body = JSON.parse(bodyurl);
+                            var response = body.response[0]
+                            resolve(`${name}\n`);
+                          } else {
+                            resolve(false);
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function romxml(url, urlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            function urlcheck(u){
+              if(u === 'https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/enchilada.xml'){
+                return 'https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/oneplus.xml'
+              } else {
+                return u
+              }
+            }
+            request({
+              url: urlcheck(url)
+            }, function(err, responses, bodyurl) {
+              try {
+                var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
+                resolve(`${name}\n`);
+              } catch(err) {
+                request({
+                  url: urlup
+                }, function(err, responses, bodyurl) {
+                  try {
+                    var body = JSON.parse(convert.xml2json(bodyurl, {compact: true, spaces: 4}));
+                    resolve(`${name}\n`);
+                  } catch(err) {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function romdirty(url, urlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl){
+              try {
+                var body = JSON.parse(bodyurl).slice(-1)[0];
+                resolve(`${name}\n`)
+              } catch(err) {
+                request({
+                  url: urlup
+                }, function(err, responses, bodyurl) {
+                  try {
+                    var body = JSON.parse(bodyurl).slice(-1)[0];
+                    resolve(`${name}\n`)
+                  } catch(err) {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        async function romaicp(url, urlup, name, disable) {
+          return new Promise(function(resolve, reject) {
+            if(disable) return resolve(false);
+            request({
+              url
+            }, function(err, responses, bodyurl){
+              if(JSON.parse(bodyurl).error === undefined){
+                resolve(`${name}\n`)
+              } else {
+                request({
+                  url: urlup
+                }, function(err, responses, bodyurl) {
+                  if(JSON.parse(bodyurl).error === undefined){
+                    resolve(`${name}\n`)
+                  } else {
+                    resolve(false);
+                  }
+                });
+              }
+            });
+          });
+        }
+        //HavocOS
+        roms(`https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codename}.json`, `https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/${codenameup}.json`, "HavocOS (havoc)", djson.havoc).then(havoc => {
+        //PixysOS
+        roms(`https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/PixysOS-Devices/official_devices/master/${codenameup}/build.json`, "PixysOS (pixy)", djson.pixys).then(pixy => {
+        //LineageOS
+        romlos(`https://download.lineageos.org/api/v1/${codename}/nightly/*`, `https://download.lineageos.org/api/v1/${codenameup}/nightly/*`, "LineageOS (los/lineage)", djson.los).then(los => {
+        //PearlOS
+        roms(`https://raw.githubusercontent.com/PearlOS/OTA/master/${codename}.json`, `https://raw.githubusercontent.com/PearlOS/OTA/master/${codenameup}.json`, "PearlOS (pearl)", djson.pearl).then(pearl => {
+        //DotOS
+        roms(`https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codename}.json`, `https://raw.githubusercontent.com/DotOS/ota_config/dot-p/${codenameup}.json`, "DotOS (dotos)", djson.dot).then(dotos => {
+        //ViperOS
+        roms(`https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codename}/build.json`, `https://raw.githubusercontent.com/Viper-Devices/official_devices/master/${codenameup}/build.json`, "ViperOS (viper)", djson.viper).then(viper => {
+        //Potato Open Sauce Project POSP (Weekly)
+        romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=weekly`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=weekly`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=weekly`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=weekly`, "Potato Open Sauce Project (Weekly) (posp/potato)", djson.posp).then(pospw => {
+        //Potato Open Sauce Project POSP (Mashed)
+        romposp(`https://api.potatoproject.co/checkUpdate?device=${codename}&type=mashed`, `https://api.potatoproject.co/checkUpdate?device=${codenameup}&type=mashed`,`http://api.strangebits.co.in/checkUpdate?device=${codename}&type=mashed`, `http://api.strangebits.co.in/checkUpdate?device=${codenameup}&type=mashed`, "Potato Open Sauce Project (Mashed) (posp/potato)", djson.posp).then(pospm => {
+        //Evolution-X EVO-X
+        rombody(`https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/evolution-x-devices/official_devices/master/builds/${codenameup}.json`, "Evolution-X (evo/evox)", djson.evo).then(evo => {
+        //AOSP Extended AEX (Pie)
+        rombody(`https://api.aospextended.com/ota/${codename}/pie`, `https://api.aospextended.com/ota/${codenameup}/pie`, "AOSP Extended (Pie) (aex)", djson.aex).then(aexpie => {
+        //AOSP Extended AEX (Oreo)
+        rombody(`https://api.aospextended.com/ota/${codename}/oreo`, `https://api.aospextended.com/ota/${codenameup}/oreo`, "AOSP Extended (Oreo) (aex)", djson.aex).then(aexoreo => {
+        //BootleggersROM BTLG
+        rombtlg(`https://bootleggersrom-devices.github.io/api/devices.json`, codename, codenameup, "BootleggersROM (btlg/bootleggers)", djson.btlg).then(btlg => {
+        //Pixel Experience (Pie)
+        rompe(`https://download.pixelexperience.org/ota_v2/${codename}/pie`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie`, "Pixel Experience (Pie) (pe)", djson.pe).then(pepie => {
+        //Pixel Experience (CAF)
+        rompe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_caf`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_caf`, "Pixel Experience (CAF) (pe)", djson.pe).then(pecaf => {
+        //Pixel Experience (Go)
+        rompe(`https://download.pixelexperience.org/ota_v2/${codename}/pie_go`, `https://download.pixelexperience.org/ota_v2/${codenameup}/pie_go`, "Pixel Experience (Pie Go) (pe)", djson.pe).then(pego => {
+        //Pixel Experience (Oreo)
+        rompe(`https://download.pixelexperience.org/ota_v2/${codename}/oreo`, `https://download.pixelexperience.org/ota_v2/${codenameup}/oreo`, "Pixel Experience (Oreo) (pe)", djson.pe).then(peoreo => {
+        //SyberiaOS
+        romsyb(codename, codenameup, "Syberia (syberia)", djson.syberia).then(syberia => {
+        //crDroid
+        romcrd(codename, codenameup, "crDroid (crdroid)", djson.crdroid).then(crdroid => {
+        //Clean Open Source Porject COSP
+        romcosp(codename, codenameup, "Clean Open Source Project (cosp/clean)", djson.cosp).then(cosp => {
+        //ResurrectionRemix RR
+        roms(`https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codename}.json`, `https://raw.githubusercontent.com/ResurrectionRemix-Devices/api/master/${codenameup}.json`, "Resurrection Remix (rr)", djson.rr).then(rr => {
+        //SuperiorOS
+        roms(`https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codename}.json`, `https://raw.githubusercontent.com/SuperiorOS/official_devices/pie/${codenameup}.json`, "SuperiorOS (superior)", djson.superior).then(superior => {
+        //RevengeOS
+        roms(`https://raw.githubusercontent.com/RevengeOS/releases/master/${codename}.json`, `https://raw.githubusercontent.com/RevengeOS/releases/master/${codenameup}.json`, "RevengeOS (revenge)", djson.revenge).then(revenge => {
+        //AOSiP Official
+        roms(`https://aosip.dev/${codename}/official`, `https://aosip.dev/${codenameup}/official`, `Android Open Source illusion Project (${lang.official}) (aosip)`, djson.aosip).then(aosipo => {
+        //AOSiP Beta
+        roms(`https://aosip.dev/${codename}/beta`, `https://aosip.dev/${codenameup}/beta`, `Android Open Source illusion Project (${lang.beta}) (aosip)`, djson.aosip).then(aosipb => {
+        //ArrowOS
+        roms(`https://update.arrowos.net/api/v1/${codename}/official`, `https://update.arrowos.net/api/v1/${codenameup}/official`, "ArrowOS (arrow)", djson.arrow).then(arrow => {
+        //Liquid Remix
+        romxml(`https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codename}.xml`, `https://raw.githubusercontent.com/LiquidRemix-Devices/LROTA/pie/${codenameup}.xml`, "Liquid Remix (liquid)", djson.liquid).then(liquid => {
+        //Dirty Unicorns (Official)
+        romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Official`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Official`, `Dirty Unicorns (${lang.official}) (dirty)`, djson.dirty).then(dirtyo => {
+        //Dirty Unicorns (RC)
+        romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Rc`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Rc`, "Dirty Unicorns (RC) (dirty)", djson.dirty).then(dirtyr => {
+        //Dirty Unicorns (Weeklies)
+        romdirty(`https://download.dirtyunicorns.com/api/files/${codename}/Weeklies`, `https://download.dirtyunicorns.com/api/files/${codenameup}/Weeklies`, "Dirty Unicorns (Weeklies) (dirty)", djson.dirty).then(dirtyw => {
+        //XenonHD (Official)
+        romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_official.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_official.xml`, `XenonHD (${lang.official}) (xenon)`, djson.xenon).then(xenono => {
+        //XenonHD (Experimental)
+        romxml(`https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codename}_experimental.xml`, `https://mirrors.c0urier.net/android/teamhorizon/P/OTA/ota_${codenameup}_experimental.xml`, `XenonHD (${lang.experimental}) (xenon)`, djson.xenon).then(xenone => {
+        //Kraken Open Tentacles Project KOTP
+        roms(`https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codename}.json`, `https://raw.githubusercontent.com/KrakenProject/official_devices/master/builds/${codenameup}.json`, "Kraken Open Tentacles Project (kotp/kraken)", djson.kotp).then(kotp => {
+        //Android Ice Cold Project AICP
+        romaicp(`http://ota.aicp-rom.com/update.php?device=${codename}`, `http://ota.aicp-rom.com/update.php?device=${codenameup}`, "Android Ice Cold Project (aicp)", djson.aicp).then(aicp => {
+        //NitrogenOS
+        roms(`https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codename}.json`, `https://raw.githubusercontent.com/nitrogen-project/OTA/p/${codenameup}.json`, "NitrogenOS (nitrogen)", djson.nitrogen).then(nitrogen => {
+        //CerberusOS
+        roms(`https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codename}/build.json`, `https://raw.githubusercontent.com/CerberusOS/official_devices/Pie/${codenameup}/build.json`, "CerberusOS (cerberus)", djson.cerberus).then(cerberus => {
+        //MSM Xtended
+        rommsm(codename, codenameup, "MSM Xtended (msm)", djson.msm).then(msm => {
+
+          //havoc, pixy, los, pearl, dotos, viper, pospw, pospm, evo, aexpie, aexoreo, btlg, pepie, pecaf, peoreo, pego, syberia, crdroid, cosp, rr, superior, revenge, aosipo, aosipb, arrow, liquid, dirtyo, dirtyr, dirtyw, xenono, xenone, kotp, aicp, nitrogen, cerberus, msm
+
+
+          if(havoc === false && pixy === false && los === false && pearl === false && dotos === false && viper === false && pospw === false && pospm === false && evo === false && aexpie === false && aexoreo == false && btlg === false && pepie === false && pecaf === false && peoreo === false && syberia === false && crdroid === false && cosp === false && rr === false && pego === false && superior === false && revenge === false && aosipo === false && aosipb === false && arrow === false && liquid === false && dirtyo === false && dirtyr === false && dirtyw === false && xenone === false && xenono === false && kotp === false && aicp === false && nitrogen === false && cerberus === false && msm === false){
+                  msg.edit(lang.romserr+" `"+devicename(codename)+"`");
+          } else {
+
+            function tof(f){
+              if(f !== false){
+                return `${f}`
+              } else {
+                return "";
+              }
+            }
+
+            const embed = new Discord.RichEmbed()
+              .setColor(0xFFFFFF)
+              .setTitle(`${lang.roms} ${devicename(codename)}`)
+              .setDescription([tof(havoc), tof(pixy), tof(los), tof(pearl), tof(dotos), tof(viper), tof(pospw), tof(pospm), tof(evo), tof(aexpie), tof(aexoreo), tof(btlg), tof(pepie), tof(pecaf), tof(peoreo), tof(pego), tof(syberia), tof(crdroid), tof(cosp), tof(rr), tof(superior), tof(revenge), tof(aosipo), tof(aosipb), tof(arrow), tof(liquid), tof(dirtyo), tof(dirtyr), tof(dirtyw), tof(xenono), tof(xenone), tof(kotp), tof(aicp), tof(nitrogen), tof(cerberus), tof(msm)].sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase())}).join(''))
+            msg.edit(embed);
+          }
+        })})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})})});
+      });
 		} else {
 			const embed = new Discord.RichEmbed()
 				.setColor(0xFFFFFF)
