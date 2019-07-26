@@ -143,15 +143,15 @@
     "help":{
       "default":{
         "title":"Help",
-        "android":"Have information on a particular version of Android",
+        "android":"Show information on a particular version of Android",
         "magisk":{
           "text":"Have the most recent version of magisk",
           "ver":"Version"
         },
-        "twrp":"Find if TWRP is Official for your device",
+        "twrp":"Check if there is an official TWRP version for your device.",
         "gapps":"Have a particular version of OpenGapps",
-        "roms":"See commands for Customs ROMs",
-        "inv":"Have the bot invite",
+        "roms":"See commands for Custom ROMs",
+        "inv":"Get the bot invite",
         "lang":"Change the language of the bot",
         "prefix":"Change the bot prefix",
         "cdn":"Find the codename of your device",
@@ -159,12 +159,12 @@
 		"gplay":"See Google Play commands",
 		"ahru":"Search file on [androidhost.ru](https://androidhost.ru/)",
         "miui":"Download MIUI from the codename of a device",
-        "specs":"Have the Specifications of a device",
+        "specs":"Get the specs for a device",
         "gcam":"Get 10 latest updates of Gcam",
         "help":"Help"
       },
       "roms":{
-        "title":"Help for Customs ROMs",
+        "title":"Help for Custom ROMs",
         "desc":"Fetches the latest builds of officially supported devices",
         "available":"ROMs Available",
         "use":{
@@ -202,7 +202,7 @@
       "nosrch":"Please enter a device name",
       "lot":"Too many search items ({results} results), please try again with more precision",
       "result":"Result",
-      "nod": "No device find for this codename",
+      "nod": "No device found for this codename",
       "tc": "This codename corresponds to the "
     },
     "sm":{
@@ -273,7 +273,7 @@
     "official":"Official",
     "beta":"Beta",
     "experimental":"Experimental",
-    "dm":"You cannot make this command on direct message!",
+    "dm":"You cannot do this command in direct messages!",
     "perm":"You don't have permission to make this command",
 	"nofile":"No file found"
   }
