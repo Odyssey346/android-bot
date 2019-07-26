@@ -3,5 +3,6 @@
 	"prefix": ".",
 	"lang": "en",
 	"ci": "github client_id",
-	"cs": "github client_secret"
+	"cs": "github client_secret",
+  	"owner": ""
 }
