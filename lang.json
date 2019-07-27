@@ -145,11 +145,11 @@
         "title":"Help",
         "android":"Show information on a particular version of Android",
         "magisk":{
-          "text":"Have the most recent version of magisk",
+          "text":"Get the most recent Magisk version.",
           "ver":"Version"
         },
         "twrp":"Check if there is an official TWRP version for your device.",
-        "gapps":"Have a particular version of OpenGapps",
+        "gapps":"Get a particular version of OpenGapps",
         "roms":"See commands for Custom ROMs",
         "inv":"Get the bot invite",
         "lang":"Change the language of the bot",
@@ -160,7 +160,7 @@
 		"ahru":"Search file on [androidhost.ru](https://androidhost.ru/)",
         "miui":"Download MIUI from the codename of a device",
         "specs":"Get the specs for a device",
-        "gcam":"Get 10 latest updates of Gcam",
+        "gcam":"Get the  10 latest updates of Gcam",
         "help":"Help"
       },
       "roms":{
